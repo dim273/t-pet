@@ -16,4 +16,3 @@ var FileType;
     FileType[FileType["isNew"] = 2] = "isNew";
 })(FileType || (FileType = {}));
 exports.default = FileType;
-//# sourceMappingURL=FileType.js.map

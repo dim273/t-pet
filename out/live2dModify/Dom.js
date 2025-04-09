@@ -240,4 +240,3 @@ function removeFiles(path) {
     fs.rmdirSync(path);
   }
 }
-//# sourceMappingURL=Dom.js.map

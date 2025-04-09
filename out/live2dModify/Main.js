@@ -18,4 +18,3 @@ class Main {
     }
 }
 exports.Main = Main;
-//# sourceMappingURL=Main.js.map

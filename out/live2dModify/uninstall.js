@@ -75,4 +75,3 @@ function removeFiles(path) {
         fs.rmdirSync(path);
     }
 }
-//# sourceMappingURL=uninstall.js.map

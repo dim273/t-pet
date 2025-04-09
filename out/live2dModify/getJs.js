@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = default_1;
 function default_1(config, extName, version) {
-    return `
+	return `
 	/*ext-${extName}-start*/
 	/*ext.${extName}.ver.${version}*/
 	class Live2d {
@@ -453,4 +453,3 @@ function default_1(config, extName, version) {
 	/*ext-${extName}-end*/
 	`;
 }
-//# sourceMappingURL=getJs.js.map
