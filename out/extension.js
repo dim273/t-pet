@@ -7,10 +7,10 @@ const live2dModify_1 = require("./live2dModify");
 
 function activate(context) {
 	// 注册live2d窗口
-	(0, live2dView_1.activateLive2DView)(context);
+	(0, live2dView_1.activateLive2d)(context);
 	// 注册live2d修改器
-	(0, live2dModify_1.activateLive2DModify)(context);
+	(0, live2dModify_1.activateModify)(context);
 }
 
-function deactivate() {}
+function deactivate() { }
 
