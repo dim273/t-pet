@@ -1,0 +1,201 @@
+/* ----
+
+# Pio Plugin
+# By: Dreamer-Paul
+# Modify: journey-ad
+# Last Update: 2021.5.10
+
+一个支持更换 Live2D 模型的 Typecho 插件。
+
+本代码为奇趣保罗原创，并遵守 GPL 2.0 开源协议。欢迎访问我的博客：https://paugram.com
+
+---- */
+
+.pio-container {
+    bottom: 0;
+    z-index: 52;
+    color: #666;
+    position: fixed;
+    user-select: none;
+    cursor: grab;
+    font-size: 12px;
+    /* 子元素的em动态调整 */
+}
+
+.pio-container:active {
+    cursor: grabbing;
+}
+
+.pio-container .pio-show {
+    left: -1.2em;
+    bottom: -0.2em;
+    width: 6em;
+    height: 6.8em;
+    display: none;
+    cursor: pointer;
+    position: absolute;
+    transition: all .3s;
+    background: url(avatar.png) center/contain;
+    opacity: 0.7;
+}
+
+.pio-container.hidden .pio-show {
+    display: block;
+}
+
+.pio-container.hidden .pio-show:hover {
+    opacity: 0.9;
+    transform: translateX(.5em);
+}
+
+.pio-container.hidden #pio {
+    display: none;
+}
+
+.pio-container.hidden .pio-dialog {
+    display: none;
+}
+
+.pio-container.left {
+    left: 0
+}
+
+.pio-container.right {
+    right: 0
+}
+
+.pio-container.active {
+    cursor: move
+}
+
+.pio-container.static {
+    pointer-events: none
+}
+
+.pio-container .pio-action {
+    top: 1.2em;
+    opacity: 0;
+    position: absolute;
+    transition: opacity .3s;
+}
+
+.pio-container.left .pio-action {
+    right: 0
+}
+
+.pio-container.right .pio-action {
+    left: 0
+}
+
+.pio-container:hover .pio-action {
+    opacity: 1
+}
+
+.pio-action span {
+    color: #fff;
+    width: 2em;
+    height: 2em;
+    margin-bottom: 0.6em;
+    display: block;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: .5em;
+    background-size: 100%;
+}
+
+.pio-action .pio-home {
+    background-image: url("../../assets/yigehun.png");
+}
+
+.pio-action .pio-skin {
+    background-image: url("../../assets/chong.jpg");
+}
+
+.pio-action .pio-skate {
+    background-image: url("../../assets/jellyfish.png");
+}
+
+.pio-action .pio-info {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 500 500' xmlns='http://www.w3.org/2000/svg'%3E%3Crect transform='rotate(45.001 238.211 363.575)' x='29.285' y='22.411' width='273.903' height='505.038' rx='70' ry='70' fill='%23dcdcdc'/%3E%3Cpath d='M218.543 249.999l-47.186 47.186c-8.987 8.988-8.987 22.47 0 31.457 8.988 8.988 22.47 8.988 31.457 0L250 281.456l15.728 15.729c17.976 17.976 17.976 46.063 0 64.038l-64.037 64.038c-17.976 17.975-46.063 17.975-64.038 0l-64.038-64.038c-17.975-17.975-17.975-46.062 0-64.038l64.038-64.037c17.975-17.976 46.062-17.976 64.038 0l16.852 16.851z' fill='%23fff'/%3E%3Cpath d='M281.457 249.999l47.186-47.186c8.988-8.987 8.988-22.469 0-31.457-8.987-8.987-22.469-8.987-31.457 0L250 218.542l-15.729-15.729c-17.975-17.975-17.975-46.062 0-64.037l64.038-64.038c17.975-17.975 46.062-17.975 64.038 0l64.037 64.038c17.977 17.975 17.977 46.062 0 64.037l-64.037 64.038c-17.976 17.976-46.063 17.976-64.038 0l-16.852-16.852z' fill='%2361a3e0'/%3E%3C/svg%3E");
+}
+
+.pio-action .pio-ava {
+    background-image: url('../../assets/Ava.png');
+}
+
+.pio-action .pio-diana {
+    background-image: url('../../assets/jiaxintang.png');
+}
+
+.pio-action .pio-eileen {
+    background-image: url('../../assets/naiqilin.png');
+}
+
+/* 背景图图标是和eileen是一样的 */
+.pio-action .pio-background {
+    background-image: url('../../assets/naiqilin.png');
+}
+
+.pio-action .pio-asoulfans {
+    background-image: url('../../assets/beijixing.png');
+}
+
+.normal-cycle {
+    animation: cycle 1s linear infinite;
+}
+
+@keyframes cycle {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+
+    25% {
+        -webkit-transform: rotate(90deg);
+    }
+
+    50% {
+        -webkit-transform: rotate(180deg);
+    }
+
+    75% {
+        -webkit-transform: rotate(270deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+.pio-container .pio-dialog {
+    top: -2.2em;
+    opacity: 0;
+    z-index: -1;
+    font-size: 1.2em;
+    min-width: 12em;
+    background: #fff;
+    padding: .75em 1em;
+    border-radius: 1em;
+    visibility: hidden;
+    position: absolute;
+    word-break: break-all;
+    border: 1px solid #eee;
+    transition: opacity .3s, visibility .3s;
+}
+
+.pio-container .pio-dialog.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.pio-container.left .pio-dialog {
+    left: 1.5em
+}
+
+.pio-container.right .pio-dialog {
+    right: 1.5em
+}
+
+#pio {
+    vertical-align: middle;
+    width: 22em;
+}
