@@ -1,33 +1,81 @@
 {
-  "name": "t-pet",
-  "displayName": "T-Pet",
-  "description": "nb",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.99.0"
+  "name": "vscode-live2d",
+  "displayName": "A-SOUL-live2d",
+  "description": "vscode插件-live2d看板娘。 默认角色会设置为asoul的嘉然",
+  "version": "1.1.1",
+  "author": "TheSecondAkari",
+  "publisher": "TheSecondAkari",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheSecondAkari/vscode-live2d"
   },
+  "engines": {
+    "vscode": "^1.98.2"
+  },
+  "keywords": [
+    "vscode看板娘",
+    "看板娘",
+    "kanbanniang",
+    "live2d",
+    "asoul",
+    "a-soul",
+    "vtuber",
+    "国内顶级偶像",
+    "虚拟偶像"
+  ],
+  "icon": "logo.png",
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onView:vscode-live2d.live2dView"
+  ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [{
-      "command": "t-pet.helloWorld",
-      "title": "Hello World"
-    }]
+    "views": {
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "vscode-live2d.live2dView",
+          "name": "live2d-A-Soul"
+        }
+      ]
+    },
+    "configuration": [
+      {
+        "title": "看板娘配置",
+        "type": "Object",
+        "properties": {
+          "vscode-live2d-asoul.enabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "是否启用live2d-asoul"
+          }
+        }
+      }
+    ]
   },
   "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "vscode-test"
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile && yarn run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "build": "vsce package"
   },
   "devDependencies": {
-    "@types/vscode": "^1.99.0",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
-    "eslint": "^9.21.0",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@types/vscode": "^1.47.0",
+    "@types/glob": "^7.1.4",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "14.x",
+    "@typescript-eslint/eslint-plugin": "^4.31.1",
+    "@typescript-eslint/parser": "^4.31.1",
+    "eslint": "^7.32.0",
+    "glob": "^7.1.7",
+    "mocha": "^9.1.1",
+    "typescript": "^4.4.3",
+    "@vscode/test-electron": "^1.6.2"
   }
 }
