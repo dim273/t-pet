@@ -1,0 +1,117 @@
+:root {
+  --primary: #58CC02;
+  --secondary: #1E90FF;
+  --bg: #252526;
+  --border: #37373d;
+  --text: #d4d4d4;
+}
+
+.problem-sidebar {
+  width: 280px;
+  background: var(--bg);
+  height: 100vh;
+  padding: 15px;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell;
+}
+
+/* 题目卡片 */
+.problem-card {
+  background: #1e1e1e;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.problem-card:hover {
+  border-color: #858585;
+  transform: translateX(3px);
+}
+
+/* 卡片头部 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.problem-title {
+  font-size: 0.95em;
+  color: var(--primary);
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 难度标签 */
+.difficulty {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75em;
+  font-weight: 500;
+}
+
+.easy {
+  background: rgba(88, 204, 2, 0.15);
+}
+
+.medium {
+  background: rgba(255, 184, 0, 0.15);
+}
+
+.hard {
+  background: rgba(255, 69, 58, 0.15);
+}
+
+/* 题目描述 */
+.problem-desc {
+  font-size: 0.85em;
+  color: #858585;
+  line-height: 1.4;
+  height: 40px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+/* 标签容器 */
+.tag-container {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* 单个标签 */
+.problem-tag {
+  padding: 2px 8px;
+  background: #005b84;
+  border-radius: 3px;
+  font-size: 0.7em;
+}
+
+/* 进度条 */
+.progress-bar {
+  height: 4px;
+  background: #37373d;
+  border-radius: 2px;
+  margin: 8px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  width: 65%;
+  transition: width 0.3s ease;
+}
+
+/* 底部统计 */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75em;
+  color: #858585;
+}

@@ -8,9 +8,14 @@ function removeResources() {
     vscode.postMessage({ type: 'removeResources' });
 }
 
+function switchPage() {
+    vscode.postMessage({ type: 'switchPage' });
+}
+
 function sendCommand(type, data) {
     window.top.postMessage({ type, data }, MainOrigin);
 }
+
 
 const receiveMessage = (event) => {
     const origin = event.origin || event.originalEvent.origin;

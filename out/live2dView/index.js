@@ -9,60 +9,72 @@ const Main_1 = require("../live2dModify/Main");
 
 // 扩展激活入口函数
 function activateLive2d(context) {
-  // 创建 Webview 视图提供者
-  const provider = new Live2dViewProvider(context.extensionUri);
-  // 注册 Webview 视图
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(Live2dViewProvider.viewType, provider)
-  );
+	// 创建 Webview 视图提供者
+	const provider = new Live2dViewProvider(context.extensionUri);
+	// 注册 Webview 视图
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(Live2dViewProvider.viewType, provider)
+	);
 }
 
 // Webview视图提供者类
 class Live2dViewProvider {
-  constructor(_extensionUri) {
-    this._extensionUri = _extensionUri;  // 扩展安装目录URI
-  }
+	constructor(_extensionUri) {
+		this._extensionUri = _extensionUri;  // 扩展安装目录URI
+		this._page = 'setting';  // 当前页面状态
+	}
 
-  // 解析 Webview 视图
-  resolveWebviewView(webviewView, context, _token) {
-    // 保存 Webview 实例引用
-    this._view = webviewView;
+	// 解析 Webview 视图
+	resolveWebviewView(webviewView, context, _token) {
+		// 保存 Webview 实例引用
+		this._view = webviewView;
 
-    // 配置 Webview 选项
-    webviewView.webview.options = {
-      enableScripts: true,  // 允许执行脚本
-      localResourceRoots: [this._extensionUri],  // 允许加载的资源路径
-    };
+		// 配置 Webview 选项
+		webviewView.webview.options = {
+			enableScripts: true,  // 允许执行脚本
+			localResourceRoots: [this._extensionUri],  // 允许加载的资源路径
+		};
 
-    // 设置 HTML 内容
-    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+		// 设置 HTML 内容
+		// webviewView.webview.html = this._getTest3Html(webviewView.webview);
+		webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 
-    // 处理来自 Webview 的消息
-    webviewView.webview.onDidReceiveMessage((data) => {
-      switch (data.type) {
-        case "generateResources":
-          // 生成资源文件
-          Main_1.Main.Instance && Main_1.Main.Instance.generateResources();
-          break;
-        case "removeResources":
-          // 移除资源文件（clean: true 表示彻底清理）
-          Main_1.Main.Instance && Main_1.Main.Instance.removeResources(true);
-          break;
-      }
-    });
-  }
+		// 处理来自 Webview 的消息
+		webviewView.webview.onDidReceiveMessage((data) => {
+			switch (data.type) {
+				case "switchPage":
+					// 切换页面
+					this._page = this._page === 'test' ? 'setting' : 'test';
+					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					break;
+				case "generateResources":
+					// 生成资源文件
+					Main_1.Main.Instance && Main_1.Main.Instance.generateResources();
+					break;
+				case "removeResources":
+					// 移除资源文件（clean: true 表示彻底清理）
+					Main_1.Main.Instance && Main_1.Main.Instance.removeResources(true);
+					break;
+			}
+		});
+	}
 
-  // 生成 Webview 的 HTML 内容
-  _getHtmlForWebview(webview) {
-    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
-    const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-    const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.css"));
+	updateWebviewContent(webview) {
+		if (this._page === 'test') return this._getTestHtml(webview);
+		else return this._getSettingHtml(webview);
+	}
 
-    // 生成随机数用于 CSP 安全策略
-    const nonce = getNonce();
+	// 生成 Webview 的 HTML 内容
+	_getSettingHtml(webview) {
+		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
+		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.css"));
 
-    // 返回 HTML 模板
-    return `<!DOCTYPE html>
+		// 生成随机数用于 CSP 安全策略
+		const nonce = getNonce();
+
+		// 返回 HTML 模板
+		return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
 				<meta charset="UTF-8">
@@ -139,6 +151,10 @@ class Live2dViewProvider {
 						<div style="margin-right:6px" > 不透明度:  </div>
 						<input id="background-opacity-input" style="width: 80%; flex: 1" type="number" placeholder="范围: 0-1，默认是0.2" onchange="handleChangeOpacity(event)" />
 					</div>
+					<div class="common-subtitle">页面切换:</div>
+					<div class="common-bar" >
+						<button class="common-button" onclick="switchPage()">切换</button>
+					</div>
 					<div class="common-bar">
 						<div style="margin-right:6px" > 适配样式:  </div>
 						<select id="background-mode-select" style="width: 80%; flex: 1" onchange="handleChangeMode(event)">
@@ -165,15 +181,144 @@ class Live2dViewProvider {
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
-  }
+	};
+
+	_getTestHtml(webview) {
+		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test.css"));
+
+
+		return `<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<link href="${styleVSCodeUri}" rel="stylesheet"> 
+				<link href="${testCssUri}" rel="stylesheet">
+				<title>Live 2d</title>
+			</head>
+			<body>
+    <div style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
+        <button class="common-button" onclick= "switchPage()"
+            style="padding: 5px 10px; background: #58CC02; border: none; border-radius: 3px; cursor: pointer;">
+            返回主界面
+        </button>
+    </div>
+    <div class="problem-sidebar">
+        <!-- 题目卡片1 -->
+        <div class="problem-card">
+            <div class="card-header">
+                <div class="problem-title">两数之和</div>
+                <div class="difficulty easy">简单</div>
+            </div>
+            <div class="problem-desc">
+                在数组中找到两个数，使它们的和等于目标值
+            </div>
+            <div class="tag-container">
+                <span class="problem-tag">数组</span>
+                <span class="problem-tag">哈希表</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="card-footer">
+                <span>68% 通过</span>
+                <span>🔥 126k</span>
+            </div>
+        </div>
+
+        <!-- 题目卡片2 -->
+        <div class="problem-card">
+            <div class="card-header">
+                <div class="problem-title">反转链表</div>
+                <div class="difficulty medium">中等</div>
+            </div>
+            <div class="problem-desc">
+                使用迭代和递归两种方式反转单链表
+            </div>
+            <div class="tag-container">
+                <span class="problem-tag">链表</span>
+                <span class="problem-tag">递归</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 45%"></div>
+            </div>
+            <div class="card-footer">
+                <span>52% 通过</span>
+                <span>⭐ 89k</span>
+            </div>
+        </div>
+
+        <!-- 题目卡片3 -->
+        <div class="problem-card">
+            <div class="card-header">
+                <div class="problem-title">二叉树遍历</div>
+                <div class="difficulty medium">中等</div>
+            </div>
+            <div class="problem-desc">
+                实现二叉树的先序、中序、后序遍历的迭代算法
+            </div>
+            <div class="tag-container">
+                <span class="problem-tag">二叉树</span>
+                <span class="problem-tag">栈</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 38%"></div>
+            </div>
+            <div class="card-footer">
+                <span>61% 通过</span>
+                <span>📚 常考</span>
+            </div>
+        </div>
+
+        <!-- 题目卡片4 -->
+        <div class="problem-card">
+            <div class="card-header">
+                <div class="problem-title">动态规划</div>
+                <div class="difficulty hard">困难</div>
+            </div>
+            <div class="problem-desc">
+                硬币找零问题：计算凑成总金额的最少硬币个数
+            </div>
+            <div class="tag-container">
+                <span class="problem-tag">DP</span>
+                <span class="problem-tag">背包问题</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 28%"></div>
+            </div>
+            <div class="card-footer">
+                <span>32% 通过</span>
+                <span>🏆 大厂</span>
+            </div>
+        </div>
+
+				<div class="common-subtitle">页面切换:</div>
+					<div class="common-bar" >
+						<button class="common-button" onclick="switchPage()">切换</button>
+				</div>
+    </div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+				const MainOrigin = "vscode-file://vscode-app";
+        function switchPage() {
+    			vscode.postMessage({ type: 'switchPage' });
+    		}
+    </script>
+	</body>
+
+	</html>
+		      
+		`;
+	}
 }
 Live2dViewProvider.viewType = "vscode-live2d.live2dView";
 // 生成随机字符串用于 CSP（内容安全策略）
 function getNonce() {
-  let text = "";
-  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
+	let text = "";
+	const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	for (let i = 0; i < 32; i++) {
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+	}
+	return text;
 }
