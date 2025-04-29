@@ -21,7 +21,7 @@ function activateLive2d(context) {
 class Live2dViewProvider {
 	constructor(_extensionUri) {
 		this._extensionUri = _extensionUri;  // 扩展安装目录URI
-		this._page = 'test4';                // 当前页面状态
+		this._page = 'test1';                // 当前页面状态
 	}
 
 	// 解析 Webview 视图
@@ -115,6 +115,9 @@ class Live2dViewProvider {
 				<title>Live 2d</title>
 			</head>
 			<body>
+				<div class="common-bar" >
+						<button class="common-button" onclick="switchPageToTest1()">返回主界面</button>
+				</div>
 				<div style="max-width: 450px; min-width: 100px; padding: 12px">
 					<div class="common-title">基本操作:</div>
 					<div class="common-bar">
@@ -183,10 +186,6 @@ class Live2dViewProvider {
 						<div style="margin-right:6px" > 不透明度:  </div>
 						<input id="background-opacity-input" style="width: 80%; flex: 1" type="number" placeholder="范围: 0-1，默认是0.2" onchange="handleChangeOpacity(event)" />
 					</div>
-					<div class="common-subtitle">页面切换:</div>
-					<div class="common-bar" >
-						<button class="common-button" onclick="switchPage()">切换</button>
-					</div>
 					<div class="common-bar">
 						<div style="margin-right:6px" > 适配样式:  </div>
 						<select id="background-mode-select" style="width: 80%; flex: 1" onchange="handleChangeMode(event)">
@@ -231,9 +230,10 @@ class Live2dViewProvider {
 					<div style="max-width: 450px; min-width: 100px; padding: 12px">
 					<div class="learning-container">
         		<!-- 顶部状态栏 -->
-        		<div class="knowledge-header">
-            	<div class="knowledge-title">知识树</div>
-        		</div>
+						<div class="knowledge-header">
+  						<button class="back-btn" onclick= "switchPageToSetting()">☣</button>
+  						<h1 class="knowledge-title">知识树</h1>
+						</div>
         		<div class="status-header">
             	<div class="status-item">
                 <div class="status-label">今日任务</div>
@@ -324,6 +324,9 @@ class Live2dViewProvider {
 						}
 						function switchPageToTest7() {
 							
+						}
+						function switchPageToSetting() {
+							vscode.postMessage({ type: 'switchPageToSetting' });
 						}
     			</script>
 				</body>
@@ -451,14 +454,14 @@ class Live2dViewProvider {
 			</head>
 			<body>
     		<div style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
-        	<button class="common-button" onclick= "switchPage()"
+        	<button class="common-button" onclick= "switchPageToTest1()"
             style="padding: 5px 10px; background: #58CC02; border: none; border-radius: 3px; cursor: pointer;">
             返回主界面
-        </button>
+        	</button>
     		</div>
     		<div class="problem-sidebar">
         <!-- 题目卡片1 -->
-        <div class="problem-card">
+        <div class="problem-card" onclick= "switchPageToTest4()">
             <div class="card-header">
                 <div class="problem-title">两数之和</div>
                 <div class="difficulty easy">简单</div>
@@ -480,7 +483,7 @@ class Live2dViewProvider {
         	</div>
 
         	<!-- 题目卡片2 -->
-        	<div class="problem-card">
+        	<div class="problem-card" onclick = "switchPageToTest4()">
             <div class="card-header">
                 <div class="problem-title">反转链表</div>
                 <div class="difficulty medium">中等</div>
@@ -502,7 +505,7 @@ class Live2dViewProvider {
         	</div>
 
         	<!-- 题目卡片3 -->
-        	<div class="problem-card">
+        	<div class="problem-card" onclick= "switchPageToTest4()">
             <div class="card-header">
                 <div class="problem-title">二叉树遍历</div>
                 <div class="difficulty medium">中等</div>
@@ -524,7 +527,7 @@ class Live2dViewProvider {
         	</div>
 
         	<!-- 题目卡片4 -->
-        	<div class="problem-card">
+        	<div class="problem-card" onclick= "switchPageToTest4()">
             <div class="card-header">
                 <div class="problem-title">动态规划</div>
                 <div class="difficulty hard">困难</div>
@@ -549,11 +552,11 @@ class Live2dViewProvider {
     		<script>
        	 	const vscode = acquireVsCodeApi();
 					const MainOrigin = "vscode-file://vscode-app";
-        	function switchPageToTest4() {
-						vscode.postMessage({ type: 'switchPageToTest3' });
+        	function switchPageToTest1() {
+						vscode.postMessage({ type: 'switchPageToTest1' });
 					}
 					function switchPageToTest4() {
-						vscode.postMessage({ type: 'switchPageToTest3' });
+						vscode.postMessage({ type: 'switchPageToTest4' });
 					}
     		</script>
 			</body>

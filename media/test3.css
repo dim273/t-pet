@@ -16,6 +16,7 @@
 }
 
 /* 题目卡片 */
+button,
 .problem-card {
   background: #1e1e1e;
   border: 1px solid var(--border);
