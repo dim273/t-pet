@@ -21,7 +21,7 @@ function activateLive2d(context) {
 class Live2dViewProvider {
 	constructor(_extensionUri) {
 		this._extensionUri = _extensionUri;  // 扩展安装目录URI
-		this._page = 'test5';  // 当前页面状态
+		this._page = 'test4';  // 当前页面状态
 	}
 
 	// 解析 Webview 视图
@@ -228,23 +228,27 @@ class Live2dViewProvider {
 					<title>Live 2d</title>
 				</head>
 			<body>
+					<div style="max-width: 450px; min-width: 100px; padding: 12px">
 					<div class="learning-container">
-        	<!-- 顶部状态栏 -->
-        	<div class="knowledge-header">
-            <div class="knowledge-title">知识树</div>
-        	</div>
-        	<div class="status-header">
-            <div class="status-item">
+        		<!-- 顶部状态栏 -->
+        		<div class="knowledge-header">
+            	<div class="knowledge-title">知识树</div>
+        		</div>
+        		<div class="status-header">
+            	<div class="status-item">
                 <div class="status-label">今日任务</div>
                 <div class="status-value">2/3</div>
+								<button class="common-button" onclick= "switchPageToTest4()" >查看任务</button>
+            	</div>
+            <div class="status-item">
+              <div class="status-label">连续打卡</div>
+              <div class="status-value">7天</div>
+							<button class="common-button" onclick= "switchPageToTest6()" >打卡日历</button>
             </div>
             <div class="status-item">
-                <div class="status-label">连续打卡</div>
-                <div class="status-value">7天</div>
-            </div>
-            <div class="status-item">
-                <div class="status-label">总积分</div>
-                <div class="status-value">1850</div>
+              <div class="status-label">总积分</div>
+              <div class="status-value">1850</div>
+							<button class="common-button" onclick= "switchPageToTest7()" >积分商城</button>
             </div>
         	</div>
 
@@ -255,9 +259,9 @@ class Live2dViewProvider {
                 <div class="node-xp">★ 300</div>
                 <div class="node-core">
                     <div class="progress-ring"></div>
-                    <div class="node-content">
+                    <div class="node-content" onclick = "switchPageToTest3()">
                         <div class="node-title">💖</div>
-                        <div class="node-title">排序算法</div>
+												<div class="node-title">排序算法</div>
                     </div>
                 </div>
                 <div class="status-indicator"></div>
@@ -268,7 +272,7 @@ class Live2dViewProvider {
                 <div class="node-xp">★ 450</div>
                 <div class="node-core">
                     <div class="progress-ring"></div>
-                    <div class="node-content">
+                    <div class="node-content" onclick = "switchPageToTest3()">
                         <div class="node-title">✨</div>
                         <div class="node-title">二分搜索</div>
                     </div>
@@ -306,8 +310,20 @@ class Live2dViewProvider {
 					<script>
 						const vscode = acquireVsCodeApi();
 						const MainOrigin = "vscode-file://vscode-app";
-						function switchPage() {
-							vscode.postMessage({ type: 'switchPage' });
+						function switchPageToTest4() {
+							vscode.postMessage({ type: 'switchPageToTest4' });
+						}
+						function switchPageToTest3() {
+							vscode.postMessage({ type: 'switchPageToTest3' });
+						}
+						function switchPageToTest2() {
+							vscode.postMessage({ type: 'switchPageToTest2' });
+						}
+						function switchPageToTest6() {
+							
+						}
+						function switchPageToTest7() {
+							
 						}
     			</script>
 				</body>
@@ -317,7 +333,7 @@ class Live2dViewProvider {
 
 	_getTestHtml2(webview) {
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test1.css"));
+		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test2.css"));
 
 		return `<!DOCTYPE html>
 			<html lang="en">
@@ -532,9 +548,12 @@ class Live2dViewProvider {
     		<script>
        	 	const vscode = acquireVsCodeApi();
 					const MainOrigin = "vscode-file://vscode-app";
-        	function switchPage() {
-    				vscode.postMessage({ type: 'switchPage' });
-    			}
+        	function switchPageToTest4() {
+						vscode.postMessage({ type: 'switchPageToTest3' });
+					}
+					function switchPageToTest4() {
+						vscode.postMessage({ type: 'switchPageToTest3' });
+					}
     		</script>
 			</body>
 		</html>
@@ -544,7 +563,7 @@ class Live2dViewProvider {
 
 	_getTestHtml4(webview) {
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test1.css"));
+		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test4.css"));
 
 		return `<!DOCTYPE html>
 			<html lang="en">
@@ -558,7 +577,7 @@ class Live2dViewProvider {
 				<div class="problem-detail">
         <!-- 头部 -->
         <div class="detail-header">
-            <button class="back-btn">←</button>
+            <button class="back-btn" onclick = "switchPageToTest1()">←</button>
             <div class="problem-meta">
                 <div class="problem-title">两数之和</div>
                 <div class="problem-tags">
@@ -629,65 +648,66 @@ class Live2dViewProvider {
 					<script>
 						const vscode = acquireVsCodeApi();
 						const MainOrigin = "vscode-file://vscode-app";
-						function switchPage() {
-							vscode.postMessage({ type: 'switchPage' });
+						function switchPageToTest1() {
+							vscode.postMessage({ type: 'switchPageToTest1' });
 						}
 						// 复制功能
-						function copyCode(event) {
-							const content = event.target.parentElement.querySelector('.io-content').innerText;
-							navigator.clipboard.writeText(content).then(() => {
-									const originalText = event.target.textContent;
-									event.target.textContent = '已复制!';
-									setTimeout(() => {
-											event.target.textContent = originalText;
-									}, 1500);
-							}).catch(err => {
-									console.error('复制失败:', err);
-							});
-						}
+        		function copyCode(event) {
+            	const content = event.target.parentElement.querySelector('.io-content').innerText;
+            	navigator.clipboard.writeText(content).then(() => {
+                const originalText = event.target.textContent;
+                event.target.textContent = '已复制!';
+                setTimeout(() => {
+                    event.target.textContent = originalText;
+                }, 1500);
+            	}).catch(err => {
+                console.error('复制失败:', err);
+            });
+        		}
 
-						// 切换样例
-						function switchSample(num) {
-							document.querySelectorAll('.sample-io').forEach(el => {
-									el.style.display = 'none';
-							});
-							document.getElementById('12').style.display = 'block';
-							
-							document.querySelectorAll('.tab-item').forEach(el => {
-									el.classList.remove('active');
-							});
-							event.target.classList.add('active');
-						}
+        		// 切换样例
+        		function switchSample(num) {
+            	document.querySelectorAll('.sample-io').forEach(el => {
+                el.style.display = 'none';
+            	});
+							var sam = document.getElementById('sample' + num).style.display = 'block';
+            
+            	document.querySelectorAll('.tab-item').forEach(el => {
+                el.classList.remove('active');
+            	});
+            	event.target.classList.add('active');
+        		}
 
-						// 模拟提交
-						function submitCode() {
-							const loading = document.getElementById('loading');
-							const result = document.getElementById('result');
-							
-							loading.style.display = 'flex';
-							result.style.display = 'none';
+        		// 模拟提交
+        		function submitCode() {
+            	const loading = document.getElementById('loading');
+            	const result = document.getElementById('result');
+            
+            	loading.style.display = 'flex';
+            	result.style.display = 'none';
 
-							// 模拟API请求延迟
-							setTimeout(() => {
-									loading.style.display = 'none';
-									result.style.display = 'block';
-									
-									// 随机模拟成功或失败
-									const isSuccess = Math.random() > 0.3;
-									if (isSuccess) {
-											result.className = 'result-feedback success';
-											result.textContent = '✔ 通过所有测试用例 (执行用时：12ms)';
-									} else {
-											result.className = 'result-feedback error';
-											result.textContent = '✘ 未通过测试用例：输入 [3,3] 6';
-									}
-							}, 1500);
-						}
-						// 返回按钮功能
-						document.querySelector('.back-btn').addEventListener('click', () => {
-							console.log('返回上一页');
-							// 实际应用中这里应该是返回逻辑
-						});
+            // 模拟API请求延迟
+            	setTimeout(() => {
+                loading.style.display = 'none';
+                result.style.display = 'block';
+                
+                // 随机模拟成功或失败
+                const isSuccess = Math.random() > 0.3;
+                if (isSuccess) {
+                    result.className = 'result-feedback success';
+                    result.textContent = '✔ 通过所有测试用例 (执行用时：12ms)';
+                } else {
+                    result.className = 'result-feedback error';
+                    result.textContent = '✘ 未通过测试用例：输入 [3,3] 6';
+                }
+            	}, 1500);
+        		}
+
+        		// 返回按钮功能
+        		document.querySelector('.back-btn').addEventListener('click', () => {
+            	console.log('返回上一页');
+            // 实际应用中这里应该是返回逻辑
+          });
     		</script>
 			</body>
 			</html>
@@ -697,7 +717,7 @@ class Live2dViewProvider {
 
 	_getTestHtml5(webview) {
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test1.css"));
+		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test5.css"));
 
 		return `<!DOCTYPE html>
 			<html lang="en">
@@ -717,18 +737,9 @@ class Live2dViewProvider {
 
         	<!-- 平台切换 -->
         	<div class="platform-tabs">
-            <div class="platform-tab active" data-platform="leetcode"><button class="common-button" onclick= "switchPage()"
-            style="padding: 5px 10px; background: #58CC02; border: none; border-radius: 3px; cursor: pointer;">
-            力扣
-        </button>
-            <div class="platform-tab" data-platform="luogu"><button class="common-button" onclick= "switchPage()"
-            style="padding: 5px 10px; background:rgb(22, 86, 207); border: none; border-radius: 3px; cursor: pointer;">
-            洛谷
-        </button>
-            <div class="platform-tab" data-platform="acwing"><button class="common-button" onclick= "switchPage()"
-            style="padding: 5px 10px; background:rgb(149, 140, 71); border: none; border-radius: 3px; cursor: pointer;">
-            Acwing
-        </button>
+            <div class="platform-tab active" data-platform="leetcode">LeetCode</div>
+            <div class="platform-tab" data-platform="luogu">洛谷</div>
+            <div class="platform-tab" data-platform="acwing">AcWing</div>
         	</div>
 
         	<!-- 登录表单 -->
@@ -787,6 +798,9 @@ class Live2dViewProvider {
                 </svg>
                 GitHub登录
             </button>
+        	</div>
+					<div class="common-bar">
+            <button class = "common-button"  onclick = "switchPageToTest1()">跳过登录</button>
         	</div>
     		</div>
 				<script>

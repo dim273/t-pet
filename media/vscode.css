@@ -52,7 +52,8 @@ button {
 	outline: 1px solid transparent;
 	outline-offset: 2px !important;
 	color: var(--vscode-button-foreground);
-	background: var(--vscode-button-background);
+	background: #58CC02;
+	border-radius: 6px;
 }
 
 button:hover {
