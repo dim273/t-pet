@@ -21,7 +21,7 @@ function activateLive2d(context) {
 class Live2dViewProvider {
 	constructor(_extensionUri) {
 		this._extensionUri = _extensionUri;  // 扩展安装目录URI
-		this._page = 'test4';  // 当前页面状态
+		this._page = 'test4';                // 当前页面状态
 	}
 
 	// 解析 Webview 视图
@@ -345,20 +345,21 @@ class Live2dViewProvider {
 				</head>
 			<body>
 				<div class="ai-chat-container">
-        <div class="ai-header">
-            <div class="ai-title">AI HELPER</div>
-        </div>
+					<div class="ai-header">
+  					<button class="back-btn" onclick= "switchPageToTest4()">返回</button>
+  					<h1 class="ai-title">AI HELPER</h1>
+					</div>
         <!-- 消息区域 -->
-        <div class="chat-messages">
+        	<div class="chat-messages">
             <!-- AI消息 -->
             <div class="message-bubble ai-message">
                 需要帮助解释这段代码吗？
                 <pre class="code-block">function binarySearch(arr, target) {
-    let left = 0, right = arr.length - 1;
-    while (left <= right) {
-        ...
-    }
-}</pre>
+    							let left = 0, right = arr.length - 1;
+    				while (left <= right) {
+        			...
+   				 	}
+						}</pre>
             </div>
 
             <!-- 用户消息 -->
@@ -392,8 +393,8 @@ class Live2dViewProvider {
 				<script>
         	const vscode = acquireVsCodeApi();
 					const MainOrigin = "vscode-file://vscode-app";
-        	function switchPage() {
-    				vscode.postMessage({ type: 'switchPage' });
+        	function switchPageToTest4() {
+    				vscode.postMessage({ type: 'switchPageToTest4' });
     			}
 					// 动态调整输入框高度
         	const textarea = document.querySelector('.chat-input');
@@ -577,7 +578,7 @@ class Live2dViewProvider {
 				<div class="problem-detail">
         <!-- 头部 -->
         <div class="detail-header">
-            <button class="back-btn" onclick = "switchPageToTest1()">←</button>
+            <button class="back-btn" onclick = "switchPageToTest1()">返回</button>
             <div class="problem-meta">
                 <div class="problem-title">两数之和</div>
                 <div class="problem-tags">
@@ -586,6 +587,7 @@ class Live2dViewProvider {
                     <span>通过率 68%</span>
                 </div>
             </div>
+						<button class= "problem-AI" onclick = "switchPageToTest2()">AI助手</button>
         </div>
 
         <!-- 内容区 -->
@@ -650,6 +652,9 @@ class Live2dViewProvider {
 						const MainOrigin = "vscode-file://vscode-app";
 						function switchPageToTest1() {
 							vscode.postMessage({ type: 'switchPageToTest1' });
+						}
+						function switchPageToTest2() {
+							vscode.postMessage({ type: 'switchPageToTest2' });
 						}
 						// 复制功能
         		function copyCode(event) {
