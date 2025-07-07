@@ -21,7 +21,7 @@ function activateLive2d(context) {
 class Live2dViewProvider {
 	constructor(_extensionUri) {
 		this._extensionUri = _extensionUri;  // 扩展安装目录URI
-		this._page = 'test1';                // 当前页面状态
+		this._page = 'test5';                // 当前页面状态，初始化为test5
 	}
 
 	// 解析 Webview 视图
@@ -63,6 +63,14 @@ class Live2dViewProvider {
 					this._page = 'test5';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
+				case "switchPageToTest6":
+					this._page = 'test6';
+					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					break;
+				case "switchPageToTest7":
+					this._page = 'test7';
+					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					break;
 				case "switchPageToSetting":
 					this._page = 'setting';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
@@ -91,6 +99,10 @@ class Live2dViewProvider {
 				return this._getTestHtml4(webview);
 			case 'test5':
 				return this._getTestHtml5(webview);
+			case 'test6':
+				return this._getTestHtml6(webview);
+			case 'test7':
+				return this._getTestHtml7(webview);
 			default:
 				return this._getSettingHtml(webview);
 		}
@@ -166,14 +178,6 @@ class Live2dViewProvider {
 							onclick="removeResources()">
 							移除
 						</button>
-					</div>
-
-					<div class="common-title">背景图相关功能失效</div>
-					<div class="common-subtitle">因为获取图片的接口没了</div>
-					<div class="common-subtitle">背景图:(需要先启动live2d人物)</div>
-					<div class="common-bar">
-						<button class="common-button" onclick="saveBackground()">保存背景图</button>
-						<button class="common-button" onclick="loadBackground()"> 加载背景图</button>
 					</div>
 					<div class="common-subtitle">定时切换(分钟):</div>
 					<div class="common-bar">
@@ -320,10 +324,10 @@ class Live2dViewProvider {
 							vscode.postMessage({ type: 'switchPageToTest2' });
 						}
 						function switchPageToTest6() {
-							
+							vscode.postMessage({ type: 'switchPageToTest6' });
 						}
 						function switchPageToTest7() {
-							
+							vscode.postMessage({ type: 'switchPageToTest7' });
 						}
 						function switchPageToSetting() {
 							vscode.postMessage({ type: 'switchPageToSetting' });
@@ -860,6 +864,132 @@ class Live2dViewProvider {
 		      
 		`;
 	}
+
+	_getTestHtml6(webview) {
+		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test6.css"));
+
+		return `<!DOCTYPE html>
+			<html lang="en">
+				<head>
+					<meta charset="UTF-8">
+					<link href="${styleVSCodeUri}" rel="stylesheet"> 
+					<link href="${testCssUri}" rel="stylesheet">
+					<title>Live 2d</title>
+				</head>
+				<body>
+    			<div class="header">
+        	<button class="back-button" onclick = "switchPageToTest1()">&lt;</button>
+        	<div class="title">日历</div>
+    			</div>
+    
+    			<div class="calendar-container">
+        	<div class="calendar">
+            <!-- 星期标题 -->
+            <div class="calendar-header">日</div>
+            <div class="calendar-header">一</div>
+            <div class="calendar-header">二</div>
+            <div class="calendar-header">三</div>
+            <div class="calendar-header">四</div>
+            <div class="calendar-header">五</div>
+            <div class="calendar-header">六</div>
+
+            <!-- 空单元格用于对齐 -->
+            <div class="calendar-day"></div>
+            <div class="calendar-day"></div>
+            <div class="calendar-day"></div>
+            <div class="calendar-day"></div>
+            
+            <!-- 实际日期（带标记的添加highlight类） -->
+            <div class="calendar-day highlight">1</div>
+            <div class="calendar-day">2</div>
+            <div class="calendar-day">3</div>
+            <div class="calendar-day">4</div>
+            <div class="calendar-day">5</div>
+            <!-- 更多日期... -->
+            
+            <!-- 示例带标记的日期 -->
+            <div class="calendar-day">10</div>
+            <div class="calendar-day highlight">15</div>
+            <div class="calendar-day">20</div>
+            <div class="calendar-day highlight">25</div>
+        	</div>
+    		</div>
+				<script>
+        	const vscode = acquireVsCodeApi();
+					const MainOrigin = "vscode-file://vscode-app";
+        	function switchPageToTest1() {
+    				vscode.postMessage({ type: 'switchPageToTest1' });
+    			}
+				</script>
+			</body>
+		</html>`
+	}
+
+	_getTestHtml7(webview) {
+		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test7.css"));
+
+		return `<!DOCTYPE html>
+			<html lang="en">
+				<head>
+					<meta charset="UTF-8">
+					<link href="${styleVSCodeUri}" rel="stylesheet"> 
+					<link href="${testCssUri}" rel="stylesheet">
+					<title>Live 2d</title>
+				</head>
+				<body>
+    			<div class="header">
+        		<button class="back-button" onclick = "switchPageToTest1()">&lt; 返回</button>
+        		<div class="title">VSCode 商城</div>
+    			</div>
+    			<div class="store-container">
+        	<div class="product-grid">
+            <!-- 商品示例 1 -->
+            <div class="product-card">
+               <div class="product-image">
+                  <img src="product1.png" alt="二哈" width= "200" height="200">
+                </div>
+              <div class="product-title">二哈桌宠</div>
+              <div class="price-container">
+                <span class="current-price">0</span>
+                <span class="original-price">1800</span>
+              </div>
+            </div>
+            <!-- 商品示例 2 -->
+            <div class="product-card">
+              <div class="product-image">
+                <img src="../../res/image/product2.jpg" alt="window精灵">
+              </div>
+              <div class="product-title">windows精灵</div>
+              <div class="price-container">
+                <span class="current-price">1990</span>
+              </div>
+            </div>
+
+            <!-- 商品示例 3 -->
+            <div class="product-card">
+              <div class="product-image">
+                <img src="../../res/image/product3.jpg" alt="猫猫">
+              </div>
+              <div class="product-title">猫猫</div>
+              <div class="price-container">
+                <span class="current-price">500</span>
+              </div>
+            </div>
+        	</div>
+    		</div>
+				<script>
+        	const vscode = acquireVsCodeApi();
+					const MainOrigin = "vscode-file://vscode-app";
+        	function switchPageToTest1() {
+    				vscode.postMessage({ type: 'switchPageToTest1' });
+    			}
+				</script>
+			</body>
+		</html>`
+	}
+
 }
 Live2dViewProvider.viewType = "vscode-live2d.live2dView";
 // 生成随机字符串用于 CSP（内容安全策略）
