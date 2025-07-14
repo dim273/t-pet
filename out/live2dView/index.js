@@ -6,6 +6,8 @@ exports.activateLive2d = activateLive2d;
 // 导入 VSCode API和自定义模块
 const vscode = require("vscode");
 const Main_1 = require("../live2dModify/Main");
+const fs = require('fs');
+const path = require('path');
 
 // 扩展激活入口函数
 function activateLive2d(context) {
@@ -63,8 +65,8 @@ class Live2dViewProvider {
 					this._page = 'test5';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
-				case "switchPageToTest6":
-					this._page = 'test6';
+				case "switchPageToCalender":
+					this._page = 'calender';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToTest7":
@@ -99,8 +101,8 @@ class Live2dViewProvider {
 				return this._getTestHtml4(webview);
 			case 'test5':
 				return this._getTestHtml5(webview);
-			case 'test6':
-				return this._getTestHtml6(webview);
+			case 'calender':
+				return this._getCalenderHtml(webview);
 			case 'test7':
 				return this._getTestHtml7(webview);
 			default:
@@ -247,7 +249,7 @@ class Live2dViewProvider {
             <div class="status-item">
               <div class="status-label">连续打卡</div>
               <div class="status-value">7天</div>
-							<button class="common-button" onclick= "switchPageToTest6()" >打卡日历</button>
+							<button class="common-button" onclick= "switchPageToCalender()" >打卡日历</button>
             </div>
             <div class="status-item">
               <div class="status-label">总积分</div>
@@ -323,8 +325,8 @@ class Live2dViewProvider {
 						function switchPageToTest2() {
 							vscode.postMessage({ type: 'switchPageToTest2' });
 						}
-						function switchPageToTest6() {
-							vscode.postMessage({ type: 'switchPageToTest6' });
+						function switchPageToCalender() {
+							vscode.postMessage({ type: 'switchPageToCalender' });
 						}
 						function switchPageToTest7() {
 							vscode.postMessage({ type: 'switchPageToTest7' });
@@ -741,189 +743,139 @@ class Live2dViewProvider {
 				</head>
 			<body>
 				<div class="auth-container">
-        	<!-- 头部 -->
-        	<div class="auth-header">
-            <div class="auth-title">用户登录</div>
-            <div class="auth-subtitle">选择OJ平台进行登录</div>
-        	</div>
+					<!-- 头部 -->
+					<div class="auth-header">
+						<div class="auth-title">用户登录</div>
+						<div class="auth-subtitle">选择OJ平台进行登录</div>
+					</div>
 
-        	<!-- 平台切换 -->
-        	<div class="platform-tabs">
-            <div class="platform-tab active" data-platform="leetcode">LeetCode</div>
-            <div class="platform-tab" data-platform="luogu">洛谷</div>
-            <div class="platform-tab" data-platform="acwing">AcWing</div>
-        	</div>
+					<!-- 平台切换 -->
+					<div class="platform-tabs">
+						<div class="platform-tab active" data-platform="leetcode">LeetCode</div>
+						<div class="platform-tab" data-platform="luogu">洛谷</div>
+						<div class="platform-tab" data-platform="acwing">AcWing</div>
+					</div>
 
-        	<!-- 登录表单 -->
-        	<form class="auth-form" id="loginForm">
-            <!-- LeetCode -->
-            <div class="form-group" data-platform="leetcode">
-                <label class="form-label">用户名</label>
-                <input type="text" class="form-input" placeholder="LeetCode用户名">
-            </div>
-            <div class="form-group" data-platform="leetcode">
-                <label class="form-label">密码</label>
-                <input type="password" class="form-input" placeholder="••••••••">
-            </div>
+					<!-- 登录表单 -->
+					<form class="auth-form" id="loginForm">
+						<!-- LeetCode -->
+						<div class="form-group" data-platform="leetcode">
+								<label class="form-label">用户名</label>
+								<input type="text" class="form-input" placeholder="LeetCode用户名">
+						</div>
+						<div class="form-group" data-platform="leetcode">
+								<label class="form-label">密码</label>
+								<input type="password" class="form-input" placeholder="••••••••">
+						</div>
 
-            <!-- 洛谷 -->
-            <div class="form-group" data-platform="luogu" style="display:none">
-                <label class="form-label">账号</label>
-                <input type="text" class="form-input" placeholder="用户名/邮箱/手机号">
-            </div>
-            <div class="form-group" data-platform="luogu" style="display:none">
-                <label class="form-label">密码</label>
-                <input type="password" class="form-input" placeholder="••••••••">
-            </div>
+						<!-- 洛谷 -->
+						<div class="form-group" data-platform="luogu" style="display:none">
+								<label class="form-label">账号</label>
+								<input type="text" class="form-input" placeholder="用户名/邮箱/手机号">
+						</div>
+						<div class="form-group" data-platform="luogu" style="display:none">
+								<label class="form-label">密码</label>
+								<input type="password" class="form-input" placeholder="••••••••">
+						</div>
 
-            <!-- AcWing -->
-            <div class="form-group" data-platform="acwing" style="display:none">
-                <label class="form-label">账号</label>
-                <input type="text" class="form-input" placeholder="用户名/手机号">
-            </div>
-            <div class="form-group" data-platform="acwing" style="display:none">
-                <label class="form-label">密码</label>
-                <input type="password" class="form-input" placeholder="••••••••">
-            </div>
+						<!-- AcWing -->
+						<div class="form-group" data-platform="acwing" style="display:none">
+								<label class="form-label">账号</label>
+								<input type="text" class="form-input" placeholder="用户名/手机号">
+						</div>
+						<div class="form-group" data-platform="acwing" style="display:none">
+								<label class="form-label">密码</label>
+								<input type="password" class="form-input" placeholder="••••••••">
+						</div>
 
-            <div class="remember-group">
-                <input type="checkbox" class="checkbox" id="remember">
-                <label for="remember">保持登录</label>
-            </div>
+						<div class="remember-group">
+								<input type="checkbox" class="checkbox" id="remember">
+								<label for="remember">保持登录</label>
+						</div>
 
-            <button type="submit" class="submit-btn" onclick = "switchPageToTest1()">立即登录</button>
+						<button type="submit" class="submit-btn" onclick = "switchPageToTest1()">立即登录</button>
 
-            <!-- 加载状态 -->
-            <div class="auth-loading" id="loading">
-                <div class="loading-spinner"></div>
-            </div>
+						<!-- 加载状态 -->
+						<div class="auth-loading" id="loading">
+								<div class="loading-spinner"></div>
+						</div>
 
-            <!-- 反馈信息 -->
-            <div class="auth-feedback" id="feedback"></div>
-        	</form>
+						<!-- 反馈信息 -->
+						<div class="auth-feedback" id="feedback"></div>
+					</form>
 
-        	<!-- 第三方登录 -->
-        	<div class="oauth-login">
-            <button class="oauth-btn" onclick = "switchPageToTest1()">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="margin-right:6px">
-                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-                </svg>
-                GitHub登录
-            </button>
-        	</div>
+					<!-- 第三方登录 -->
+					<div class="oauth-login">
+						<button class="oauth-btn" onclick = "switchPageToTest1()">
+								<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="margin-right:6px">
+										<path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+								</svg>
+								GitHub登录
+						</button>
+					</div>
 					<div class="common-bar">
-            <button class = "common-button"  onclick = "switchPageToTest1()">跳过登录</button>
-        	</div>
-    		</div>
+						<button class = "common-button"  onclick = "switchPageToTest1()">跳过登录</button>
+					</div>
+				</div>
 				<script>
-        	const vscode = acquireVsCodeApi();
+					const vscode = acquireVsCodeApi();
 					const MainOrigin = "vscode-file://vscode-app";
-        	function switchPageToTest1() {
-    				vscode.postMessage({ type: 'switchPageToTest1' });
-    			}
+					function switchPageToTest1() {
+						vscode.postMessage({ type: 'switchPageToTest1' });
+					}
 					// 平台切换逻辑
-        document.querySelectorAll('.platform-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // 切换激活状态
-                document.querySelectorAll('.platform-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
+				document.querySelectorAll('.platform-tab').forEach(tab => {
+						tab.addEventListener('click', () => {
+								// 切换激活状态
+								document.querySelectorAll('.platform-tab').forEach(t => t.classList.remove('active'));
+								tab.classList.add('active');
 
-                // 切换表单显示
-                const platform = tab.dataset.platform;
-                document.querySelectorAll('.form-group').forEach(group => {
-                    group.style.display = group.dataset.platform === platform ? 'block' : 'none';
-                });
-            });
-        });
+								// 切换表单显示
+								const platform = tab.dataset.platform;
+								document.querySelectorAll('.form-group').forEach(group => {
+										group.style.display = group.dataset.platform === platform ? 'block' : 'none';
+								});
+						});
+				});
 
-        // 表单提交
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const loading = document.getElementById('loading');
-            const feedback = document.getElementById('feedback');
+				// 表单提交
+				document.getElementById('loginForm').addEventListener('submit', async (e) => {
+						e.preventDefault();
+						const loading = document.getElementById('loading');
+						const feedback = document.getElementById('feedback');
 
-            loading.style.display = 'flex';
-            feedback.style.display = 'none';
+						loading.style.display = 'flex';
+						feedback.style.display = 'none';
 
-            // 模拟API请求
-            setTimeout(() => {
-                loading.style.display = 'none';
-                
-                const isSuccess = Math.random() > 0.3;
-                feedback.style.display = 'block';
-                feedback.className = isSuccess ? 'auth-feedback success' : 'auth-feedback error';
-                feedback.textContent = isSuccess 
-                    ? '✓ 登录成功，正在跳转...' 
-                    : '✗ 登录失败：用户名或密码错误';
-            }, 1200);
-        	});
+						// 模拟API请求
+						setTimeout(() => {
+								loading.style.display = 'none';
+							  
+								const isSuccess = Math.random() > 0.3;
+								feedback.style.display = 'block';
+								feedback.className = isSuccess ? 'auth-feedback success' : 'auth-feedback error';
+								feedback.textContent = isSuccess 
+										? '✓ 登录成功，正在跳转...' 
+										: '✗ 登录失败：用户名或密码错误';
+						}, 1200);
+					});
 
-    		</script>
+				</script>
 			</body>
 			</html>
-		      
+				  
 		`;
 	}
 
-	_getTestHtml6(webview) {
+	// 生成日历的 HTML内容
+	_getCalenderHtml(webview) {
+		const calenderPath = path.join(__dirname, '../.././media/calender.html');
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test6.css"));
 
-		return `<!DOCTYPE html>
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8">
-					<link href="${styleVSCodeUri}" rel="stylesheet"> 
-					<link href="${testCssUri}" rel="stylesheet">
-					<title>Live 2d</title>
-				</head>
-				<body>
-    			<div class="header">
-        	<button class="back-button" onclick = "switchPageToTest1()">&lt;</button>
-        	<div class="title">日历</div>
-    			</div>
-    
-    			<div class="calendar-container">
-        	<div class="calendar">
-            <!-- 星期标题 -->
-            <div class="calendar-header">日</div>
-            <div class="calendar-header">一</div>
-            <div class="calendar-header">二</div>
-            <div class="calendar-header">三</div>
-            <div class="calendar-header">四</div>
-            <div class="calendar-header">五</div>
-            <div class="calendar-header">六</div>
+		// 读取calender.html内容
+		const htmlContent = fs.readFileSync(calenderPath, 'utf8');
 
-            <!-- 空单元格用于对齐 -->
-            <div class="calendar-day"></div>
-            <div class="calendar-day"></div>
-            <div class="calendar-day"></div>
-            <div class="calendar-day"></div>
-            
-            <!-- 实际日期（带标记的添加highlight类） -->
-            <div class="calendar-day highlight">1</div>
-            <div class="calendar-day">2</div>
-            <div class="calendar-day">3</div>
-            <div class="calendar-day">4</div>
-            <div class="calendar-day">5</div>
-            <!-- 更多日期... -->
-            
-            <!-- 示例带标记的日期 -->
-            <div class="calendar-day">10</div>
-            <div class="calendar-day highlight">15</div>
-            <div class="calendar-day">20</div>
-            <div class="calendar-day highlight">25</div>
-        	</div>
-    		</div>
-				<script>
-        	const vscode = acquireVsCodeApi();
-					const MainOrigin = "vscode-file://vscode-app";
-        	function switchPageToTest1() {
-    				vscode.postMessage({ type: 'switchPageToTest1' });
-    			}
-				</script>
-			</body>
-		</html>`
+		return htmlContent;
 	}
 
 	_getTestHtml7(webview) {
