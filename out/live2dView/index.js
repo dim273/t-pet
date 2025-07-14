@@ -220,124 +220,6 @@ class Live2dViewProvider {
 			</html>`;
 	};
 
-	/*_getTestHtml1(webview) {
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test1.css"));
-		return `<!DOCTYPE html>
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8">
-					<link href="${styleVSCodeUri}" rel="stylesheet"> 
-					<link href="${testCssUri}" rel="stylesheet">
-					<title>Live 2d</title>
-				</head>
-			<body>
-					<div style="max-width: 450px; min-width: 100px; padding: 12px">
-					<div class="learning-container">
-						<!-- 顶部状态栏 -->
-						<div class="knowledge-header">
-							<button class="back-btn" onclick= "switchPageToSetting()">☣</button>
-							<h1 class="knowledge-title">知识树</h1>
-						</div>
-						<div class="status-header">
-							<div class="status-item">
-								<div class="status-label">今日任务</div>
-								<div class="status-value">2/3</div>
-								<button class="common-button" onclick= "switchPageToTest4()" >查看任务</button>
-							</div>
-						<div class="status-item">
-							<div class="status-label">连续打卡</div>
-							<div class="status-value">7天</div>
-							<button class="common-button" onclick= "switchPageToTest6()" >打卡日历</button>
-						</div>
-						<div class="status-item">
-							<div class="status-label">总积分</div>
-							<div class="status-value">1850</div>
-							<button class="common-button" onclick= "switchPageToTest7()" >积分商城</button>
-						</div>
-					</div>
-
-					<!-- 算法学习路径 -->
-					<div class="skill-track">
-						<!-- 排序算法 -->
-						<div class="algorithm-node completed">
-								<div class="node-xp">★ 300</div>
-								<div class="node-core">
-										<div class="progress-ring"></div>
-										<div class="node-content" onclick = "switchPageToTest3()">
-												<div class="node-title">💖</div>
-												<div class="node-title">排序算法</div>
-										</div>
-								</div>
-								<div class="status-indicator"></div>
-						</div>
-
-						<!-- 二分搜索 -->
-						<div class="algorithm-node current">
-								<div class="node-xp">★ 450</div>
-								<div class="node-core">
-										<div class="progress-ring"></div>
-										<div class="node-content" onclick = "switchPageToTest3()">
-												<div class="node-title">✨</div>
-												<div class="node-title">二分搜索</div>
-										</div>
-								</div>
-								<div class="status-indicator"></div>
-						</div>
-
-						<!-- 递归 -->
-						<div class="algorithm-node">
-								<div class="node-xp">★ 200</div>
-								<div class="node-core">
-										<div class="progress-ring"></div>
-										<div class="node-content">
-												<div class="node-title">🎉</div>
-												<div class="node-title">递归算法</div>
-										</div>
-								</div>
-								<div class="status-indicator"></div>
-						</div>
-
-						<!-- 动态规划 -->
-						<div class="algorithm-node locked">
-								<div class="node-xp">🔒 锁定</div>
-								<div class="node-core">
-										<div class="progress-ring"></div>
-										<div class="node-content">
-												<div class="node-title">🎨</div>
-												<div class="node-title">动态规划</div>
-										</div>
-								</div>
-								<div class="status-indicator"></div>
-						</div>
-				</div>
-				</div>
-					<script>
-						const vscode = acquireVsCodeApi();
-						const MainOrigin = "vscode-file://vscode-app";
-						function switchPageToTest4() {
-							vscode.postMessage({ type: 'switchPageToTest4' });
-						}
-						function switchPageToTest3() {
-							vscode.postMessage({ type: 'switchPageToTest3' });
-						}
-						function switchPageToTest2() {
-							vscode.postMessage({ type: 'switchPageToTest2' });
-						}
-						function switchPageToCalender() {
-							vscode.postMessage({ type: 'switchPageToCalender' });
-						}
-						function switchPageToTest7() {
-							vscode.postMessage({ type: 'switchPageToTest7' });
-						}
-						function switchPageToSetting() {
-							vscode.postMessage({ type: 'switchPageToSetting' });
-						}
-					</script>
-				</body>
-			</html>
-		`;
-	}*/
 
 	_getTestHtml1(webview) {
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
@@ -594,9 +476,9 @@ class Live2dViewProvider {
 			<div class="top-bar">
 				<div class="top-left">
 					<div class="info-box">积分: 1850</div>
-					<div class="info-box" onclick="switchPageToTest6()">连续打卡: 7天</div>
+					<div class="info-box" onclick="switchPageToCalender()">连续打卡: 7天</div>
 				</div>
-				<img class="setting-icon" src="${webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "settings.png"))}" alt="设置图标" onclick="switchPageToCalender()">
+				<img class="setting-icon" src="${webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "settings.png"))}" alt="设置图标" onclick="switchPageToSetting()">
 			</div>
 			<div class="main-card">
 				<div class="card-top with-icon">
