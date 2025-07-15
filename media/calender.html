@@ -59,14 +59,18 @@
     </style>
 </head>
 
-<body class="bg-gray-50 min-h-screen font-inter text-dark">
+<body class="min-h-screen font-inter text-dark" style="background: linear-gradient(135deg, #2f3e4e, #455a6b);">
   <div class="max-w-4xl mx-auto px-4 py-8">
     <!-- 顶部日期显示区域 -->
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 transform hover:shadow-xl transition-all duration-300">
+    <div class="bg-gray-900 rounded-xl shadow-lg p-6 mb-8 transform hover:shadow-xl transition-all duration-300">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <button class="absolute left-4 top-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+          onclick="switchPageToMain()">
+          <i class="fa fa-arrow-left text-primary"></i>
+        </button>
         <div>
           <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary">打卡日志</h1>
-          <p class="text-gray-600 text-lg" id="current-date"></p>
+          <p class="text-accent text-lg" id="current-date"></p>
         </div>
         <div class="flex items-center gap-3">
           <span id="weekday" class="text-2xl font-bold text-accent"></span>
@@ -78,13 +82,13 @@
     </div>
 
     <!-- 日历区域 -->
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 transform hover:shadow-xl transition-all duration-300">
+    <div class="bg-gray-900 rounded-xl shadow-lg p-6 mb-8 transform hover:shadow-xl transition-all duration-300">
       <!-- 月份控制 -->
       <div class="flex items-center justify-between mb-6">
         <button id="prev-month" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
           <i class="fa fa-chevron-left text-primary"></i>
         </button>
-        <h2 id="current-month" class="text-xl font-bold"></h2>
+        <h2 id="current-month" class="text-xl font-bold text-accent"></h2>
         <button id="next-month" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
           <i class="fa fa-chevron-right text-primary"></i>
         </button>
@@ -92,13 +96,13 @@
 
       <!-- 星期标题 -->
       <div class="grid grid-cols-7 gap-2 mb-2">
-        <div class="text-center font-medium text-gray-500">日</div>
-        <div class="text-center font-medium text-gray-500">一</div>
-        <div class="text-center font-medium text-gray-500">二</div>
-        <div class="text-center font-medium text-gray-500">三</div>
-        <div class="text-center font-medium text-gray-500">四</div>
-        <div class="text-center font-medium text-gray-500">五</div>
-        <div class="text-center font-medium text-gray-500">六</div>
+        <div class="text-center font-medium text-green-500">日</div>
+        <div class="text-center font-medium text-green-500">一</div>
+        <div class="text-center font-medium text-green-500">二</div>
+        <div class="text-center font-medium text-green-500">三</div>
+        <div class="text-center font-medium text-green-500">四</div>
+        <div class="text-center font-medium text-green-500">五</div>
+        <div class="text-center font-medium text-green-500">六</div>
       </div>
 
       <!-- 日历主体 -->
@@ -109,34 +113,34 @@
 
     <!-- 统计信息 -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      <div class="bg-white rounded-xl shadow p-4 text-center transform hover:shadow-lg transition-all duration-300">
-        <div class="text-primary text-3xl mb-2">
+      <div class="bg-gray-900 rounded-xl shadow p-4 text-center transform hover:shadow-lg transition-all duration-300">
+        <div class="text-green-500 text-3xl mb-2">
           <i class="fa fa-check-circle"></i>
         </div>
-        <h3 class="font-semibold text-gray-600">本月打卡</h3>
-        <p id="check-in-count" class="text-2xl font-bold">0</p>
+        <h3 class="font-semibold text-gray-300">本月打卡</h3>
+        <p id="check-in-count" class="text-2xl font-bold text-white">0</p>
       </div>
-      <div class="bg-white rounded-xl shadow p-4 text-center transform hover:shadow-lg transition-all duration-300">
-        <div class="text-accent text-3xl mb-2">
+      <div class="bg-gray-900 rounded-xl shadow p-4 text-center transform hover:shadow-lg transition-all duration-300">
+        <div class="text-green-500 text-3xl mb-2">
           <i class="fa fa-calendar"></i>
         </div>
-        <h3 class="font-semibold text-gray-600">本月天数</h3>
-        <p id="month-days" class="text-2xl font-bold">0</p>
+        <h3 class="font-semibold text-gray-300">本月天数</h3>
+        <p id="month-days" class="text-2xl font-bold text-white">0</p>
       </div>
-      <div class="bg-white rounded-xl shadow p-4 text-center transform hover:shadow-lg transition-all duration-300">
-        <div class="text-secondary text-3xl mb-2">
+      <div class="bg-gray-900 rounded-xl shadow p-4 text-center transform hover:shadow-lg transition-all duration-300">
+        <div class="text-green-500 text-3xl mb-2">
           <i class="fa fa-trophy"></i>
         </div>
-        <h3 class="font-semibold text-gray-600">打卡率</h3>
-        <p id="check-in-rate" class="text-2xl font-bold">0%</p>
+        <h3 class="font-semibold text-gray-300">打卡率</h3>
+        <p id="check-in-rate" class="text-2xl font-bold text-white">0%</p>
       </div>
     </div>
   </div>
 
   <script>
     const vscode = acquireVsCodeApi();
-    function switchPageToTest1() {
-      vscode.postMessage({ type: 'switchPageToTest1' });
+    function switchPageToMain() {
+      vscode.postMessage({ type: 'switchPageToMain' });
     }
     document.addEventListener('DOMContentLoaded', () => {
       // 获取DOM元素
@@ -223,7 +227,7 @@
           const dateKey = `${year}-${month + 1}-${day}`;
 
           // 基本样式
-          dateEl.classList.add('calendar-day', 'rounded-lg');
+          dateEl.classList.add('calendar-day', 'rounded-lg', 'text-white');
           dateEl.textContent = day;
 
           // 检查是否是今天

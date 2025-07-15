@@ -8,8 +8,8 @@ function removeResources() {
     vscode.postMessage({ type: 'removeResources' });
 }
 
-function switchPageToTest1() {
-    vscode.postMessage({ type: 'switchPageToTest1' });
+function switchPageToMain() {
+    vscode.postMessage({ type: 'switchPageToMain' });
 }
 
 function sendCommand(type, data) {

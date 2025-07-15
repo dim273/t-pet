@@ -45,8 +45,8 @@ class Live2dViewProvider {
 		webviewView.webview.onDidReceiveMessage((data) => {
 			switch (data.type) {
 				// 切换页面
-				case "switchPageToTest1":
-					this._page = 'test1';
+				case "switchPageToMain":
+					this._page = 'main';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToTest2":
@@ -91,7 +91,7 @@ class Live2dViewProvider {
 
 	updateWebviewContent(webview) {
 		switch (this._page) {
-			case 'test1':
+			case 'main':
 				return this._getTestHtml1(webview);
 			case 'test2':
 				return this._getTestHtml2(webview);
@@ -130,7 +130,7 @@ class Live2dViewProvider {
 			</head>
 			<body>
 				<div class="common-bar" >
-						<button class="common-button" onclick="switchPageToTest1()">返回主界面</button>
+						<button class="common-button" onclick="switchPageToMain()">返回主界面</button>
 				</div>
 				<div style="max-width: 450px; min-width: 100px; padding: 12px">
 					<div class="common-title">基本操作:</div>
@@ -222,327 +222,16 @@ class Live2dViewProvider {
 
 
 	_getTestHtml1(webview) {
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test1.css"));
-		return `<!DOCTYPE html>
-		<html lang="en">
-		<head>
-			<meta charset="UTF-8">
-			<link href="${styleVSCodeUri}" rel="stylesheet">
-			<link href="${testCssUri}" rel="stylesheet">
-			<style>
-				body{
-					margin: 0;
-					font-family:"Segoe UI", sans-serif;
-					background: linear-gradient(135deg, #2f3e4e, #455a6b);
-  				min-height: 100vh;
-					color:#d0d8e8;
-				}
-				.top-bar{
-					display:flex;
-					justify-content: space-between;
-					align-items:center;
-					background-colorlinear-gradient(to right,  #3f5063, #374757);
-					padding: 12px 24px;
-					box-shadow: 0 2px 6px rgba(0,0,0,0.6);
-				}	
-				.top-left{
-					display:flex;
-					gap:12px;
-				}
-				.info-box{
-					background-color:#4a617d;
-					color:#aac7ff;
-					border-radius: 20px;
-					padding: 8px 16px;
-					cursor: pointer;
-					box-shadow:0 2px 4px rgba(0,0,0,0.3);
-					transition: all 0.2s ease;
-		  	}
-				.info-box:hover{
-					background-color: #7396d3;
-					color:#ffffff;
-				}
-				.settings-icon{
-					width:28px;
-					height:28px;
-					cursor:pointer;
-					filter: invert(75%) sepia(25%) saturate(120%) hue-rotate(180deg) brightness(85%);
-				}
-				.settings-icon:hover{
-					transform: rotate(30deg) scale(1.1);
-					filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%);
-				}
-				.main-card{
-					background-color: #222;
-					margin: 30px 24px;
-					border-radius: 20px;
-					padding:24px;
-					box-shadow:0 6px 16px rgba(0,0,0,0.8);
-					border-left: 6px solid #4caf50;
-				}
-				.card-top{
-					text-align:left;
-					margin-bottom:30px;
-				}
-				.card-top button{
-					padding:8px 16px;
-					background-color: #4caf50;
-					color:#eee;
-					border:none;
-					border-radius:25px;
-					font-size:20px;
-					font-weight:normal;
-					cursor: pointer;
-					transition: background-color 0.3s ease;
-					display: inline-block;
-					width:60%;
-				}
-				.card-top button:hover{
-					background-color: #43a047;
-				}
-				.card-buttons{
-					display:flex;
-					justify-content:space-around;
-					gap:20px;
-					flex-wrap:wrap;
-				}
-				.card-buttons button{
-					padding:14px 30px;
-					background-color: #388e3c;
-					color:white;
-					border:none;
-					border-radius:25px;
-					cursor: pointer;
-					font-size:13px;
-					box-shadow:0 3px 6px rgba(0,0,0,0.1);
-					width:35%;
-					transition: background-color 0.3s ease;
-				}
-				.chat-box{
-					margin: 20px 24px;
-  				background-color: #222;
-  				border-radius: 20px;
-  				padding: 20px;
-  				position: relative;
-  				font-style: italic;
-  				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
-  				line-height: 1.5;
-  				border-left: 5px solid #4caf50;
-  				transition: all 0.3s ease;
-					color:#ccc;
-				}
-				.chat-box::before{
-					content:"🤖";
-					position:absolute;
-					top:-20px;
-					left:-10px;
-					font-size:24px;
-				}
-				.setting-icon{
-					width:24px;
-					height:24px;
-					object-fit:contain;
-					vertical-align:middle;
-					margin-left:10px;
-					cursor: pointer;
-				}
-				.with-icon{
-					display:flex;
-					align-items:center;
-					gap:8px;
-				}
-				.icon-left{
-					font-size:25px;
-					line-height:1;
-					user-select:none;
-				}
-				.icon-above{
-					font-size:30px;
-					user-select:none;
-				}
-				.icon-button-row{
-					width:100%;
-					display:flex;
-					justify-content:center;
-					gap:100px;
-					margin-top:20px;
-				}
-				.icon-button-vertical{
-					display:flex;
-					flex-direction:column;
-					align-items:center;
-					gap:6px;
-					width:180px;
-				}
-				.icon-button-vertical button{
-					background-color: #2196f3;
-  				color: white;
-					padding: 8px 16px;
-					border: none;
-					border-radius: 25px;
-					font-size: 13px;
-					box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-					cursor: pointer;
-					transition: background-color 0.3s ease;
-					white-space: nowrap; 
-					text-align: center;
-				}
-				.icon-button-vertical button:hover{
-					background-color: #1976d2;
-				}
-				.book {
-					width: 900px;
-					max-width: 90vw;
-					height: 260px;
-					margin: 40px auto 60px auto;
-					display: flex;
-					perspective: 1200px;
-					position: relative;
-					font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-					color: #f0f0f0;
-				}
+		const htmlPath = path.join(__dirname, '../.././media/menu.html');
 
-				/* 左右书页 */
-				.page {
-					background: linear-gradient(135deg, #3a3a3a, #242424);
-					box-shadow: inset 0 0 30px #111, 0 4px 12px rgba(0, 0, 0, 0.9);
-					border: 1.5px solid #555;
-					border-radius: 0 15px 15px 0;
-					padding: 20px 30px;
-					width: 50%;
-					height: 100%;
-					overflow-y: auto;
-					box-sizing: border-box;
-					position: relative;
-				}
+		let htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
-				/* 左页特殊圆角 */
-				.left-page {
-					border-radius: 15px 0 0 15px;
-					transform-origin: left center;
-					transform-style: preserve-3d;
-					transform: rotateY(-8deg);
-					margin-right: 10px;
-				}
+		// 更改图片的路径
+		htmlContent = htmlContent.replace(/(src|href)="(.+?)"/g, (match, p1, p2) => {
+			return `${p1}="${webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "settings.png"))}"`;
+		});
 
-				/* 右页特殊圆角 */
-				.right-page {
-					border-radius: 0 15px 15px 0;
-					transform-origin: right center;
-					transform-style: preserve-3d;
-					transform: rotateY(8deg);
-					margin-left: 10px;
-				}
-
-				/* 书脊效果 */
-				.book::before {
-					content: "";
-					position: absolute;
-					top: 0;
-					left: 50%;
-					transform: translateX(-50%);
-					width: 14px;
-					height: 100%;
-					background: linear-gradient(90deg, #222 0%, #555 50%, #222 100%);
-					border-radius: 4px;
-					box-shadow: inset 0 0 10px #000;
-					z-index: 10;
-				}
-
-				/* 标题样式 */
-				.page h3 {
-					margin-top: 0;
-					margin-bottom: 12px;
-					font-weight: 700;
-					color: #82c7ff;
-					text-shadow: 0 0 6px #2a85c9;
-				}
-
-				/* 列表样式 */
-				.page ul {
-					padding-left: 20px;
-					margin: 0;
-					font-size: 14px;
-					line-height: 1.5;
-					user-select: text;
-				}
-				.page li {
-					margin-bottom: 8px;
-				}			
-			</style>
-		</head>
-		<body>
-			<div class="top-bar">
-				<div class="top-left">
-					<div class="info-box">积分: 1850</div>
-					<div class="info-box" onclick="switchPageToCalender()">连续打卡: 7天</div>
-				</div>
-				<img class="setting-icon" src="${webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "settings.png"))}" alt="设置图标" onclick="switchPageToSetting()">
-			</div>
-			<div class="main-card">
-				<div class="card-top with-icon">
-					<span class="icon-left">🌳</span>
-					<button onclick="switchPageToTest2()">知识树</button>
-				</div>
-				<div class="icon-button-row">
-					<div class="icon-button-vertical">
-						<span class="icon-above">📚</span>
-						<button onclick="switchPageToTest3()">题目放送</button>
-					</div>
-					<div class="icon-button-vertical">
-						<span class="icon-above">🤖</span>
-						<button onclick="switchPageToTest2()">AI助手</button>
-					</div>
-				</div>
-			</div>
-			<div class="chat-box">
-				欢迎来到算法学习助手！请点击上方按钮开始你的学习之旅。
-			</div>
-			<div class="book">
-				<div class="page left-page">
-					<h3>新手常识 📘</h3>
-					<ul>
-						<li>注释清晰有助于维护代码。</li>
-						<li>变量命名要有意义。</li>
-						<li>函数封装提升复用性。</li>
-						<li>遇错先查语法和拼写。</li>
-						<li>熟悉调试工具定位问题。</li>
-						<li>保持代码格式和风格。</li>
-					</ul>
-				</div>
-				<div class="page right-page">
-					<h3>更多提示 💡</h3>
-					<ul>
-						<li>坚持写单元测试。</li>
-						<li>多阅读优秀开源代码。</li>
-						<li>理解数据结构和算法。</li>
-						<li>注重代码性能和可读性。</li>
-						<li>及时重构避免技术债。</li>
-					</ul>
-				</div>
-			</div>
-			<script>
-				const vscode = acquireVsCodeApi();
-				const MainOrigin = "vscode-file://vscode-app";
-				function switchPageToTest4() {
-					vscode.postMessage({ type: 'switchPageToTest4' });
-				}
-				function switchPageToTest3() {
-					vscode.postMessage({ type: 'switchPageToTest3' });
-				}
-				function switchPageToTest2() {
-					vscode.postMessage({ type: 'switchPageToTest2' });
-				}
-				function switchPageToCalender() {
-							vscode.postMessage({ type: 'switchPageToCalender' });
-						}
-				function switchPageToSetting() {
-					vscode.postMessage({ type: 'switchPageToSetting' });
-				}
-			</script>
-		</body>
-		</html>`;
+		return htmlContent;
 	}
 	_getTestHtml2(webview) {
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
@@ -664,7 +353,7 @@ class Live2dViewProvider {
 			</head>
 			<body>
     		<div style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
-        	<button class="common-button" onclick= "switchPageToTest1()"
+        	<button class="common-button" onclick= "switchPageToMain()"
             style="padding: 5px 10px; background: #58CC02; border: none; border-radius: 3px; cursor: pointer;">
             返回主界面
         	</button>
@@ -762,8 +451,8 @@ class Live2dViewProvider {
     		<script>
        	 	const vscode = acquireVsCodeApi();
 					const MainOrigin = "vscode-file://vscode-app";
-        	function switchPageToTest1() {
-						vscode.postMessage({ type: 'switchPageToTest1' });
+        	function switchPageToMain() {
+						vscode.postMessage({ type: 'switchPageToMain' });
 					}
 					function switchPageToTest4() {
 						vscode.postMessage({ type: 'switchPageToTest4' });
@@ -791,7 +480,7 @@ class Live2dViewProvider {
 				<div class="problem-detail">
         <!-- 头部 -->
         <div class="detail-header">
-            <button class="back-btn" onclick = "switchPageToTest1()">返回</button>
+            <button class="back-btn" onclick = "switchPageToMain()">返回</button>
             <div class="problem-meta">
                 <div class="problem-title">两数之和</div>
                 <div class="problem-tags">
@@ -863,8 +552,8 @@ class Live2dViewProvider {
 					<script>
 						const vscode = acquireVsCodeApi();
 						const MainOrigin = "vscode-file://vscode-app";
-						function switchPageToTest1() {
-							vscode.postMessage({ type: 'switchPageToTest1' });
+						function switchPageToMain() {
+							vscode.postMessage({ type: 'switchPageToMain' });
 						}
 						function switchPageToTest2() {
 							vscode.postMessage({ type: 'switchPageToTest2' });
@@ -997,7 +686,7 @@ class Live2dViewProvider {
 								<label for="remember">保持登录</label>
 						</div>
 
-						<button type="submit" class="submit-btn" onclick = "switchPageToTest1()">立即登录</button>
+						<button type="submit" class="submit-btn" onclick = "switchPageToMain()">立即登录</button>
 
 						<!-- 加载状态 -->
 						<div class="auth-loading" id="loading">
@@ -1010,7 +699,7 @@ class Live2dViewProvider {
 
 					<!-- 第三方登录 -->
 					<div class="oauth-login">
-						<button class="oauth-btn" onclick = "switchPageToTest1()">
+						<button class="oauth-btn" onclick = "switchPageToMain()">
 								<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="margin-right:6px">
 										<path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
 								</svg>
@@ -1018,14 +707,14 @@ class Live2dViewProvider {
 						</button>
 					</div>
 					<div class="common-bar">
-						<button class = "common-button"  onclick = "switchPageToTest1()">跳过登录</button>
+						<button class = "common-button"  onclick = "switchPageToMain()">跳过登录</button>
 					</div>
 				</div>
 				<script>
 					const vscode = acquireVsCodeApi();
 					const MainOrigin = "vscode-file://vscode-app";
-					function switchPageToTest1() {
-						vscode.postMessage({ type: 'switchPageToTest1' });
+					function switchPageToMain() {
+						vscode.postMessage({ type: 'switchPageToMain' });
 					}
 					// 平台切换逻辑
 				document.querySelectorAll('.platform-tab').forEach(tab => {
@@ -1074,7 +763,6 @@ class Live2dViewProvider {
 	// 生成日历的 HTML内容
 	_getCalenderHtml(webview) {
 		const calenderPath = path.join(__dirname, '../.././media/calender.html');
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
 
 		// 读取calender.html内容
 		const htmlContent = fs.readFileSync(calenderPath, 'utf8');
@@ -1096,7 +784,7 @@ class Live2dViewProvider {
 				</head>
 				<body>
     			<div class="header">
-        		<button class="back-button" onclick = "switchPageToTest1()">&lt; 返回</button>
+        		<button class="back-button" onclick = "switchPageToMain()">&lt; 返回</button>
         		<div class="title">VSCode 商城</div>
     			</div>
     			<div class="store-container">
@@ -1138,8 +826,8 @@ class Live2dViewProvider {
 				<script>
         	const vscode = acquireVsCodeApi();
 					const MainOrigin = "vscode-file://vscode-app";
-        	function switchPageToTest1() {
-    				vscode.postMessage({ type: 'switchPageToTest1' });
+        	function switchPageToMain() {
+    				vscode.postMessage({ type: 'switchPageToMain' });
     			}
 				</script>
 			</body>
