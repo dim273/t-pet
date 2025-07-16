@@ -30,7 +30,8 @@ class Live2dViewProvider {
 	resolveWebviewView(webviewView, context, _token) {
 		// 保存 Webview 实例引用
 		this._view = webviewView;
-
+		this._history = []; // 初始化
+		this._page = 'test5'; // 默认起始页
 		// 配置 Webview 选项
 		webviewView.webview.options = {
 			enableScripts: true,  // 允许执行脚本
@@ -46,36 +47,50 @@ class Live2dViewProvider {
 			switch (data.type) {
 				// 切换页面
 				case "switchPageToMain":
+					this._history.push(this._page); // <-- 保存当前页
 					this._page = 'main';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToTest2":
+					this._history.push(this._page); // <-- 保存当前页
 					this._page = 'test2';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToTest3":
+					this._history.push(this._page); // <-- 保存当前页
 					this._page = 'test3';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToTest4":
+					this._history.push(this._page); // <-- 保存当前页
 					this._page = 'test4';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToTest5":
+					this._history.push(this._page); // <-- 保存当前页
 					this._page = 'test5';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToCalender":
+					this._history.push(this._page); // <-- 保存当前页
 					this._page = 'calender';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToTest7":
+					this._history.push(this._page); // <-- 保存当前页
 					this._page = 'test7';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToSetting":
+					this._history.push(this._page); // <-- 保存当前页
 					this._page = 'setting';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					break;
+				case "goBack":
+					if (this._history.length > 0) {
+						this._page = this._history.pop(); // 取出上一个页面
+						webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					}
 					break;
 				case "generateResources":
 					// 生成资源文件
@@ -222,13 +237,15 @@ class Live2dViewProvider {
 
 
 	_getTestHtml1(webview) {
-		const htmlPath = path.join(__dirname, '../.././media/menu.html');
-
+		const htmlPath = path.join(__dirname, '../../media/menu.html');
 		let htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
-		// 更改图片的路径
-		htmlContent = htmlContent.replace(/(src|href)="(.+?)"/g, (match, p1, p2) => {
-			return `${p1}="${webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "settings.png"))}"`;
+		// 正确地动态替换本地资源路径
+		htmlContent = htmlContent.replace(/(src|href)="(.+?)"/g, (match, attr, relPath) => {
+			// 构造绝对路径
+			const resourcePath = vscode.Uri.joinPath(this._extensionUri, 'media', relPath);
+			const webviewUri = webview.asWebviewUri(resourcePath);
+			return `${attr}="${webviewUri}"`;
 		});
 
 		return htmlContent;
@@ -248,7 +265,7 @@ class Live2dViewProvider {
 			<body>
 				<div class="ai-chat-container">
 					<div class="ai-header">
-  					<button class="back-btn" onclick= "switchPageToTest4()">返回</button>
+  					<button class="back-btn" onclick= "goBack()">返回</button>
   					<h1 class="ai-title">AI HELPER</h1>
 					</div>
         <!-- 消息区域 -->
@@ -298,12 +315,15 @@ class Live2dViewProvider {
         	function switchPageToTest4() {
     				vscode.postMessage({ type: 'switchPageToTest4' });
     			}
+			function goBack() {
+					vscode.postMessage({ type: 'goBack' });
+				}
 					// 动态调整输入框高度
         	const textarea = document.querySelector('.chat-input');
         	textarea.addEventListener('input', () => {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
-        	});
+        	}); 
 
         	// 模拟发送消息
         	document.querySelector('.send-button').addEventListener('click', () => {
@@ -353,7 +373,7 @@ class Live2dViewProvider {
 			</head>
 			<body>
     		<div style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
-        	<button class="common-button" onclick= "switchPageToMain()"
+        	<button class="common-button" onclick= "goBack()"
             style="padding: 5px 10px; background: #58CC02; border: none; border-radius: 3px; cursor: pointer;">
             返回主界面
         	</button>
@@ -457,6 +477,9 @@ class Live2dViewProvider {
 					function switchPageToTest4() {
 						vscode.postMessage({ type: 'switchPageToTest4' });
 					}
+					function goBack() {
+						vscode.postMessage({ type: 'goBack' });
+					}
     		</script>
 			</body>
 		</html>
@@ -480,7 +503,7 @@ class Live2dViewProvider {
 				<div class="problem-detail">
         <!-- 头部 -->
         <div class="detail-header">
-            <button class="back-btn" onclick = "switchPageToMain()">返回</button>
+            <button class="back-btn" onclick = "goBack()">返回</button>
             <div class="problem-meta">
                 <div class="problem-title">两数之和</div>
                 <div class="problem-tags">
@@ -559,6 +582,9 @@ class Live2dViewProvider {
 							vscode.postMessage({ type: 'switchPageToTest2' });
 						}
 						// 复制功能
+						function goBack() {
+							vscode.postMessage({ type: 'goBack' });
+						}
         		function copyCode(event) {
             	const content = event.target.parentElement.querySelector('.io-content').innerText;
             	navigator.clipboard.writeText(content).then(() => {
@@ -784,7 +810,7 @@ class Live2dViewProvider {
 				</head>
 				<body>
     			<div class="header">
-        		<button class="back-button" onclick = "switchPageToMain()">&lt; 返回</button>
+        		<button class="back-button" onclick = "goBack()">&lt; 返回</button>
         		<div class="title">VSCode 商城</div>
     			</div>
     			<div class="store-container">
@@ -829,6 +855,9 @@ class Live2dViewProvider {
         	function switchPageToMain() {
     				vscode.postMessage({ type: 'switchPageToMain' });
     			}
+			function goBack() {
+				vscode.postMessage({ type: 'goBack' });
+				}
 				</script>
 			</body>
 		</html>`

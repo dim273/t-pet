@@ -65,7 +65,7 @@
     <div class="bg-gray-900 rounded-xl shadow-lg p-6 mb-8 transform hover:shadow-xl transition-all duration-300">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         <button class="absolute left-4 top-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
-          onclick="switchPageToMain()">
+          onclick="goBack()">
           <i class="fa fa-arrow-left text-primary"></i>
         </button>
         <div>
@@ -139,8 +139,8 @@
 
   <script>
     const vscode = acquireVsCodeApi();
-    function switchPageToMain() {
-      vscode.postMessage({ type: 'switchPageToMain' });
+    function goBack() {
+      vscode.postMessage({ type: 'goBack' });
     }
     document.addEventListener('DOMContentLoaded', () => {
       // 获取DOM元素
