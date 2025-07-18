@@ -648,7 +648,7 @@ class Live2dViewProvider {
 		`;
 	}
 
-	_getTestHtml5(webview) {
+	/*_getTestHtml5(webview) {
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
 		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test5.css"));
 
@@ -656,6 +656,7 @@ class Live2dViewProvider {
 			<html lang="en">
 				<head>
 					<meta charset="UTF-8">
+					
 					<link href="${styleVSCodeUri}" rel="stylesheet"> 
 					<link href="${testCssUri}" rel="stylesheet">
 					<title>Live 2d</title>
@@ -784,8 +785,38 @@ class Live2dViewProvider {
 			</html>
 				  
 		`;
-	}
+	}*/
 
+	_getTestHtml5(webview) {
+		const styleVSCodeUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
+		);
+		const logoUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this._extensionUri, "res", "image", "logo.png")
+		);
+		const backgroundUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this._extensionUri, "res", "image", "back.jpg")
+		);
+		const htmlPath = path.join(this._extensionUri.fsPath, "media", "login.html");
+		const leetcodeIcon = webview.asWebviewUri(
+			vscode.Uri.joinPath(this._extensionUri, "res", "image", "leetcode.png")
+		);
+		const luoguIcon = webview.asWebviewUri(
+			vscode.Uri.joinPath(this._extensionUri, "res", "image", "luogu.png")
+		);
+		const githubIcon = webview.asWebviewUri(
+			vscode.Uri.joinPath(this._extensionUri, "res", "image", "github.png")
+		);
+		let htmlContent = fs.readFileSync(htmlPath, 'utf8');
+
+		htmlContent = htmlContent.replace(/{{styleVSCodeUri}}/g, styleVSCodeUri.toString())
+			.replace(/{{logoUri}}/g, logoUri.toString())
+			.replace(/{{backgroundUri}}/g, backgroundUri.toString())
+			.replace(/{{leetcodeIcon}}/g, leetcodeIcon.toString())
+			.replace(/{{luoguIcon}}/g, luoguIcon.toString())
+			.replace(/{{githubIcon}}/g, githubIcon.toString());
+		return htmlContent;
+	}
 	// 生成日历的 HTML内容
 	_getCalenderHtml(webview) {
 		const calenderPath = path.join(__dirname, '../.././media/calender.html');
