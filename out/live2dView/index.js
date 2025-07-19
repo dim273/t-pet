@@ -86,6 +86,11 @@ class Live2dViewProvider {
 					this._page = 'setting';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
+				case "switchPageToAiChat":
+					this._history.push(this._page);
+					this._page = 'aiChat';
+					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					break;
 				case "goBack":
 					if (this._history.length > 0) {
 						this._page = this._history.pop(); // 取出上一个页面
@@ -120,6 +125,8 @@ class Live2dViewProvider {
 				return this._getCalenderHtml(webview);
 			case 'test7':
 				return this._getTestHtml7(webview);
+			case 'aiChat':
+				return this._getAiChatHtml(webview);
 			default:
 				return this._getSettingHtml(webview);
 		}
@@ -234,7 +241,18 @@ class Live2dViewProvider {
 			</body>
 			</html>`;
 	};
+	_getAiChatHtml(webview) {
+		const aiHtmlPath = path.join(this._extensionUri.fsPath, 'media', 'ai-assistant.html');
+		let html = fs.readFileSync(aiHtmlPath, 'utf8');
 
+		const scriptUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this._extensionUri, 'media', 'ai-assistant.js')
+		);
+
+		html = html.replace('<!--SCRIPT_PLACEHOLDER-->', `<script type="module" src="${scriptUri}"></script>`);
+
+		return html;
+	}
 
 	_getTestHtml1(webview) {
 		const htmlPath = path.join(__dirname, '../../media/menu.html');
