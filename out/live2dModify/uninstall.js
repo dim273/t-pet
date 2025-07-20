@@ -5,7 +5,7 @@ const fs = require("fs");
 const vscode_1 = require("vscode");
 const base = process.cwd();
 // 文件路径
-const filePath = path.join(base, 'resources', 'app', 'out', 'vs', 'code', 'electron-sandbox', 'workbench', 'workbench.js');
+const filePath = path.join(base, 'resources', 'app', 'out', 'vs', 'code', 'electron-browser', 'workbench', 'workbench.js');
 const extName = "vscode-live2d";
 //执行清理
 main();
@@ -16,7 +16,7 @@ function main() {
         const base = vscode_1.env.appRoot;
         content = clearCssContent(content);
         saveContent(content);
-        removeFiles(path.join(base, 'out', 'vs', 'code', 'electron-sandbox', 'workbench', 'live2d'));
+        removeFiles(path.join(base, 'out', 'vs', 'code', 'electron-browser', 'workbench', 'live2d'));
         return true;
     }
     catch (ex) {

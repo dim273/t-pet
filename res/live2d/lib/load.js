@@ -154,7 +154,7 @@ const initConfig = {
   onModelLoad: onModelLoad
 }
 
-function 加载圣·嘉然() {
+function updateGod() {
   pio_reference = new Paul_Pio(initConfig)
 
   pio_alignment = "left"
@@ -350,4 +350,4 @@ function onModelLoad(model) {
 
 
 var pio_reference
-window.onload = 加载圣·嘉然
+window.onload = updateGod

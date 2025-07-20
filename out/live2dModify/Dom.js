@@ -33,7 +33,7 @@ class Dom {
   generateResources(notice) {
     try {
       const base = vscode_1.env.appRoot;
-      copy(path.join(__dirname, '../../res/'), path.join(base, 'out', 'vs', 'code', 'electron-sandbox', 'workbench'));
+      copy(path.join(__dirname, '../../res/'), path.join(base, 'out', 'vs', 'code', 'electron-browser', 'workbench'));
       this.install(true);
       notice && vsHelp_1.default.showInfo('资源文件配置成功');
     }
@@ -51,7 +51,7 @@ class Dom {
   removeResources(notice) {
     try {
       const base = vscode_1.env.appRoot;
-      removeFiles(path.join(base, 'out', 'vs', 'code', 'electron-sandbox', 'workbench', 'live2d'));
+      removeFiles(path.join(base, 'out', 'vs', 'code', 'electron-browser', 'workbench', 'live2d'));
       this.uninstall();
       notice && vsHelp_1.default.showInfoRestart('资源文件移除成功');
     }
