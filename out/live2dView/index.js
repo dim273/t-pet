@@ -23,7 +23,7 @@ function activateLive2d(context) {
 class Live2dViewProvider {
 	constructor(_extensionUri) {
 		this._extensionUri = _extensionUri;  // 扩展安装目录URI
-		this._page = 'test5';                // 当前页面状态，初始化为test5
+		this._page = 'login';                // 当前页面状态，初始化为test5
 	}
 
 	// 解析 Webview 视图
@@ -31,7 +31,7 @@ class Live2dViewProvider {
 		// 保存 Webview 实例引用
 		this._view = webviewView;
 		this._history = []; // 初始化
-		this._page = 'test5'; // 默认起始页
+		this._page = 'login'; // 默认起始页
 		// 配置 Webview 选项
 		webviewView.webview.options = {
 			enableScripts: true,  // 允许执行脚本
@@ -51,38 +51,28 @@ class Live2dViewProvider {
 					this._page = 'main';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
-				case "switchPageToTest2":
-					this._history.push(this._page); // <-- 保存当前页
-					this._page = 'test2';
-					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
-					break;
 				case "switchPageToTest3":
-					this._history.push(this._page); // <-- 保存当前页
+					this._history.push(this._page);
 					this._page = 'test3';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToTest4":
-					this._history.push(this._page); // <-- 保存当前页
+					this._history.push(this._page);
 					this._page = 'test4';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
-				case "switchPageToTest5":
-					this._history.push(this._page); // <-- 保存当前页
-					this._page = 'test5';
+				case "switchPageToLogin":
+					this._history.push(this._page);
+					this._page = 'login';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToCalender":
-					this._history.push(this._page); // <-- 保存当前页
+					this._history.push(this._page);
 					this._page = 'calender';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
-				case "switchPageToTest7":
-					this._history.push(this._page); // <-- 保存当前页
-					this._page = 'test7';
-					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
-					break;
 				case "switchPageToSetting":
-					this._history.push(this._page); // <-- 保存当前页
+					this._history.push(this._page);
 					this._page = 'setting';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
@@ -112,19 +102,15 @@ class Live2dViewProvider {
 	updateWebviewContent(webview) {
 		switch (this._page) {
 			case 'main':
-				return this._getTestHtml1(webview);
-			case 'test2':
-				return this._getTestHtml2(webview);
+				return this._getMainHtml(webview);
 			case 'test3':
 				return this._getTestHtml3(webview);
 			case 'test4':
 				return this._getTestHtml4(webview);
-			case 'test5':
-				return this._getTestHtml5(webview);
+			case 'login':
+				return this._getLoginHtml(webview);
 			case 'calender':
 				return this._getCalenderHtml(webview);
-			case 'test7':
-				return this._getTestHtml7(webview);
 			case 'aiChat':
 				return this._getAiChatHtml(webview);
 			default:
@@ -132,7 +118,7 @@ class Live2dViewProvider {
 		}
 	}
 
-	// 生成 Webview 的 HTML 内容
+	// 生成设置
 	_getSettingHtml(webview) {
 		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
@@ -155,7 +141,8 @@ class Live2dViewProvider {
 						<button class="common-button" onclick="switchPageToMain()">返回主界面</button>
 				</div>
 				<div style="max-width: 450px; min-width: 100px; padding: 12px">
-					<div class="common-title">基本操作:</div>
+					<div class="common-title">萌宠设置</div>
+					<div class="common-subtitle">基本操作:</div>
 					<div class="common-bar">
 						<button class="common-button" onclick="lodashLive2d()">启动live2d</button>
 						<button class="common-button" onclick="closeLive2d()"> 关闭live2d</button>
@@ -170,24 +157,14 @@ class Live2dViewProvider {
 						<button class="common-button" onclick="resetPosition()">重置默认位置</button>
 					</div>
 
-				<br />
-					<div class="common-title">配置信息:</div>
+				  <br/>
+					<div class="common-subtitle">配置信息:</div>
 					<div class="common-subtitle">自启动:</div>
 					<div class="common-bar" >
 						<button class="common-button" onclick="openAutoLodash()">开启</button>
 						<button class="common-button" onclick="closeAutoLodash()">关闭</button>
 					</div>
-					<!-- <div style="display: flex;" >
-						<div class="common-subtitle">定位依赖:</div>
-						<span style="font-style: 12px;font-weight: 400;">(初始默认为右下角)</span>
-					</div> -->
-					<div class="common-subtitle">定位依赖:</div>
-					<div class="common-bar">
-						<button class="common-button" onclick="setAnchor('tl')">左上角</button>
-						<button class="common-button" onclick="setAnchor('tr')">右上角</button>
-						<button class="common-button" onclick="setAnchor('bl')">左下角</button>
-						<button class="common-button" onclick="setAnchor('br')">右下角</button>
-					</div>
+					
 					<div class="common-subtitle">插件依赖文件:</div>
 					<div class="common-bar">
 						<button 
@@ -208,39 +185,15 @@ class Live2dViewProvider {
 						<input style="width: 30%" placeholder="默认30" type="number" onchange="handleChangeTime(event)" />
 						<button style="width: 30%" onclick="openBackgroundSetTime()"> 开启</button>
 						<button style="width: 30%" onclick="closeBackgroundSetTime()"> 关闭</button>
-					</div>
-					<div class="common-subtitle">背景图配置:(会默认使用最近配置)</div>
-					<div class="common-bar">
-						<div style="margin-right:6px" > 不透明度:  </div>
-						<input id="background-opacity-input" style="width: 80%; flex: 1" type="number" placeholder="范围: 0-1，默认是0.2" onchange="handleChangeOpacity(event)" />
-					</div>
-					<div class="common-bar">
-						<div style="margin-right:6px" > 适配样式:  </div>
-						<select id="background-mode-select" style="width: 80%; flex: 1" onchange="handleChangeMode(event)">
-							<option value='' disabled selected style='display:none;'>背景图适配样式,默认是覆盖</option>  
-							<option value="cover">覆盖</option>
-							<option value="contain">适应</option>
-						</select>
-					</div>
-					<div class="common-bar" style="justify-content: space-round" >
-						<button style="width: 45%" onclick="modifyBackgroundConfig()"> 确认</button>
-						<button style="width: 45%" onclick="restoreBgConfig()"> 恢复默认</button>
-					</div>
-
-					<br />
-					<div class="common-title">测试功能:</div>
-					<div class="common-subtitle">下载当前背景图(勿短时间内多次点击):</div>
-					<div class="common-bar">
-						<button class="common-button" onclick="downloadBackground()">获取当前背景</button>
-						<button class="common-button" onclick="removeDownloadBackground()">移除下载展示</button>
-					</div>
-					<div id="currentBackground" class="common-bar"></div>
+					</div>	
 				</div>
 			
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
 	};
+
+	// 生成Ai助手
 	_getAiChatHtml(webview) {
 		const aiHtmlPath = path.join(this._extensionUri.fsPath, 'media', 'ai-assistant.html');
 		let html = fs.readFileSync(aiHtmlPath, 'utf8');
@@ -254,7 +207,8 @@ class Live2dViewProvider {
 		return html;
 	}
 
-	_getTestHtml1(webview) {
+	// 生成主菜单
+	_getMainHtml(webview) {
 		const htmlPath = path.join(__dirname, '../../media/menu.html');
 		let htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
@@ -267,113 +221,6 @@ class Live2dViewProvider {
 		});
 
 		return htmlContent;
-	}
-	_getTestHtml2(webview) {
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test2.css"));
-
-		return `<!DOCTYPE html>
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8">
-					<link href="${styleVSCodeUri}" rel="stylesheet"> 
-					<link href="${testCssUri}" rel="stylesheet">
-					<title>Live 2d</title>
-				</head>
-			<body>
-				<div class="ai-chat-container">
-					<div class="ai-header">
-  					<button class="back-btn" onclick= "goBack()">返回</button>
-  					<h1 class="ai-title">AI HELPER</h1>
-					</div>
-        <!-- 消息区域 -->
-        	<div class="chat-messages">
-            <!-- AI消息 -->
-            <div class="message-bubble ai-message">
-                需要帮助解释这段代码吗？
-                <pre class="code-block">function binarySearch(arr, target) {
-    							let left = 0, right = arr.length - 1;
-    				while (left <= right) {
-        			...
-   				 	}
-						}</pre>
-            </div>
-
-            <!-- 用户消息 -->
-            <div class="message-bubble user-message">
-                为什么这里的循环条件是 left &lt;= right？
-            </div>
-
-            <!-- AI消息 -->
-            <div class="message-bubble ai-message">
-                这个条件确保搜索区间闭合，当left=right时仍需检查最后一个元素...
-            </div>
-
-            <!-- 加载状态 -->
-            <div class="typing-indicator">
-                <div class="typing-dot" style="animation-delay: 0s"></div>
-                <div class="typing-dot" style="animation-delay: 0.2s"></div>
-                <div class="typing-dot" style="animation-delay: 0.4s"></div>
-            </div>
-        </div>
-
-        <!-- 输入区域 -->
-        <div class="chat-input-area">
-            <textarea 
-                class="chat-input" 
-                placeholder="向AI助手提问..."
-                rows="1"
-            ></textarea>
-            <button class="send-button"></button>
-        </div>
-    </div>
-				<script>
-        	const vscode = acquireVsCodeApi();
-					const MainOrigin = "vscode-file://vscode-app";
-        	function switchPageToTest4() {
-    				vscode.postMessage({ type: 'switchPageToTest4' });
-    			}
-			function goBack() {
-					vscode.postMessage({ type: 'goBack' });
-				}
-					// 动态调整输入框高度
-        	const textarea = document.querySelector('.chat-input');
-        	textarea.addEventListener('input', () => {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-        	}); 
-
-        	// 模拟发送消息
-        	document.querySelector('.send-button').addEventListener('click', () => {
-            const messages = document.querySelector('.chat-messages');
-            
-            // 添加用户消息
-            const userMsg = document.createElement('div');
-            userMsg.className = 'message-bubble user-message';
-            userMsg.textContent = textarea.value;
-            messages.appendChild(userMsg);
-
-            // 显示加载状态
-            const typing = document.querySelector('.typing-indicator');
-            typing.style.display = 'flex';
-            
-            // 清空输入框
-            textarea.value = '';
-            
-            // 模拟AI回复
-            setTimeout(() => {
-                typing.style.display = 'none';
-                const aiMsg = document.createElement('div');
-                aiMsg.className = 'message-bubble ai-message';
-                aiMsg.textContent = '这是模拟的AI回复内容...';
-                messages.appendChild(aiMsg);
-                messages.scrollTop = messages.scrollHeight;
-            }, 1500);
-        	});
-    		</script>
-			</body>
-			</html>
-		`;
 	}
 
 	_getTestHtml3(webview) {
@@ -530,7 +377,7 @@ class Live2dViewProvider {
                     <span>通过率 68%</span>
                 </div>
             </div>
-						<button class= "problem-AI" onclick = "switchPageToTest2()">AI助手</button>
+						<button class= "problem-AI" onclick = "switchPageToAiChat()">AI助手</button>
         </div>
 
         <!-- 内容区 -->
@@ -596,8 +443,8 @@ class Live2dViewProvider {
 						function switchPageToMain() {
 							vscode.postMessage({ type: 'switchPageToMain' });
 						}
-						function switchPageToTest2() {
-							vscode.postMessage({ type: 'switchPageToTest2' });
+						function switchPageToAiChat() {
+							vscode.postMessage({ type: 'switchPageToAiChat' });
 						}
 						// 复制功能
 						function goBack() {
@@ -666,7 +513,8 @@ class Live2dViewProvider {
 		`;
 	}
 
-	_getTestHtml5(webview) {
+	// 生成登录界面
+	_getLoginHtml(webview) {
 		const styleVSCodeUri = webview.asWebviewUri(
 			vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
 		);
@@ -696,7 +544,8 @@ class Live2dViewProvider {
 			.replace(/{{githubIcon}}/g, githubIcon.toString());
 		return htmlContent;
 	}
-	// 生成日历的 HTML内容
+
+	// 生成日历
 	_getCalenderHtml(webview) {
 		const calenderPath = path.join(__dirname, '../.././media/calender.html');
 
@@ -704,73 +553,6 @@ class Live2dViewProvider {
 		const htmlContent = fs.readFileSync(calenderPath, 'utf8');
 
 		return htmlContent;
-	}
-
-	_getTestHtml7(webview) {
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test7.css"));
-
-		return `<!DOCTYPE html>
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8">
-					<link href="${styleVSCodeUri}" rel="stylesheet"> 
-					<link href="${testCssUri}" rel="stylesheet">
-					<title>Live 2d</title>
-				</head>
-				<body>
-    			<div class="header">
-        		<button class="back-button" onclick = "goBack()">&lt; 返回</button>
-        		<div class="title">VSCode 商城</div>
-    			</div>
-    			<div class="store-container">
-        	<div class="product-grid">
-            <!-- 商品示例 1 -->
-            <div class="product-card">
-               <div class="product-image">
-                  <img src="product1.png" alt="二哈" width= "200" height="200">
-                </div>
-              <div class="product-title">二哈桌宠</div>
-              <div class="price-container">
-                <span class="current-price">0</span>
-                <span class="original-price">1800</span>
-              </div>
-            </div>
-            <!-- 商品示例 2 -->
-            <div class="product-card">
-              <div class="product-image">
-                <img src="../../res/image/product2.jpg" alt="window精灵">
-              </div>
-              <div class="product-title">windows精灵</div>
-              <div class="price-container">
-                <span class="current-price">1990</span>
-              </div>
-            </div>
-
-            <!-- 商品示例 3 -->
-            <div class="product-card">
-              <div class="product-image">
-                <img src="../../res/image/product3.jpg" alt="猫猫">
-              </div>
-              <div class="product-title">猫猫</div>
-              <div class="price-container">
-                <span class="current-price">500</span>
-              </div>
-            </div>
-        	</div>
-    		</div>
-				<script>
-        	const vscode = acquireVsCodeApi();
-					const MainOrigin = "vscode-file://vscode-app";
-        	function switchPageToMain() {
-    				vscode.postMessage({ type: 'switchPageToMain' });
-    			}
-			function goBack() {
-				vscode.postMessage({ type: 'goBack' });
-				}
-				</script>
-			</body>
-		</html>`
 	}
 
 }

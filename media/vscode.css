@@ -4,6 +4,7 @@
 	--input-padding-horizontal: 4px;
 	--input-margin-vertical: 4px;
 	--input-margin-horizontal: 0;
+	background: #374757;
 }
 
 body {
@@ -12,7 +13,7 @@ body {
 	font-size: var(--vscode-font-size);
 	font-weight: var(--vscode-font-weight);
 	font-family: var(--vscode-font-family);
-	background-color: var(--vscode-editor-background);
+
 }
 
 ol,
@@ -52,7 +53,7 @@ button {
 	outline: 1px solid transparent;
 	outline-offset: 2px !important;
 	color: var(--vscode-button-foreground);
-	background: #58CC02;
+	background: #1976d2;
 	border-radius: 6px;
 }
 
