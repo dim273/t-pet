@@ -20,44 +20,23 @@ function default_1(config, extName, version) {
 				const { type, data } = event?.data || {};
 				if(type)
 					switch (type) {
-						case 'live2d-asoul-openAutoLodash':
+						case 'live2d-openAutoLodash':
 							this.saveConfig({ autoLodash: true });
 							break;
-						case 'live2d-asoul-closeAutoLodash':
+						case 'live2d-closeAutoLodash':
 							this.saveConfig({ autoLodash: false });
 							break;
-						case 'live2d-asoul-lodash':
+						case 'live2d-lodash':
 							this.createLive2d();
 							break;
-						case 'live2d-asoul-close':
+						case 'live2d-close':
 							this.deleteLive2d();
 							break;
-						case 'live2d-asoul-setAnchor': 
-							this.anchor = data;
-							break;
-						case 'live2d-asoul-resetPosition':
+						case 'live2d-resetPosition':
 							this.resetPosition();
 							break;
-						case 'live2d-asoul-saveCurrentConfig':
+						case 'live2d-saveCurrentConfig':
 							this.saveCurrentConfig();
-							break;
-						case 'live2d-asoul-saveBackground':
-							this.saveBackground();
-							break;
-						case 'live2d-asoul-loadBackground':
-							this.loadBackground();
-							break;
-						case 'live2d-asoul-openBackgroundSetTime':
-							this.openBackgroundSetTime(data);
-							break;
-						case 'live2d-asoul-closeBackgroundSetTime':
-							this.closeBackgroundSetTime();
-							break;
-						case 'live2d-asoul-modifyBackgroundConfig':
-							this.modifyBackgroundConfig(data);
-							break;
-						case 'live2d-asoul-downloadBackground':
-							event.source.postMessage({type: 'live2d-asoul-initDownloadBackground', data: this.live2dIframe?.contentWindow?.currentImgs }, origin);
 							break;
 						default:
 							break;

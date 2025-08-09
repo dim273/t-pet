@@ -144,8 +144,8 @@ class Live2dViewProvider {
 					<div class="common-title">萌宠设置</div>
 					<div class="common-subtitle">基本操作:</div>
 					<div class="common-bar">
-						<button class="common-button" onclick="lodashLive2d()">启动live2d</button>
-						<button class="common-button" onclick="closeLive2d()"> 关闭live2d</button>
+						<button class="common-button" onclick="lodashLive2d()">启动萌宠</button>
+						<button class="common-button" onclick="closeLive2d()"> 关闭萌宠</button>
 					</div>
 					<div class="common-bar">
 						<button 
@@ -180,12 +180,6 @@ class Live2dViewProvider {
 							移除
 						</button>
 					</div>
-					<div class="common-subtitle">定时切换(分钟):</div>
-					<div class="common-bar">
-						<input style="width: 30%" placeholder="默认30" type="number" onchange="handleChangeTime(event)" />
-						<button style="width: 30%" onclick="openBackgroundSetTime()"> 开启</button>
-						<button style="width: 30%" onclick="closeBackgroundSetTime()"> 关闭</button>
-					</div>	
 				</div>
 			
 				<script nonce="${nonce}" src="${scriptUri}"></script>
