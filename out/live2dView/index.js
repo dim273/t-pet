@@ -66,6 +66,11 @@ class Live2dViewProvider {
 					this._page = 'login';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
+				case "switchPageTotree":
+					this._history.push(this._page);
+					this._page = 'tree';
+					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					break;
 				case "switchPageToCalender":
 					this._history.push(this._page);
 					this._page = 'calender';
@@ -79,6 +84,11 @@ class Live2dViewProvider {
 				case "switchPageToAiChat":
 					this._history.push(this._page);
 					this._page = 'aiChat';
+					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					break;
+				case "switchToNode1":
+					this._history.push(this._page);
+					this._page = 'node1';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "goBack":
@@ -111,8 +121,12 @@ class Live2dViewProvider {
 				return this._getLoginHtml(webview);
 			case 'calender':
 				return this._getCalenderHtml(webview);
+			case 'tree':
+				return this._getTreeHtml(webview);
 			case 'aiChat':
 				return this._getAiChatHtml(webview);
+			case 'node1':
+				return this._getNode1Html(webview);
 			default:
 				return this._getSettingHtml(webview);
 		}
@@ -144,8 +158,8 @@ class Live2dViewProvider {
 					<div class="common-title">萌宠设置</div>
 					<div class="common-subtitle">基本操作:</div>
 					<div class="common-bar">
-						<button class="common-button" onclick="lodashLive2d()">启动萌宠</button>
-						<button class="common-button" onclick="closeLive2d()"> 关闭萌宠</button>
+						<button class="common-button" onclick="lodashLive2d()">启动live2d</button>
+						<button class="common-button" onclick="closeLive2d()"> 关闭live2d</button>
 					</div>
 					<div class="common-bar">
 						<button 
@@ -180,6 +194,12 @@ class Live2dViewProvider {
 							移除
 						</button>
 					</div>
+					<div class="common-subtitle">定时切换(分钟):</div>
+					<div class="common-bar">
+						<input style="width: 30%" placeholder="默认30" type="number" onchange="handleChangeTime(event)" />
+						<button style="width: 30%" onclick="openBackgroundSetTime()"> 开启</button>
+						<button style="width: 30%" onclick="closeBackgroundSetTime()"> 关闭</button>
+					</div>	
 				</div>
 			
 				<script nonce="${nonce}" src="${scriptUri}"></script>
@@ -200,6 +220,7 @@ class Live2dViewProvider {
 
 		return html;
 	}
+
 
 	// 生成主菜单
 	_getMainHtml(webview) {
@@ -538,7 +559,25 @@ class Live2dViewProvider {
 			.replace(/{{githubIcon}}/g, githubIcon.toString());
 		return htmlContent;
 	}
-
+	// 生成题目树
+	_getTreeHtml(webview) {
+		const d3Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "d3.v7.min.js"));
+		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const htmlPath = path.join(this._extensionUri.fsPath, "media", "tree.html");
+		let htmlContent = fs.readFileSync(htmlPath, 'utf8');
+		htmlContent = htmlContent.replace(/{{d3Uri}}/g, d3Uri.toString())
+			.replace(/{{styleVSCodeUri}}/g, styleVSCodeUri.toString());
+		return htmlContent;
+	}
+	_getNode1Html(webview) {
+		const d3Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "d3.v7.min.js"));
+		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const htmlPath = path.join(this._extensionUri.fsPath, "media", "node1.html");
+		let htmlContent = fs.readFileSync(htmlPath, 'utf8');
+		htmlContent = htmlContent.replace(/{{d3Uri}}/g, d3Uri.toString())
+			.replace(/{{styleVSCodeUri}}/g, styleVSCodeUri.toString());
+		return htmlContent;
+	}
 	// 生成日历
 	_getCalenderHtml(webview) {
 		const calenderPath = path.join(__dirname, '../.././media/calender.html');

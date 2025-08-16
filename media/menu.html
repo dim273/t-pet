@@ -283,7 +283,7 @@
   <div class="main-card">
     <div class="card-top with-icon">
       <span class="icon-left">🌳</span>
-      <button onclick="switchPageToAiChat()">知识树</button>
+      <button onclick="switchPageTotree()">知识树</button>
     </div>
     <div class="icon-button-row">
       <div class="icon-button-vertical">
@@ -333,6 +333,9 @@
     }
     function switchPageToAiChat() {
       vscode.postMessage({ type: 'switchPageToAiChat' });
+    }
+    function switchPageTotree() {
+      vscode.postMessage({ type: 'switchPageTotree' });
     }
     function switchPageToCalender() {
       vscode.postMessage({ type: 'switchPageToCalender' });
