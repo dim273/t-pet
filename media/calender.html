@@ -64,8 +64,7 @@
     <!-- 顶部日期显示区域 -->
     <div class="bg-gray-900 rounded-xl shadow-lg p-6 mb-8 transform hover:shadow-xl transition-all duration-300">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-        <button class="absolute left-4 top-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
-          onclick="goBack()">
+        <button class="absolute left-4 top-4 p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="goBack()">
           <i class="fa fa-arrow-left text-primary"></i>
         </button>
         <div>
@@ -142,6 +141,10 @@
     function goBack() {
       vscode.postMessage({ type: 'goBack' });
     }
+
+    // 声明全局变量用于存储打卡记录
+    let checkInRecords = {};
+    
     document.addEventListener('DOMContentLoaded', () => {
       // 获取DOM元素
       const currentDateEl = document.getElementById('current-date');
@@ -164,8 +167,29 @@
       let currentDate = new Date();
       let displayDate = new Date(currentDate); // 用于显示的日期，可能与当前日期不同月份
 
-      // 从本地存储获取打卡记录
-      let checkInRecords = JSON.parse(localStorage.getItem('checkInRecords')) || {};
+      // 接收从扩展发送的消息
+      window.addEventListener('message', event => {
+        const message = event.data;
+        if (message.type === 'loadCalenderData') {
+          console.log('Received calendar data:', message.data);
+          // 接收到日历数据后更新显示
+          checkInRecords = message.data || {};
+          updateCalendar();
+        }
+      });
+
+      // 请求从扩展加载日历数据
+      function requestCalendarData() {
+        console.log('Requesting calendar data from extension');
+        vscode.postMessage({ type: 'getCalenderData' });
+      }
+
+      // 立即请求数据
+      requestCalendarData();
+
+      // 添加重试机制，确保在页面加载完成后能够获取数据
+      setTimeout(requestCalendarData, 500);
+      setTimeout(requestCalendarData, 1000);
 
       // 更新顶部日期显示
       function updateTopDate() {
@@ -256,7 +280,11 @@
           if (!isChecked && !(dateObj > currentDate)) {
             dateEl.addEventListener('click', () => {
               checkInRecords[dateKey] = true;
-              localStorage.setItem('checkInRecords', JSON.stringify(checkInRecords));
+              // 发送数据到扩展保存
+              vscode.postMessage({
+                type: 'saveCalenderData',
+                data: checkInRecords
+              });
               updateCalendar();
 
               // 添加动画效果

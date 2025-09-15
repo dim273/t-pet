@@ -24,6 +24,13 @@ class Live2dViewProvider {
 	constructor(_extensionUri) {
 		this._extensionUri = _extensionUri;  // 扩展安装目录URI
 		this._page = 'login';                // 当前页面状态，初始化为test5
+		// 确保路径有效：如果有工作区使用工作区路径，否则使用扩展路径
+		this._storagePath = path.join(
+			vscode.workspace.fsPath || _extensionUri.fsPath,
+			'.t-pet',
+			'data.json'
+		);
+		console.log('Calendar storage path:', this._storagePath);
 	}
 
 	// 解析 Webview 视图
@@ -75,6 +82,16 @@ class Live2dViewProvider {
 					this._history.push(this._page);
 					this._page = 'calender';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					// 加载日历数据并在DOMContentLoaded后发送
+					this.loadCalenderData().then(loadedData => {
+						// 使用保存的webviewView引用
+						if (this._view && this._view.webview) {
+							this._view.webview.postMessage({
+								type: 'loadCalenderData',
+								data: loadedData
+							});
+						}
+					});
 					break;
 				case "switchPageToSetting":
 					this._history.push(this._page);
@@ -104,6 +121,20 @@ class Live2dViewProvider {
 				case "removeResources":
 					// 移除资源文件（clean: true 表示彻底清理）
 					Main_1.Main.Instance && Main_1.Main.Instance.removeResources(true);
+					break;
+				// 处理日历打卡数据
+				case "saveCalenderData":
+					this.saveCalenderData(data.data);
+					break;
+				case "getCalenderData":
+					this.loadCalenderData().then(loadedData => {
+						if (this._view) {
+							this._view.webview.postMessage({
+								type: 'loadCalenderData',
+								data: loadedData
+							});
+						}
+					});
 					break;
 			}
 		});
@@ -586,6 +617,32 @@ class Live2dViewProvider {
 		const htmlContent = fs.readFileSync(calenderPath, 'utf8');
 
 		return htmlContent;
+	}
+
+	// 保存日历数据
+	async saveCalenderData(data) {
+		const dir = path.dirname(this._storagePath);
+		if (!fs.existsSync(dir)) {
+			fs.mkdirSync(dir, { recursive: true });
+		}
+
+		fs.writeFileSync(this._storagePath, JSON.stringify(data, null, 2));
+	}
+
+	// 加载日历数据
+	async loadCalenderData() {
+		try {
+			if (fs.existsSync(this._storagePath)) {
+				const data = fs.readFileSync(this._storagePath, 'utf8');
+				const parsedData = JSON.parse(data);
+				return parsedData;
+			} else {
+				return {};
+			}
+		} catch (error) {
+			console.error('Failed to load calendar data:', error);
+			return {};
+		}
 	}
 
 }
