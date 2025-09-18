@@ -14,9 +14,9 @@
           colors: {
             primary: '#4F46E5',
             secondary: '#10B981',
-            accent: '#8B5CF6',
+            accent: '#d4d4d4',
             light: '#F3F4F6',
-            dark: '#1F2937'
+            dark: '#1e1e1e'
           },
           fontFamily: {
             inter: ['Inter', 'sans-serif'],
@@ -47,10 +47,10 @@
                 border: 2px solid #10B981;
             }
             .calendar-day.today:not(.checked) {
-                border: 2px solid #4F46E5;
+                border: 2px solid #06cff3;
             }
             .calendar-day.checked.today {
-                border: 2px solid #8B5CF6;
+                border: 2px solid #2fafea;
             }
             .month-transition {
                 transition: all 0.5s ease;
@@ -59,16 +59,16 @@
     </style>
 </head>
 
-<body class="min-h-screen font-inter text-dark" style="background: linear-gradient(135deg, #2f3e4e, #455a6b);">
+<body class="min-h-screen font-inter text-dark" style="background: #252526;">
   <div class="max-w-4xl mx-auto px-4 py-8">
     <!-- 顶部日期显示区域 -->
-    <div class="bg-gray-900 rounded-xl shadow-lg p-6 mb-8 transform hover:shadow-xl transition-all duration-300">
+    <div class="bg-dark rounded-xl shadow-lg p-6 mb-8 transform hover:shadow-xl transition-all duration-300">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         <button class="absolute left-4 top-4 p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="goBack()">
-          <i class="fa fa-arrow-left text-primary"></i>
+          <i class="fa fa-arrow-left text-accent"></i>
         </button>
         <div>
-          <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary">打卡日志</h1>
+          <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-accent">打卡日志</h1>
           <p class="text-accent text-lg" id="current-date"></p>
         </div>
         <div class="flex items-center gap-3">
@@ -81,27 +81,27 @@
     </div>
 
     <!-- 日历区域 -->
-    <div class="bg-gray-900 rounded-xl shadow-lg p-6 mb-8 transform hover:shadow-xl transition-all duration-300">
+    <div class="bg-dark rounded-xl shadow-lg p-6 mb-8 transform hover:shadow-xl transition-all duration-300">
       <!-- 月份控制 -->
       <div class="flex items-center justify-between mb-6">
         <button id="prev-month" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
-          <i class="fa fa-chevron-left text-primary"></i>
+          <i class="fa fa-chevron-left text-accent"></i>
         </button>
         <h2 id="current-month" class="text-xl font-bold text-accent"></h2>
         <button id="next-month" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
-          <i class="fa fa-chevron-right text-primary"></i>
+          <i class="fa fa-chevron-right text-accent"></i>
         </button>
       </div>
 
       <!-- 星期标题 -->
       <div class="grid grid-cols-7 gap-2 mb-2">
-        <div class="text-center font-medium text-green-500">日</div>
-        <div class="text-center font-medium text-green-500">一</div>
-        <div class="text-center font-medium text-green-500">二</div>
-        <div class="text-center font-medium text-green-500">三</div>
-        <div class="text-center font-medium text-green-500">四</div>
-        <div class="text-center font-medium text-green-500">五</div>
-        <div class="text-center font-medium text-green-500">六</div>
+        <div class="text-center font-medium text-accent">日</div>
+        <div class="text-center font-medium text-accent">一</div>
+        <div class="text-center font-medium text-accent">二</div>
+        <div class="text-center font-medium text-accent">三</div>
+        <div class="text-center font-medium text-accent">四</div>
+        <div class="text-center font-medium text-accent">五</div>
+        <div class="text-center font-medium text-accent">六</div>
       </div>
 
       <!-- 日历主体 -->
@@ -112,22 +112,15 @@
 
     <!-- 统计信息 -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      <div class="bg-gray-900 rounded-xl shadow p-4 text-center transform hover:shadow-lg transition-all duration-300">
+      <div class="bg-dark rounded-xl shadow p-4 text-center transform hover:shadow-lg transition-all duration-300">
         <div class="text-green-500 text-3xl mb-2">
           <i class="fa fa-check-circle"></i>
         </div>
         <h3 class="font-semibold text-gray-300">本月打卡</h3>
         <p id="check-in-count" class="text-2xl font-bold text-white">0</p>
       </div>
-      <div class="bg-gray-900 rounded-xl shadow p-4 text-center transform hover:shadow-lg transition-all duration-300">
-        <div class="text-green-500 text-3xl mb-2">
-          <i class="fa fa-calendar"></i>
-        </div>
-        <h3 class="font-semibold text-gray-300">本月天数</h3>
-        <p id="month-days" class="text-2xl font-bold text-white">0</p>
-      </div>
-      <div class="bg-gray-900 rounded-xl shadow p-4 text-center transform hover:shadow-lg transition-all duration-300">
-        <div class="text-green-500 text-3xl mb-2">
+      <div class="bg-dark rounded-xl shadow p-4 text-center transform hover:shadow-lg transition-all duration-300">
+        <div class="text-yellow-400 text-3xl mb-2">
           <i class="fa fa-trophy"></i>
         </div>
         <h3 class="font-semibold text-gray-300">打卡率</h3>
@@ -144,7 +137,7 @@
 
     // 声明全局变量用于存储打卡记录
     let checkInRecords = {};
-    
+
     document.addEventListener('DOMContentLoaded', () => {
       // 获取DOM元素
       const currentDateEl = document.getElementById('current-date');
@@ -154,7 +147,6 @@
       const prevMonthBtn = document.getElementById('prev-month');
       const nextMonthBtn = document.getElementById('next-month');
       const checkInCountEl = document.getElementById('check-in-count');
-      const monthDaysEl = document.getElementById('month-days');
       const checkInRateEl = document.getElementById('check-in-rate');
 
       // 中文星期数组
@@ -218,9 +210,6 @@
 
         // 获取当月有多少天
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        // 更新统计信息
-        monthDaysEl.textContent = daysInMonth;
 
         // 计算当月打卡数量
         let checkInCount = 0;

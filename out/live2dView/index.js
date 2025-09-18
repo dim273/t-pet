@@ -259,12 +259,10 @@ class Live2dViewProvider {
 		let htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
 		// 正确地动态替换本地资源路径
-		htmlContent = htmlContent.replace(/(src|href)="(.+?)"/g, (match, attr, relPath) => {
-			// 构造绝对路径
-			const resourcePath = vscode.Uri.joinPath(this._extensionUri, 'media', relPath);
-			const webviewUri = webview.asWebviewUri(resourcePath);
-			return `${attr}="${webviewUri}"`;
-		});
+		const logoUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this._extensionUri, "res", "image", "logo.png")
+		);
+		htmlContent = htmlContent.replace(/{{logo}}/g, logoUri.toString());
 
 		return htmlContent;
 	}
@@ -590,6 +588,7 @@ class Live2dViewProvider {
 			.replace(/{{githubIcon}}/g, githubIcon.toString());
 		return htmlContent;
 	}
+
 	// 生成题目树
 	_getTreeHtml(webview) {
 		const d3Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "d3.v7.min.js"));
@@ -609,7 +608,7 @@ class Live2dViewProvider {
 			.replace(/{{styleVSCodeUri}}/g, styleVSCodeUri.toString());
 		return htmlContent;
 	}
-	// 生成日历
+	// 生成日历 
 	_getCalenderHtml(webview) {
 		const calenderPath = path.join(__dirname, '../.././media/calender.html');
 
