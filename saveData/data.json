@@ -1,0 +1,16 @@
+{
+  "userInfo": {
+    "name": "张三",
+    "email": "zhangsan@example.com",
+    "department": "开发部"
+  },
+  "checkIn": {
+    "checkInDays": {
+      "2025-9-5": true,
+      "2025-9-6": true,
+      "2025-9-4": true,
+      "2025-8-9": true,
+      "2025-8-8": true
+    }
+  }
+}
