@@ -9,6 +9,7 @@ const Main_1 = require("../live2dModify/Main");
 const fs = require('fs');
 const path = require('path');
 const { FileStorage } = require('../../manager/fileStorage');
+const { fetchPage } = require('../../manager/GetluoguProblem');
 
 // 扩展激活入口函数
 function activateLive2d(context) {
@@ -28,7 +29,6 @@ class Live2dViewProvider {
 
 		// 初始化文件存储管理器
 		this.storage = new FileStorage(_extensionUri);
-		this.testData = [];
 		this.saveData = {
 			userInfo: {
 				name: "张三",
@@ -73,6 +73,11 @@ class Live2dViewProvider {
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToTest4":
+					console.log('点击了题目卡片, 题目ID:', data.id);
+					fetchPage(data.id); // 获取洛谷题目并保存为 example.md
+					setTimeout(() => {
+						console.log('2秒后执行');
+					}, 2000);
 					this._history.push(this._page);
 					this._page = 'test4';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
@@ -134,8 +139,6 @@ class Live2dViewProvider {
 					break;
 				// 处理日历打卡数据
 				case "saveCalenderData":
-					//this.testData = data.data;
-					//this.storage.saveData(this.testData);
 					this.saveData.checkIn.checkInDays = data.data;
 					this.storage.saveData(this.saveData);
 					break;
@@ -255,7 +258,6 @@ class Live2dViewProvider {
 		return html;
 	}
 
-
 	// 生成主菜单
 	_getMainHtml(webview) {
 		const htmlPath = path.join(__dirname, '../../media/menu.html');
@@ -292,7 +294,7 @@ class Live2dViewProvider {
     		</div>
     		<div class="problem-sidebar">
         <!-- 题目卡片1 -->
-        <div class="problem-card" onclick= "switchPageToTest4()">
+        <div class="problem-card" data-id="P1301">
             <div class="card-header">
                 <div class="problem-title">两数之和</div>
                 <div class="difficulty easy">简单</div>
@@ -314,7 +316,7 @@ class Live2dViewProvider {
         	</div>
 
         	<!-- 题目卡片2 -->
-        	<div class="problem-card" onclick = "switchPageToTest4()">
+        	<div class="problem-card" data-id="P1302">
             <div class="card-header">
                 <div class="problem-title">反转链表</div>
                 <div class="difficulty medium">中等</div>
@@ -336,7 +338,7 @@ class Live2dViewProvider {
         	</div>
 
         	<!-- 题目卡片3 -->
-        	<div class="problem-card" onclick= "switchPageToTest4()">
+        	<div class="problem-card" data-id="P1303">
             <div class="card-header">
                 <div class="problem-title">二叉树遍历</div>
                 <div class="difficulty medium">中等</div>
@@ -358,7 +360,7 @@ class Live2dViewProvider {
         	</div>
 
         	<!-- 题目卡片4 -->
-        	<div class="problem-card" onclick= "switchPageToTest4()">
+        	<div class="problem-card" data-id="P1304">
             <div class="card-header">
                 <div class="problem-title">动态规划</div>
                 <div class="difficulty hard">困难</div>
@@ -386,12 +388,26 @@ class Live2dViewProvider {
         	function switchPageToMain() {
 						vscode.postMessage({ type: 'switchPageToMain' });
 					}
-					function switchPageToTest4() {
-						vscode.postMessage({ type: 'switchPageToTest4' });
+					function switchPageToProblemCard() {
+						const questionItem = event.currentTarget;
+						const problemId = questionItem.getAttribute('data-id');
+
+						vscode.postMessage({ 
+							type: 'switchPageToTest4',
+							id: problemId
+						});
 					}
 					function goBack() {
 						vscode.postMessage({ type: 'goBack' });
 					}
+
+					// 为题目卡片添加点击事件监听
+					document.addEventListener('DOMContentLoaded', function() {
+						const questionItems = document.querySelectorAll('.problem-card');
+						questionItems.forEach(item => {
+							item.addEventListener('click', switchPageToProblemCard);
+						});
+					});
     		</script>
 			</body>
 		</html>
@@ -400,164 +416,59 @@ class Live2dViewProvider {
 	}
 
 	_getTestHtml4(webview) {
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test4.css"));
+		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));		// css主题
+		const katex_min_css_Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "katex", "katex.min.css")); // katex.min.css
+		const katex_min_js_Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "katex", "katex.min.js")); // katex.min.js
+		const katex_auto_render_min_js_Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "katex", "auto-render.min.js")); // auto-render.min.js
+
+		const filePath = path.join(this._extensionUri.fsPath, "saveData", "example.md");
+		const fileContent = fs.readFileSync(filePath, 'utf8');
 
 		return `<!DOCTYPE html>
 			<html lang="en">
-				<head>
-					<meta charset="UTF-8">
-					<link href="${styleVSCodeUri}" rel="stylesheet"> 
-					<link href="${testCssUri}" rel="stylesheet">
-					<title>Live 2d</title>
-				</head>
+
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>Markdown Displayer</title>
+				<link href="${styleVSCodeUri}" rel="stylesheet" />
+				<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+				<link rel="stylesheet" href="${katex_min_css_Uri}">
+  			<script src="${katex_min_js_Uri}"></script>
+  			<script src="${katex_auto_render_min_js_Uri}"></script>
+			</head>
+
 			<body>
-				<div class="problem-detail">
-        <!-- 头部 -->
-        <div class="detail-header">
-            <button class="back-btn" onclick = "goBack()">返回</button>
-            <div class="problem-meta">
-                <div class="problem-title">两数之和</div>
-                <div class="problem-tags">
-                    <span>#数组</span>
-                    <span>#哈希表</span>
-                    <span>通过率 68%</span>
-                </div>
-            </div>
-						<button class= "problem-AI" onclick = "switchPageToAiChat()">AI助手</button>
-        </div>
+				<button onclick="renderMarkdown()" class="common-button">渲染</button>
+				<button onclick="goBack()" class="common-button">返回主界面</button>
+				<div id="markdownDisplay"></div>
+				<script>
+					const vscode = acquireVsCodeApi();
+					const MainOrigin = "vscode-file://vscode-app";
+					const fs = require('fs');
+					const path = require('path');
+					
 
-        <!-- 内容区 -->
-        <div class="detail-content">
-            <div class="problem-description">
-                给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的两个整数，并返回它们的数组下标。
-                
-                你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
-            </div>
+					function goBack() {
+						vscode.postMessage({ type: 'switchPageToTest3' });
+					}
 
-            <!-- 样例切换 -->
-            <div class="sample-tabs">
-                <div class="tab-item active" onclick="switchSample(1)">样例1</div>
-                <div class="tab-item" onclick="switchSample(2)">样例2</div>
-            </div>
-
-            <!-- 样例内容 -->
-            <div class="sample-io" id="sample1">
-                <div class="io-box">
-                    <div class="io-header">输入</div>
-                    <div class="io-content">nums = [2,7,11,15], target = 9</div>
-                    <button class="copy-btn" onclick="copyCode(event)">复制</button>
-                </div>
-                <div class="io-box">
-                    <div class="io-header">输出</div>
-                    <div class="io-content">[0,1]</div>
-                    <button class="copy-btn" onclick="copyCode(event)">复制</button>
-                </div>
-                <div class="code-sample">
-                    <div>解释：nums[0] + nums[1] = 2 + 7 = 9</div>
-                </div>
-            </div>
-
-            <div class="sample-io" id="sample2" style="display:none">
-                <div class="io-box">
-                    <div class="io-header">输入</div>
-                    <div class="io-content">nums = [3,2,4], target = 6</div>
-                    <button class="copy-btn" onclick="copyCode(event)">复制</button>
-                </div>
-                <div class="io-box">
-                    <div class="io-header">输出</div>
-                    <div class="io-content">[1,2]</div>
-                    <button class="copy-btn" onclick="copyCode(event)">复制</button>
-                </div>
-            	</div>
-        	</div>
-
-        	<!-- 提交区域 -->
-        	<div class="submit-area">
-            <button class="submit-btn" onclick="submitCode()">提交代码</button>
-            	<div class="loading-indicator" id="loading">
-                <div class="loading-dot"></div>
-                <div class="loading-dot" style="animation-delay:0.2s"></div>
-                <div class="loading-dot" style="animation-delay:0.4s"></div>
-                <span>判题中...</span>
-            	</div>
-            <div class="result-feedback" id="result"></div>
-        	</div>
-    			</div>
-					<script>
-						const vscode = acquireVsCodeApi();
-						const MainOrigin = "vscode-file://vscode-app";
-						function switchPageToMain() {
-							vscode.postMessage({ type: 'switchPageToMain' });
-						}
-						function switchPageToAiChat() {
-							vscode.postMessage({ type: 'switchPageToAiChat' });
-						}
-						// 复制功能
-						function goBack() {
-							vscode.postMessage({ type: 'goBack' });
-						}
-        		function copyCode(event) {
-            	const content = event.target.parentElement.querySelector('.io-content').innerText;
-            	navigator.clipboard.writeText(content).then(() => {
-                const originalText = event.target.textContent;
-                event.target.textContent = '已复制!';
-                setTimeout(() => {
-                    event.target.textContent = originalText;
-                }, 1500);
-            	}).catch(err => {
-                console.error('复制失败:', err);
-            });
-        		}
-
-        		// 切换样例
-        		function switchSample(num) {
-            	document.querySelectorAll('.sample-io').forEach(el => {
-                el.style.display = 'none';
-            	});
-							var sam = document.getElementById('sample' + num).style.display = 'block';
-            
-            	document.querySelectorAll('.tab-item').forEach(el => {
-                el.classList.remove('active');
-            	});
-            	event.target.classList.add('active');
-        		}
-
-        		// 模拟提交
-        		function submitCode() {
-            	const loading = document.getElementById('loading');
-            	const result = document.getElementById('result');
-            
-            	loading.style.display = 'flex';
-            	result.style.display = 'none';
-
-            // 模拟API请求延迟
-            	setTimeout(() => {
-                loading.style.display = 'none';
-                result.style.display = 'block';
-                
-                // 随机模拟成功或失败
-                const isSuccess = Math.random() > 0.3;
-                if (isSuccess) {
-                    result.className = 'result-feedback success';
-                    result.textContent = '✔ 通过所有测试用例 (执行用时：12ms)';
-                } else {
-                    result.className = 'result-feedback error';
-                    result.textContent = '✘ 未通过测试用例：输入 [3,3] 6';
-                }
-            	}, 1500);
-        		}
-
-        		// 返回按钮功能
-        		document.querySelector('.back-btn').addEventListener('click', () => {
-            	console.log('返回上一页');
-            // 实际应用中这里应该是返回逻辑
-          });
-    		</script>
+					function renderMarkdown() {
+						var markdownDisplay = document.getElementById('markdownDisplay');
+						var markdownText = ${JSON.stringify(fileContent)};
+						var htmlContent = marked.parse(markdownText);
+						markdownDisplay.innerHTML = htmlContent;
+						renderMathInElement(markdownDisplay, {
+        			delimiters: [
+          			{ left: "$$", right: "$$", display: true },
+          			{ left: "$", right: "$", display: false }
+        			]
+      			});
+					}
+				</script>
 			</body>
-			</html>
-		      
-		`;
+
+			</html>`;
 	}
 
 	// 生成登录界面

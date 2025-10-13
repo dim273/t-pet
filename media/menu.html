@@ -96,6 +96,7 @@
 
     document.getElementById('switchPageTotree').addEventListener('click', () => {
       vscode.postMessage({ type: 'switchPageTotree' });
+      console.log("点击了知识树按钮");
     });
 
     document.getElementById('switchPageToAiChat').addEventListener('click', () => {
