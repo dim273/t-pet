@@ -73,14 +73,13 @@ class Live2dViewProvider {
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToTest4":
-					console.log('点击了题目卡片, 题目ID:', data.id);
-					fetchPage(data.id); // 获取洛谷题目并保存为 example.md
-					setTimeout(() => {
-						console.log('2秒后执行');
-					}, 2000);
-					this._history.push(this._page);
-					this._page = 'test4';
-					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					// 由于fetchPage是异步函数，需要等待它完成后再渲染页面
+					fetchPage(data.id).then(() => {
+						console.log('题目获取完成，开始渲染页面');
+						this._history.push(this._page);
+						this._page = 'test4';
+						webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					});
 					break;
 				case "switchPageToLogin":
 					this._history.push(this._page);
