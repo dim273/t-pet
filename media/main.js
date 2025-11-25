@@ -34,6 +34,3 @@ function saveCurrentConfig() {
 function resetPosition() {
     sendCommand('live2d-resetPosition');
 }
-
-
-
