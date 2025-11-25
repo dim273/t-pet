@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,14 +20,14 @@
             --vscode-highlight: #363636;
             --transition-speed: 0.3s;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
         }
-        
+
         body {
             background-color: var(--vscode-sidebar-bg);
             color: var(--vscode-text);
@@ -36,7 +37,7 @@
             flex-direction: column;
             overflow: hidden;
         }
-        
+
         .header {
             padding: 12px 16px;
             display: flex;
@@ -45,7 +46,7 @@
             background-color: var(--vscode-bg);
             position: relative;
         }
-        
+
         .back-btn {
             background: transparent;
             border: none;
@@ -62,11 +63,11 @@
             width: 30px;
             height: 30px;
         }
-        
+
         .back-btn:hover {
             background: var(--vscode-highlight);
         }
-        
+
         .chat-container {
             flex: 1;
             overflow-y: auto;
@@ -75,7 +76,7 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         .init-state {
             position: absolute;
             top: 0;
@@ -92,33 +93,33 @@
             transition: opacity 0.4s ease;
             z-index: 2;
         }
-        
+
         .init-state.hidden {
             opacity: 0;
             pointer-events: none;
             z-index: -1;
         }
-        
+
         .init-state h2 {
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 8px;
             color: var(--vscode-accent);
         }
-        
+
         .init-state p {
             font-size: 12px;
             line-height: 1.5;
             max-width: 300px;
         }
-        
+
         .features {
             display: flex;
             justify-content: space-between;
             max-width: 360px;
             margin-top: 25px;
         }
-        
+
         .feature {
             flex: 1;
             padding: 10px;
@@ -127,42 +128,42 @@
             border-radius: 6px;
             transition: transform 0.2s ease, background 0.2s ease;
         }
-        
+
         .feature:hover {
             background: rgba(55, 148, 255, 0.2);
             transform: translateY(-3px);
         }
-        
+
         .feature-icon {
             font-size: 20px;
             margin-bottom: 6px;
             color: var(--vscode-accent);
         }
-        
+
         .feature-title {
             font-size: 12px;
             font-weight: 600;
             margin-bottom: 4px;
         }
-        
+
         .feature-desc {
             font-size: 11px;
             opacity: 0.8;
         }
-        
+
         .chat-content {
             padding: 16px;
             flex: 1;
             display: none;
         }
-        
+
         .input-area {
             padding: 0 16px 16px;
             border-top: 1px solid var(--vscode-tab-border);
             background-color: var(--vscode-bg);
             position: relative;
         }
-        
+
         .mode-container {
             display: flex;
             margin: 0 -4px 12px;
@@ -170,7 +171,7 @@
             overflow: hidden;
             height: 36px;
         }
-        
+
         .mode-indicator {
             position: absolute;
             bottom: 0;
@@ -179,7 +180,7 @@
             border-radius: 3px;
             transition: all var(--transition-speed) cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
-        
+
         .mode-btn {
             flex: 1;
             background: transparent;
@@ -196,21 +197,21 @@
             border-radius: 4px;
             margin: 0 4px;
         }
-        
+
         .mode-btn.active {
             color: var(--vscode-accent);
         }
-        
+
         .input-group {
             display: none;
             flex-direction: column;
             transition: all var(--transition-speed) ease;
         }
-        
+
         .input-group.active {
             display: flex;
         }
-        
+
         .problem-id-input {
             background: var(--vscode-input-bg);
             color: var(--vscode-text);
@@ -221,12 +222,12 @@
             height: 36px;
             font-size: 13px;
         }
-        
+
         .problem-id-input::placeholder {
             color: var(--vscode-text);
             opacity: 0.6;
         }
-        
+
         .text-input {
             width: 100%;
             background: var(--vscode-input-bg);
@@ -240,29 +241,29 @@
             line-height: 1.5;
             transition: border-color 0.2s ease;
         }
-        
+
         .text-input:focus {
             outline: none;
             border-color: var(--vscode-accent);
         }
-        
+
         .actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 10px;
         }
-        
+
         .code-checkbox {
             display: flex;
             align-items: center;
             font-size: 12px;
         }
-        
+
         .code-checkbox input {
             margin-right: 8px;
         }
-        
+
         .knowledge-select {
             width: 100%;
             background: var(--vscode-input-bg);
@@ -279,7 +280,7 @@
             background-position: right 8px center;
             background-size: 16px;
         }
-        
+
         .send-btn {
             background: var(--vscode-button-bg);
             color: white;
@@ -295,7 +296,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .send-btn::before {
             content: '';
             position: absolute;
@@ -307,28 +308,28 @@
             opacity: 0;
             transition: opacity 0.2s ease;
         }
-        
+
         .send-btn:hover {
             background: var(--vscode-button-hover);
             transform: scale(1.05);
         }
-        
+
         .send-btn:hover::before {
             opacity: 1;
         }
-        
+
         .send-btn:active {
             transform: scale(0.95);
         }
-        
+
         .send-btn svg {
             transition: transform 0.3s ease;
         }
-        
+
         .send-btn:hover svg {
             transform: translateX(2px);
         }
-        
+
         /* 统一消息布局 */
         .message {
             margin-bottom: 20px;
@@ -339,7 +340,7 @@
             transform: translateY(10px);
             animation: messageAppear 0.3s forwards;
         }
-        
+
         .message-content {
             display: flex;
             flex-direction: column;
@@ -354,7 +355,7 @@
             align-items: flex-start;
             margin-bottom: 5px;
         }
-        
+
         .avatar {
             width: 30px;
             height: 30px;
@@ -369,18 +370,18 @@
             font-size: 12px;
             font-weight: bold;
         }
-        
+
         .user .avatar {
             background: #4caf50;
         }
-        
+
         .name {
             font-size: 11px;
             font-weight: 600;
             opacity: 0.8;
             margin-bottom: 5px;
         }
-        
+
         .message-body {
             padding: 10px 15px;
             border-radius: 8px;
@@ -389,15 +390,15 @@
             word-wrap: break-word;
             white-space: pre-wrap;
         }
-        
+
         .user .message-body {
             background: rgba(59, 134, 255, 0.2);
         }
-        
+
         .assistant .message-body {
             background: rgba(55, 148, 255, 0.1);
         }
-        
+
         .timestamp {
             font-size: 10px;
             opacity: 0.6;
@@ -405,14 +406,14 @@
             text-align: right;
             width: 100%;
         }
-        
+
         @keyframes messageAppear {
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         .code-block {
             background: rgba(30, 30, 30, 0.5);
             font-family: 'Courier New', monospace;
@@ -421,39 +422,40 @@
             font-size: 12px;
             margin: 10px 0;
             white-space: pre-wrap;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             overflow-x: auto;
             max-width: 100%;
         }
-        
+
         .olist {
             padding-left: 20px;
             margin: 10px 0;
         }
-        
+
         .olist li {
             margin-bottom: 8px;
             line-height: 1.6;
         }
-        
-        .assistant .message-body p, 
-        .assistant .message-body ul, 
+
+        .assistant .message-body p,
+        .assistant .message-body ul,
         .assistant .message-body ol {
             margin-bottom: 12px;
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <button class="back-btn" id="back-btn" onclick="goBack()">←</button>
         <h3 style="font-weight: 600;">AI编程助手</h3>
     </div>
-    
+
     <div class="chat-container" id="chat-container">
         <div class="init-state" id="init-state">
             <h2>AI编程助手</h2>
             <p>智能辅助, 启发教育</p>
-            
+
             <div class="features">
                 <div class="feature">
                     <div class="feature-icon">💻</div>
@@ -472,12 +474,12 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="chat-content" id="chat-content">
             <!-- 消息将通过JavaScript动态添加 -->
         </div>
     </div>
-    
+
     <div class="input-area">
         <div class="mode-container">
             <div class="mode-indicator" id="mode-indicator"></div>
@@ -485,7 +487,7 @@
             <button class="mode-btn" data-mode="problem">刷题指导</button>
             <button class="mode-btn" data-mode="knowledge">知识学习</button>
         </div>
-        
+
         <!-- 代码建议输入区域 -->
         <div class="input-group active" data-mode="code">
             <textarea class="text-input" id="code-input" placeholder="输入关于代码的问题..."></textarea>
@@ -496,12 +498,14 @@
                 </div>
                 <button class="send-btn" id="send-code">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                        <path d="M20,12a1,1,0,0,1-.29.73l-6.31,6.31a1,1,0,0,1-1.41-1.41L17.59,13H4a1,1,0,0,1,0-2H17.59L12,6.44A1,1,0,0,1,12.72,5a1,1,0,0,1,.69.29l6.31,6.3A1,1,0,0,1,20,12Z"></path>
+                        <path
+                            d="M20,12a1,1,0,0,1-.29.73l-6.31,6.31a1,1,0,0,1-1.41-1.41L17.59,13H4a1,1,0,0,1,0-2H17.59L12,6.44A1,1,0,0,1,12.72,5a1,1,0,0,1,.69.29l6.31,6.3A1,1,0,0,1,20,12Z">
+                        </path>
                     </svg>
                 </button>
             </div>
         </div>
-        
+
         <!-- 刷题指导输入区域 -->
         <div class="input-group" data-mode="problem">
             <input type="text" class="problem-id-input" id="problem-id" placeholder="题目编号">
@@ -510,12 +514,14 @@
                 <div></div> <!-- 占位元素 -->
                 <button class="send-btn" id="send-problem">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                        <path d="M20,12a1,1,0,0,1-.29.73l-6.31,6.31a1,1,0,0,1-1.41-1.41L17.59,13H4a1,1,0,0,1,0-2H17.59L12,6.44A1,1,0,0,1,12.72,5a1,1,0,0,1,.69.29l6.31,6.3A1,1,0,0,1,20,12Z"></path>
+                        <path
+                            d="M20,12a1,1,0,0,1-.29.73l-6.31,6.31a1,1,0,0,1-1.41-1.41L17.59,13H4a1,1,0,0,1,0-2H17.59L12,6.44A1,1,0,0,1,12.72,5a1,1,0,0,1,.69.29l6.31,6.3A1,1,0,0,1,20,12Z">
+                        </path>
                     </svg>
                 </button>
             </div>
         </div>
-        
+
         <!-- 知识学习输入区域 -->
         <div class="input-group" data-mode="knowledge">
             <select class="knowledge-select" id="knowledge-select">
@@ -533,7 +539,9 @@
                 <div></div> <!-- 占位元素 -->
                 <button class="send-btn" id="send-knowledge">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                        <path d="M20,12a1,1,0,0,1-.29.73l-6.31,6.31a1,1,0,0,1-1.41-1.41L17.59,13H4a1,1,0,0,1,0-2H17.59L12,6.44A1,1,0,0,1,12.72,5a1,1,0,0,1,.69.29l6.31,6.3A1,1,0,0,1,20,12Z"></path>
+                        <path
+                            d="M20,12a1,1,0,0,1-.29.73l-6.31,6.31a1,1,0,0,1-1.41-1.41L17.59,13H4a1,1,0,0,1,0-2H17.59L12,6.44A1,1,0,0,1,12.72,5a1,1,0,0,1,.69.29l6.31,6.3A1,1,0,0,1,20,12Z">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -545,7 +553,7 @@
         function goBack() {
             vscode.postMessage({ type: 'goBack' });
         }
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // DOM元素
             const chatContainer = document.getElementById('chat-container');
             const chatContent = document.getElementById('chat-content');
@@ -554,32 +562,32 @@
             const modeIndicator = document.getElementById('mode-indicator');
             const inputGroups = document.querySelectorAll('.input-group');
             const backBtn = document.getElementById('back-btn');
-            
+
             // 发送按钮
             const sendCodeBtn = document.getElementById('send-code');
             const sendProblemBtn = document.getElementById('send-problem');
             const sendKnowledgeBtn = document.getElementById('send-knowledge');
-            
+
             // 输入框
             const codeInput = document.getElementById('code-input');
             const problemIdInput = document.getElementById('problem-id');
             const problemInput = document.getElementById('problem-input');
             const knowledgeSelect = document.getElementById('knowledge-select');
             const knowledgeInput = document.getElementById('knowledge-input');
-            
+
             // 初始设置指示器位置
             updateModeIndicator(document.querySelector('.mode-btn.active'));
-            
+
             // 模式切换
             modeBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     // 更新按钮状态
                     modeBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
-                    
+
                     // 更新指示器位置
                     updateModeIndicator(this);
-                    
+
                     // 显示对应的输入区域
                     const mode = this.dataset.mode;
                     inputGroups.forEach(group => {
@@ -587,15 +595,15 @@
                     });
                 });
             });
-            
+
             function updateModeIndicator(btn) {
                 const btnRect = btn.getBoundingClientRect();
                 const containerRect = btn.parentElement.getBoundingClientRect();
-                
+
                 modeIndicator.style.width = `${btnRect.width}px`;
                 modeIndicator.style.left = `${btnRect.left - containerRect.left}px`;
             }
-            
+
             // 发送消息函数
             function sendMessage(type, message, extraData = {}) {
                 // 隐藏初始状态
@@ -603,20 +611,20 @@
                     initState.classList.add('hidden');
                     chatContent.style.display = 'block';
                 }
-                
+
                 // 添加用户消息
                 addMessage('user', message);
-                
+
                 // 根据消息类型模拟AI回复
                 setTimeout(() => {
                     simulateAIResponse(type, message, extraData);
                 }, 1000);
             }
-            
+
             function addMessage(sender, text) {
-                const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 const name = sender === 'user' ? '您' : '编程助手';
-                
+
                 const messageEl = document.createElement('div');
                 messageEl.className = `message ${sender}`;
                 messageEl.innerHTML = `
@@ -627,17 +635,17 @@
                         <div class="timestamp">${timestamp}</div>
                     </div>
                 `;
-                
+
                 chatContent.appendChild(messageEl);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
-            
+
             function simulateAIResponse(type, userMessage, extraData) {
                 let response = "";
-                
+
                 if (type === 'code') {
                     const workspaceEnabled = document.getElementById('workspace-code').checked;
-                    
+
                     response = `我分析了${workspaceEnabled ? '您提供的' : ''}代码，发现以下优化点：<br><br>
                     <div class="code-block">// 原始实现：
 function processData(arr) {
@@ -655,10 +663,10 @@ function processData(arr) {
     return arr.filter(item => item > 5);
 }</div>
                     <strong>性能提升</strong>：使用filter方法减少了代码量并提升可读性`;
-                } 
+                }
                 else if (type === 'problem') {
                     const problemId = extraData.problemId;
-                    
+
                     response = `对于问题${problemId ? ` #${problemId}` : ''} "${userMessage}"，我建议分解如下步骤：<br>
                     <ol class="olist">
                         <li>理解问题核心需求：识别问题核心目标</li>
@@ -666,10 +674,10 @@ function processData(arr) {
                         <li>数据结构选择：确定最适合的数据结构</li>
                         <li>算法设计：选择高效的解决算法</li>
                     </ol>`;
-                } 
+                }
                 else {
                     const knowledge = extraData.knowledge;
-                    
+
                     if (!knowledge) {
                         response = `请选择一个知识点，我会根据您的学习进度提供详细的解释和示例。`;
                     } else {
@@ -688,63 +696,63 @@ function factorial(n) {
     return n * factorial(n - 1); // 递归调用
 }</div>`
                         };
-                        
+
                         response = knowledgeResponses[knowledge] || `关于${knowledgeSelect.options[knowledgeSelect.selectedIndex].text}的详细解释`;
                     }
                 }
-                
+
                 addMessage('assistant', response);
             }
-            
+
             // 事件监听器
-            sendCodeBtn.addEventListener('click', function() {
+            sendCodeBtn.addEventListener('click', function () {
                 const message = codeInput.value.trim();
                 if (!message) return;
-                
+
                 sendMessage('code', message);
                 codeInput.value = '';
             });
-            
-            sendProblemBtn.addEventListener('click', function() {
+
+            sendProblemBtn.addEventListener('click', function () {
                 const problemId = problemIdInput.value.trim();
                 const message = problemInput.value.trim();
                 if (!message) return;
-                
+
                 sendMessage('problem', message, { problemId });
                 problemIdInput.value = '';
                 problemInput.value = '';
             });
-            
-            sendKnowledgeBtn.addEventListener('click', function() {
+
+            sendKnowledgeBtn.addEventListener('click', function () {
                 const knowledge = knowledgeSelect.value;
                 const message = knowledgeInput.value.trim();
-                
+
                 sendMessage('knowledge', message, { knowledge });
                 knowledgeInput.value = '';
             });
-            
+
             // 输入框回车支持
-            codeInput.addEventListener('keydown', function(e) {
+            codeInput.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendCodeBtn.click();
                 }
             });
-            
-            problemInput.addEventListener('keydown', function(e) {
+
+            problemInput.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendProblemBtn.click();
                 }
             });
-            
-            knowledgeInput.addEventListener('keydown', function(e) {
+
+            knowledgeInput.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendKnowledgeBtn.click();
                 }
             });
-            
+
             // 初始化
             window.addEventListener('resize', () => {
                 updateModeIndicator(document.querySelector('.mode-btn.active'));
@@ -752,4 +760,5 @@ function factorial(n) {
         });
     </script>
 </body>
+
 </html>

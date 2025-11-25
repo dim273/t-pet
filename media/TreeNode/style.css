@@ -1,0 +1,232 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: rgba(13, 27, 42, 0.9);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(100, 255, 218, 0.3);
+}
+
+.controls h3 {
+  margin: 0 0 10px 0;
+  color: #64ffda;
+  font-size: 16px;
+}
+
+.reset-btn {
+  background: #64ffda;
+  color: #0a1929;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.reset-btn:hover {
+  background: #4cd9b9;
+  transform: translateY(-2px);
+}
+
+.info {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #8892b0;
+}
+
+.tech-tree-container {
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100%;
+  min-height: 100vh;
+}
+
+.tech-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.tech-level {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 100px;
+  position: relative;
+}
+
+.tech-node {
+  width: 140px;
+  height: 70px;
+  margin: 0 15px;
+  background: #112240;
+  border: 2px solid #233554;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.tech-node.root {
+  background: linear-gradient(135deg, #6a5acd, #4b0082);
+  border-color: #8a2be2;
+  box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);
+}
+
+.tech-node.ultimate {
+  background: linear-gradient(135deg, #ff1493, #c71585);
+  border-color: #ff69b4;
+  box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);
+}
+
+.tech-node.unlocked {
+  background: linear-gradient(135deg, #218838, #28a745);
+  border-color: #40c057;
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+  animation: pulse 2s infinite;
+}
+
+.tech-node.available {
+  background: linear-gradient(135deg, #0056b3, #007bff);
+  border-color: #339af0;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  transform: scale(1.05);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(40, 167, 69, 0.8);
+  }
+
+  100% {
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+  }
+}
+
+.tech-node:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.tech-node-title {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  padding: 0 5px;
+}
+
+.tech-node-icon {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.connection-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.connection-line {
+  position: absolute;
+  background-color: #233554;
+  z-index: 1;
+}
+
+.connection-line.unlocked {
+  background: linear-gradient(90deg, #0056b3, #007bff);
+  box-shadow: 0 0 5px #1976d2;
+}
+
+.vertical-line {
+  width: 4px;
+  height: 100px;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+}
+
+.horizontal-line {
+  height: 4px;
+  width: 100%;
+  left: 0;
+  bottom: 100%;
+}
+
+.message-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(13, 27, 42, 0.95);
+  color: #ffffff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(82, 82, 82, 0.3);
+  z-index: 2000;
+  font-size: 16px;
+  opacity: 0;
+  animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
+.tech-level-title {
+  position: absolute;
+  top: -60px;
+  left: -60px;
+  width: 100%;
+  text-align: left;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+}

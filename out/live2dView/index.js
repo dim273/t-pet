@@ -72,12 +72,12 @@ class Live2dViewProvider {
 					this._page = 'test3';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
-				case "switchPageToTest4":
+				case "switchPageToProblem":
 					// 由于fetchPage是异步函数，需要等待它完成后再渲染页面
 					fetchPage(data.id).then(() => {
 						console.log('题目获取完成，开始渲染页面');
 						this._history.push(this._page);
-						this._page = 'test4';
+						this._page = 'problem';
 						webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					});
 					break;
@@ -151,8 +151,8 @@ class Live2dViewProvider {
 				return this._getMainHtml(webview);
 			case 'test3':
 				return this._getTestHtml3(webview);
-			case 'test4':
-				return this._getTestHtml4(webview);
+			case 'problem':
+				return this._getProblemHtml(webview);
 			case 'login':
 				return this._getLoginHtml(webview);
 			case 'calender':
@@ -286,7 +286,7 @@ class Live2dViewProvider {
 			</head>
 			<body>
     		<div style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
-        	<button class="common-button" onclick= "goBack()"
+        	<button class="common-button" onclick= "switchPageToMain()"
             style="padding: 5px 10px; background: #58CC02; border: none; border-radius: 3px; cursor: pointer;">
             返回主界面
         	</button>
@@ -392,7 +392,7 @@ class Live2dViewProvider {
 						const problemId = questionItem.getAttribute('data-id');
 
 						vscode.postMessage({ 
-							type: 'switchPageToTest4',
+							type: 'switchPageToProblem',
 							id: problemId
 						});
 					}
@@ -414,7 +414,8 @@ class Live2dViewProvider {
 		`;
 	}
 
-	_getTestHtml4(webview) {
+	// 生成题目界面
+	_getProblemHtml(webview) {
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));		// css主题
 		const katex_min_css_Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "katex", "katex.min.css")); // katex.min.css
 		const katex_min_js_Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "katex", "katex.min.js")); // katex.min.js
@@ -504,13 +505,45 @@ class Live2dViewProvider {
 
 	// 生成题目树
 	_getTreeHtml(webview) {
-		const d3Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "d3.v7.min.js"));
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const htmlPath = path.join(this._extensionUri.fsPath, "media", "tree.html");
-		let htmlContent = fs.readFileSync(htmlPath, 'utf8');
-		htmlContent = htmlContent.replace(/{{d3Uri}}/g, d3Uri.toString())
-			.replace(/{{styleVSCodeUri}}/g, styleVSCodeUri.toString());
-		return htmlContent;
+		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "data.js"));
+		const logicUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "logic.js"));
+		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "style.css"))
+		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"))
+
+		return `
+			<!DOCTYPE html>
+			<html lang="zh-CN">
+
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>知识树图谱</title>
+				<link rel="stylesheet" href="${vscodeCssUri}">
+				<link rel="stylesheet" href="${styleCssUri}">
+			</head>
+
+			<body>
+				<div class="header">
+        	<button class="back-btn" id="back-btn" onclick="switchPageToMain()">←</button>
+        	<h3 style="font-weight: 600;">知识树</h3>
+    		</div>
+				<div class="controls">
+					<h3>测试控制（可删除）</h3>
+					<button class="reset-btn" onclick="resetTechTree()">重置</button>
+					<div class="info">点击蓝色节点解锁</div>
+				</div>
+
+				<div class="tech-tree-container">
+					<div class="tech-tree" id="techTree">
+					</div>
+				</div>
+
+				<script src="${dataUri}"></script>
+				<script src="${logicUri}"></script>
+			</body>
+
+			</html>
+		`
 	}
 
 	_getNode1Html(webview) {
