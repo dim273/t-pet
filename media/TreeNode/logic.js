@@ -5,7 +5,7 @@ function switchPageToMain() {
 }
 
 
-// 初始化科技树
+// 初始化知识树
 function initTechTree() {
   const techTree = document.getElementById('techTree');
   techTree.innerHTML = '';
@@ -15,32 +15,32 @@ function initTechTree() {
   connectionsContainer.className = 'connection-lines';
   techTree.appendChild(connectionsContainer);
 
-  // 为每个层级创建科技节点
-  techData.forEach((levelData, index) => {
-    const techLevel = document.createElement('div');
-    techLevel.className = 'tech-level';
-    techLevel.dataset.level = index;
+  // 为每个层级创建节点
+  treeData.forEach((levelData, index) => {
+    const treeLevel = document.createElement('div');
+    treeLevel.className = 'tech-level';
+    treeLevel.dataset.level = index;
 
     // 添加层级标题
     const levelTitle = document.createElement('div');
     levelTitle.className = 'tech-level-title';
     levelTitle.textContent = levelData.title;
-    techLevel.appendChild(levelTitle);
+    treeLevel.appendChild(levelTitle);
 
     // 根据层级类型创建节点
     if (index === 0) {
       // 根节点
       const rootNode = createTechNode(levelData);
-      techLevel.appendChild(rootNode);
+      treeLevel.appendChild(rootNode);
     } else {
       // 其他层级的节点
       levelData.nodes.forEach(nodeData => {
         const node = createTechNode(nodeData);
-        techLevel.appendChild(node);
+        treeLevel.appendChild(node);
       });
     }
 
-    techTree.appendChild(techLevel);
+    techTree.appendChild(treeLevel);
   });
 
   // 绘制连接线
@@ -50,7 +50,7 @@ function initTechTree() {
   updateNodeStates();
 }
 
-// 创建科技节点
+// 创建节点
 function createTechNode(nodeData) {
   const node = document.createElement('div');
   node.className = 'tech-node';
@@ -93,7 +93,7 @@ function unlockNode(nodeId) {
   // 在数据结构中查找节点
   let nodeToUnlock = null;
 
-  for (const levelData of techData) {
+  for (const levelData of treeData) {
     if (levelData.nodes) {
       const node = levelData.nodes.find(n => n.id === nodeId);
       if (node) {
@@ -114,26 +114,28 @@ function unlockNode(nodeId) {
     return;
   }
 
-  // 检查父节点是否已解锁
-  if (nodeToUnlock.parent) {
-    let parentUnlocked = false;
+  // 检查所有父节点是否已解锁
+  if (nodeToUnlock.parent && Array.isArray(nodeToUnlock.parent)) {
+    for (const parentId of nodeToUnlock.parent) {
+      let parentUnlocked = false;
 
-    for (const levelData of techData) {
-      if (levelData.nodes) {
-        const parentNode = levelData.nodes.find(n => n.id === nodeToUnlock.parent);
-        if (parentNode && parentNode.unlocked) {
+      for (const levelData of treeData) {
+        if (levelData.nodes) {
+          const parentNode = levelData.nodes.find(n => n.id === parentId);
+          if (parentNode && parentNode.unlocked) {
+            parentUnlocked = true;
+            break;
+          }
+        } else if ((levelData.id === parentId || levelData.title === parentId) && levelData.unlocked) {
           parentUnlocked = true;
           break;
         }
-      } else if ((levelData.id === nodeToUnlock.parent || levelData.title === nodeToUnlock.parent) && levelData.unlocked) {
-        parentUnlocked = true;
-        break;
       }
-    }
 
-    if (!parentUnlocked) {
-      showMessage("需要先解锁父节点: " + nodeToUnlock.parent);
-      return;
+      if (!parentUnlocked) {
+        showMessage("需要先解锁父节点: " + parentId);
+        return;
+      }
     }
   }
 
@@ -151,14 +153,14 @@ function unlockNode(nodeId) {
 // 更新节点状态
 function updateNodeStates() {
   // 检查哪些节点是可解锁的
-  for (const levelData of techData) {
+  for (const levelData of treeData) {
     if (levelData.nodes) {
       for (const node of levelData.nodes) {
         if (!node.unlocked && node.parent) {
           // 检查父节点是否已解锁
           let parentUnlocked = false;
 
-          for (const parentLevelData of techData) {
+          for (const parentLevelData of treeData) {
             if (parentLevelData.nodes) {
               const parentNode = parentLevelData.nodes.find(n => n.id === node.parent);
               if (parentNode && parentNode.unlocked) {
@@ -189,59 +191,41 @@ function drawConnections() {
   const connectionsContainer = document.querySelector('.connection-lines');
   connectionsContainer.innerHTML = '';
 
-  // 为每个节点连接到其父节点绘制线
-  for (const levelData of techData) {
+  // 为每个节点连接到其父节点绘制直线
+  for (const levelData of treeData) {
     if (levelData.nodes) {
       for (const node of levelData.nodes) {
-        if (node.parent) {
-          // 找到父节点和当前节点的位置
-          const parentNode = document.querySelector(`[data-id="${node.parent}"]`);
-          const currentNode = document.querySelector(`[data-id="${node.id}"]`);
+        if (node.parent && Array.isArray(node.parent)) {
+          for (const parentId of node.parent) {
+            // 找到父节点和当前节点的位置
+            const parentNode = document.querySelector(`[data-id="${parentId}"]`);
+            const currentNode = document.querySelector(`[data-id="${node.id}"]`);
 
-          if (parentNode && currentNode) {
-            const parentRect = parentNode.getBoundingClientRect();
-            const currentRect = currentNode.getBoundingClientRect();
-            const containerRect = connectionsContainer.getBoundingClientRect();
+            if (parentNode && currentNode) {
+              const parentRect = parentNode.getBoundingClientRect();
+              const currentRect = currentNode.getBoundingClientRect();
+              const containerRect = connectionsContainer.getBoundingClientRect();
 
-            // 计算相对位置
-            const parentX = parentRect.left + parentRect.width / 2 - containerRect.left;
-            const parentY = parentRect.bottom - containerRect.top;
-            const currentX = currentRect.left + currentRect.width / 2 - containerRect.left;
-            const currentY = currentRect.top - containerRect.top;
+              // 计算相对位置
+              const parentX = parentRect.left + parentRect.width / 2 - containerRect.left;
+              const parentY = parentRect.bottom - containerRect.top;
+              const currentX = currentRect.left + currentRect.width / 2 - containerRect.left;
+              const currentY = currentRect.top - containerRect.top;
 
-            // 创建垂直线（从父节点向下）
-            const verticalLine = document.createElement('div');
-            verticalLine.className = 'connection-line vertical-line';
-            verticalLine.style.left = parentX + 'px';
-            verticalLine.style.bottom = (containerRect.height - parentY) + 'px';
+              // 创建直线连接线
+              const line = document.createElement('div');
+              line.className = 'connection-line';
+              line.style.position = 'absolute';
+              line.style.left = parentX + 'px';
+              line.style.top = parentY + 'px';
+              line.style.width = Math.sqrt(Math.pow(currentX - parentX, 2) + Math.pow(currentY - parentY, 2)) + 'px';
+              line.style.transformOrigin = '0 0';
+              line.style.transform = `rotate(${Math.atan2(currentY - parentY, currentX - parentX)}rad)`;
+              line.style.height = '2px';
+              line.style.backgroundColor = node.unlocked ? '#4CAF50' : '#888';
 
-            if (node.unlocked) {
-              verticalLine.classList.add('unlocked');
+              connectionsContainer.appendChild(line);
             }
-
-            // 创建水平线（从垂直线到当前节点）
-            const horizontalLine = document.createElement('div');
-            horizontalLine.className = 'connection-line horizontal-line';
-            horizontalLine.style.top = parentY + 'px';
-            horizontalLine.style.left = Math.min(parentX, currentX) + 'px';
-            horizontalLine.style.width = Math.abs(currentX - parentX) + 'px';
-
-            // 创建第二条垂直线（从水平线到当前节点）
-            const verticalLine2 = document.createElement('div');
-            verticalLine2.className = 'connection-line vertical-line';
-            verticalLine2.style.left = currentX + 'px';
-            verticalLine2.style.top = parentY + 'px';
-            verticalLine2.style.height = (currentY - parentY) + 'px';
-            verticalLine2.style.bottom = 'auto';
-
-            if (node.unlocked) {
-              verticalLine2.classList.add('unlocked');
-              horizontalLine.classList.add('unlocked');
-            }
-
-            connectionsContainer.appendChild(verticalLine);
-            connectionsContainer.appendChild(horizontalLine);
-            connectionsContainer.appendChild(verticalLine2);
           }
         }
       }
@@ -252,10 +236,11 @@ function drawConnections() {
 // 重置科技树
 function resetTechTree() {
   // 重置所有节点状态（除了根节点）
-  for (const levelData of techData) {
+  for (const levelData of treeData) {
     if (levelData.nodes) {
       levelData.nodes.forEach(node => {
         node.unlocked = false;
+        node.icon = "🔒"
       });
     } else if (levelData.type !== 'root') {
       levelData.unlocked = false;

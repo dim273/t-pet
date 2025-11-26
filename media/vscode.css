@@ -75,6 +75,7 @@ button.secondary:hover {
 	background: var(--vscode-button-secondaryHoverBackground);
 }
 
+/*可以使用header和back-btn创建一个标题和返回键*/
 .header {
 	padding: 12px 16px;
 	display: flex;
@@ -103,4 +104,9 @@ button.secondary:hover {
 
 .back-btn:hover {
 	background: var(--vscode-highlight);
+}
+
+/*这个用于空行*/
+.spacer {
+	margin-bottom: 30px;
 }

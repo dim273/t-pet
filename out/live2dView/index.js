@@ -527,12 +527,13 @@ class Live2dViewProvider {
         	<button class="back-btn" id="back-btn" onclick="switchPageToMain()">←</button>
         	<h3 style="font-weight: 600;">知识树</h3>
     		</div>
+				
 				<div class="controls">
 					<h3>测试控制（可删除）</h3>
 					<button class="reset-btn" onclick="resetTechTree()">重置</button>
 					<div class="info">点击蓝色节点解锁</div>
 				</div>
-
+			  <div class="spacer"></div>
 				<div class="tech-tree-container">
 					<div class="tech-tree" id="techTree">
 					</div>

@@ -74,8 +74,8 @@
   width: 140px;
   height: 70px;
   margin: 0 15px;
-  background: #112240;
-  border: 2px solid #233554;
+  background: #3b3b3b86;
+  border: 2px solid #1f1f1fd4;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -185,7 +185,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(13, 27, 42, 0.95);
+  background: rgba(40, 40, 40, 0.943);
   color: #ffffff;
   padding: 20px 30px;
   border-radius: 8px;
