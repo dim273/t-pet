@@ -15,10 +15,10 @@ nodes: [
 */
 
 // 知识树数据结构
-const treeData = [
+const treeNode_1 = [
   {
     level: 0,
-    title: "编程基础",
+    title: "编程语言基础",
     icon: "🚩",
     type: "root",
     unlocked: true,
@@ -36,7 +36,8 @@ const treeData = [
         unlocked: false,
         questionList: 0,
         parent: ["编程基础"],
-        children: ["模拟与枚举"]
+        children: ["模拟与枚举"],
+        lay: 2
       },
       {
         id: "基本运算",
@@ -45,7 +46,8 @@ const treeData = [
         unlocked: false,
         questionList: 0,
         parent: ["编程基础"],
-        children: ["模拟与枚举"]
+        children: ["模拟与枚举"],
+        lay: 2
       },
       {
         id: "程序基本语句",
@@ -54,7 +56,8 @@ const treeData = [
         unlocked: false,
         questionList: 0,
         parent: ["编程基础"],
-        children: ["模拟与枚举"]
+        children: ["模拟与枚举"],
+        lay: 2
       },
       {
         id: "数组与字符串",
@@ -63,7 +66,8 @@ const treeData = [
         unlocked: false,
         questionList: 0,
         parent: ["编程基础"],
-        children: ["模拟与枚举"]
+        children: ["模拟与枚举"],
+        lay: 2
       },
       {
         id: "指针与引用",
@@ -72,7 +76,8 @@ const treeData = [
         unlocked: false,
         questionList: 0,
         parent: ["编程基础"],
-        children: ["模拟与枚举"]
+        children: ["模拟与枚举"],
+        lay: 2
       },
       {
         id: "结构体",
@@ -81,7 +86,8 @@ const treeData = [
         unlocked: false,
         questionList: 0,
         parent: ["编程基础"],
-        children: ["模拟与枚举"]
+        children: ["模拟与枚举"],
+        lay: 2
       },
       {
         id: "函数与递归",
@@ -90,7 +96,8 @@ const treeData = [
         unlocked: false,
         questionList: 0,
         parent: ["编程基础"],
-        children: ["模拟与枚举"]
+        children: ["模拟与枚举"],
+        lay: 2
       },
       {
         id: "数据库常用函数",
@@ -99,27 +106,25 @@ const treeData = [
         unlocked: false,
         questionList: 0,
         parent: ["编程基础"],
-        children: ["模拟与枚举"]
+        children: ["模拟与枚举"],
+        lay: 2
       }
     ]
-  },
+  }
+]
+
+const treeNode_2 = [
   {
-    level: 2,
+    level: 0,
     title: "模拟与枚举",
-    nodes: [
-      {
-        id: "模拟与枚举",
-        icon: "🔒",
-        type: "tech",
-        unlocked: false,
-        questionList: 0,
-        parent: ["基本数据类型", "基本运算", "程序基本语句", "数组与字符串", "指针与引用", "结构体", "函数与递归", "数据库常用函数"],
-        children: ["模拟", "枚举"]
-      },
-    ]
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["模拟", "枚举"]
   },
   {
-    level: 3,
+    level: 1,
     title: "",
     nodes: [
       {
@@ -127,21 +132,26 @@ const treeData = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["模拟与枚举"],
-        children: ["基础算法"]
+        children: ["基础算法"],
       },
       {
         id: "枚举",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["模拟与枚举"],
-        children: ["基础算法"]
+        children: ["基础算法"],
       }
     ]
-  },
+  }
+]
+
+const treeNode_3 = [
   {
     level: 4,
     title: "基础算法",
@@ -234,7 +244,10 @@ const treeData = [
         children: ["简单搜索算法"]
       },
     ]
-  },
+  }
+]
+
+const treeNode_4 = [
   {
     level: 6,
     title: "简单搜索算法",
@@ -273,7 +286,10 @@ const treeData = [
         children: ["字符串匹配"]
       }
     ]
-  },
+  }
+]
+
+const treeNode_5 = [
   {
     level: 8,
     title: "字符串匹配",
@@ -288,7 +304,10 @@ const treeData = [
         children: ["线性结构"]
       }
     ]
-  },
+  }
+]
+
+const treeNode_6 = [
   {
     level: 9,
     title: "线性结构",
@@ -336,7 +355,10 @@ const treeData = [
         children: ["简单动态规划"]
       }
     ]
-  },
+  }
+]
+
+const treeNode_7 = [
   {
     level: 11,
     title: "简单动态规划",
@@ -375,7 +397,10 @@ const treeData = [
         children: ["简单树"]
       }
     ]
-  },
+  }
+]
+
+const treeNode_8 = [
   {
     level: 13,
     title: "简单树",
@@ -390,7 +415,10 @@ const treeData = [
         children: ["特殊树"]
       },
     ]
-  },
+  }
+]
+
+const treeNode_9 = [
   {
     level: 14,
     title: "特殊树",
@@ -405,7 +433,10 @@ const treeData = [
         children: ["深入搜索算法"]
       }
     ]
-  },
+  }
+]
+
+const treeNode_10 = [
   {
     level: 15,
     title: "深入搜索算法",
@@ -444,7 +475,10 @@ const treeData = [
         children: ["深入排序算法"]
       }
     ]
-  },
+  }
+]
+
+const treeNode_11 = [
   {
     level: 17,
     title: "深入排序算法",
@@ -510,7 +544,10 @@ const treeData = [
         children: ["复杂动态规划"]
       }
     ]
-  },
+  }
+]
+
+const treeNode_12 = [
   {
     level: 19,
     title: "复杂动态规划",
@@ -567,7 +604,10 @@ const treeData = [
         children: ["图"]
       },
     ]
-  },
+  }
+]
+
+const treeNode_13 = [
   {
     level: 21,
     title: "图",
@@ -582,7 +622,10 @@ const treeData = [
         children: ["图论算法"]
       }
     ]
-  },
+  }
+]
+
+const treeNode_14 = [
   {
     level: 22,
     title: "图论算法",
@@ -598,4 +641,53 @@ const treeData = [
       }
     ]
   }
-];
+]
+
+const treeMain = [
+  {
+    level: 0,
+    title: "编程学习之旅",
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["编程语言基础"]
+  },
+  {
+    level: 2,
+    title: "",
+    nodes: [
+      {
+        id: "编程语言基础",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["编程学习之旅"],
+        children: ["模拟与枚举"],
+        myNode: treeNode_1,
+        lay: 1
+      },
+    ]
+  },
+  {
+    level: 2,
+    title: "",
+    nodes: [
+      {
+        id: "模拟与枚举",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["编程语言基础"],
+        children: [""],
+        myNode: treeNode_2,
+        lay: 1
+      },
+    ]
+  },
+]
+
+let treeData = treeMain;
+let pageID = "知识树";

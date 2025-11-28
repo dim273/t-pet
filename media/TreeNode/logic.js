@@ -1,9 +1,13 @@
 const vscode = acquireVsCodeApi();
 const MainOrigin = "vscode-file://vscode-app";
-function switchPageToMain() {
-  vscode.postMessage({ type: 'switchPageToMain' });
-}
 
+// 返回主菜单
+function switchPageToMain() {
+  if (pageID != "知识树")
+    vscode.postMessage({ type: 'switchPageTotree' });
+  else
+    vscode.postMessage({ type: 'switchPageToMain' });
+}
 
 // 初始化知识树
 function initTechTree() {
@@ -82,10 +86,31 @@ function createTechNode(nodeData) {
 
   // 添加点击事件
   node.addEventListener('click', function () {
-    unlockNode(nodeData.id || nodeData.title);
+    console.log("Clicked node:", nodeData.id || nodeData.title);
+    if (nodeData.type === "root") return;   // 若为根节点, 暂无点击事件
+    if ((!nodeData.unlocked && CheckParentUnlocked(nodeData)) || nodeData.unlocked) {
+      if (nodeData.lay == 1) {
+        // 通过消息机制通知扩展端切换子树
+        vscode.postMessage({
+          type: 'switchToSubTree',
+          subTreeId: nodeData.id || nodeData.title
+        });
+      }
+      else if (nodeData.lay == 2) {
+        if (nodeData.questionList != 0)
+          switchPageToProblemList(nodeData.questionList);
+      }
+    }
+    //if (nodeData.questionList === 0)
+    //  unlockNode(nodeData.id || nodeData.title);
   });
 
   return node;
+}
+
+// 切换页面到对应题单
+function switchPageToProblemList(ListId) {
+  vscode.postMessage({ type: 'switchPageToProblemList', listId: ListId });
 }
 
 // 解锁节点
@@ -115,6 +140,21 @@ function unlockNode(nodeId) {
   }
 
   // 检查所有父节点是否已解锁
+  if (!CheckParentUnlocked(nodeToUnlock)) return;
+
+  // 解锁节点
+  nodeToUnlock.unlocked = true;
+  nodeToUnlock.icon = "⭐"
+
+  // 更新UI
+  initTechTree();
+
+  // 显示消息
+  showMessage("已解锁: " + nodeId);
+}
+
+// 检查所有父节点是否已解锁
+function CheckParentUnlocked(nodeToUnlock) {
   if (nodeToUnlock.parent && Array.isArray(nodeToUnlock.parent)) {
     for (const parentId of nodeToUnlock.parent) {
       let parentUnlocked = false;
@@ -134,20 +174,12 @@ function unlockNode(nodeId) {
 
       if (!parentUnlocked) {
         showMessage("需要先解锁父节点: " + parentId);
-        return;
+        return false;
       }
     }
+    return true;
   }
-
-  // 解锁节点
-  nodeToUnlock.unlocked = true;
-  nodeToUnlock.icon = "⭐"
-
-  // 更新UI
-  initTechTree();
-
-  // 显示消息
-  showMessage("已解锁: " + nodeId);
+  return true;
 }
 
 // 更新节点状态
@@ -276,6 +308,20 @@ function showMessage(message) {
 
 // 页面加载完成后初始化科技树
 window.onload = function () {
+  // 根据当前子树ID动态设置treeData
+  if (window.currentSubTreeId && window.currentSubTreeId !== "知识树") {
+    // 根据子树ID找到对应的myNode数据
+    for (const levelData of treeMain) {
+      if (levelData.nodes) {
+        const node = levelData.nodes.find(n => n.id === window.currentSubTreeId);
+        if (node && node.myNode) {
+          treeData = node.myNode;
+          break;
+        }
+      }
+    }
+  }
+  pageID = window.currentSubTreeId;
   initTechTree();
 };
 

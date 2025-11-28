@@ -88,6 +88,12 @@ class Live2dViewProvider {
 				case "switchPageTotree":
 					this._history.push(this._page);
 					this._page = 'tree';
+					this._currentSubTree = null; // 重置当前子树
+					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					break;
+				case "switchToSubTree":
+					// 切换到指定的子树
+					this._currentSubTree = data.subTreeId;
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToCalender":
@@ -407,6 +413,12 @@ class Live2dViewProvider {
 		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "style.css"))
 		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"))
 
+		// 根据当前子树ID决定显示的标题
+		let treeTitle = "知识树";
+		if (this._currentSubTree) {
+			treeTitle = this._currentSubTree;
+		}
+
 		return `
 			<!DOCTYPE html>
 			<html lang="zh-CN">
@@ -422,7 +434,7 @@ class Live2dViewProvider {
 			<body>
 				<div class="header">
         	<button class="back-btn" id="back-btn" onclick="switchPageToMain()">←</button>
-        	<h3 style="font-weight: 600;">知识树</h3>
+        	<h3 style="font-weight: 600;">${treeTitle}</h3>
     		</div>
 				
 				<div class="controls">
@@ -438,6 +450,10 @@ class Live2dViewProvider {
 
 				<script src="${dataUri}"></script>
 				<script src="${logicUri}"></script>
+				<script>
+					// 设置当前子树ID
+					window.currentSubTreeId = "${this._currentSubTree || "知识树"}";
+				</script>
 			</body>
 
 			</html>

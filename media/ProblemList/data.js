@@ -14,6 +14,7 @@
 
 const problemSets = {
   "list_1": {
+    name: "基本数据类型",
     problems: [
       {
         id: 1,
@@ -62,96 +63,94 @@ const problemSets = {
       }
     ]
   },
-  "dynamic-programming": {
-    name: "动态规划专题",
-    description: "动态规划经典题目",
+  "list_2": {
+    name: "基本运算",
     problems: [
       {
-        id: 101,
-        title: "斐波那契数列",
-        url: "https://leetcode-cn.com/problems/fibonacci-number/",
+        id: 1,
+        title: "计算分数的浮点数值",
+        url: "https://www.luogu.com.cn/problem/B2011",
         difficulty: "easy",
-        passed: true,
-        tags: ["动态规划"],
-        lastAttempt: "2023-05-20"
+        passed: false,
+        tags: ["顺序结构"],
+        ref: 6
       },
       {
-        id: 102,
-        title: "爬楼梯",
-        url: "https://leetcode-cn.com/problems/climbing-stairs/",
+        id: 2,
+        title: "入门测试题目",
+        url: "https://www.luogu.com.cn/problem/B2001",
         difficulty: "easy",
-        passed: true,
-        tags: ["动态规划"],
-        lastAttempt: "2023-05-18"
+        passed: false,
+        tags: ["顺序结构", "模拟"],
+        ref: 7
       },
       {
-        id: 103,
-        title: "最长递增子序列",
-        url: "https://leetcode-cn.com/problems/longest-increasing-subsequence/",
-        difficulty: "medium",
+        id: 3,
+        title: "计算 (a+b)/c 的值",
+        url: "https://www.luogu.com.cn/problem/B2009",
+        difficulty: "easy",
         passed: false,
-        tags: ["动态规划", "二分查找"],
-        lastAttempt: "2023-05-16"
+        tags: ["顺序结构"],
+        ref: 8
       },
       {
-        id: 104,
-        title: "零钱兑换",
-        url: "https://leetcode-cn.com/problems/coin-change/",
-        difficulty: "medium",
+        id: 4,
+        title: "计算 (a+b) x c 的值",
+        url: "https://www.luogu.com.cn/problem/B2008",
+        difficulty: "easy",
         passed: false,
-        tags: ["动态规划"],
-        lastAttempt: "2023-05-14"
+        tags: ["顺序结构"],
+        ref: 9
       },
       {
-        id: 105,
-        title: "编辑距离",
-        url: "https://leetcode-cn.com/problems/edit-distance/",
-        difficulty: "hard",
+        id: 5,
+        title: "带余除法",
+        url: "https://www.luogu.com.cn/problem/B2010",
+        difficulty: "easy",
         passed: false,
-        tags: ["动态规划"],
-        lastAttempt: "2023-05-12"
+        tags: ["顺序结构"],
+        ref: 10
       }
     ]
   },
-  "data-structures": {
-    name: "数据结构基础",
-    description: "常见数据结构练习题",
+  "list_3": {
+    name: "程序基本语句",
     problems: [
       {
-        id: 201,
-        title: "反转链表",
-        url: "https://leetcode-cn.com/problems/reverse-linked-list/",
+        id: 1,
+        title: "求 1+2+3+...+N 的值",
+        url: "https://www.luogu.com.cn/problem/B2142",
         difficulty: "easy",
-        passed: true,
-        tags: ["链表"],
-        lastAttempt: "2023-05-22"
+        passed: false,
+        tags: ["函数与递归"],
+        ref: 11
       },
       {
-        id: 202,
-        title: "有效的括号",
-        url: "https://leetcode-cn.com/problems/valid-parentheses/",
+        id: 2,
+        title: "判断数正负",
+        url: "https://www.luogu.com.cn/problem/B2035 ",
         difficulty: "easy",
-        passed: true,
-        tags: ["栈", "字符串"],
-        lastAttempt: "2023-05-20"
+        passed: false,
+        tags: ["分支结构"],
+        ref: 12
       },
       {
-        id: 203,
-        title: "二叉树的层序遍历",
-        url: "https://leetcode-cn.com/problems/binary-tree-level-order-traversal/",
-        difficulty: "medium",
+        id: 3,
+        title: "星期几",
+        url: "https://www.luogu.com.cn/problem/U503340",
+        difficulty: "easy",
         passed: false,
-        tags: ["树", "广度优先搜索"],
-        lastAttempt: "2023-05-18"
+        tags: ["无"],
+        ref: 13
       },
       {
-        id: 204,
-        title: "实现 Trie (前缀树)",
-        url: "https://leetcode-cn.com/problems/implement-trie-prefix-tree/",
-        difficulty: "medium",
+        id: 4,
+        title: "分类平均",
+        url: "https://www.luogu.com.cn/problem/P5719",
+        difficulty: "easy",
         passed: false,
-        tags: ["设计", "字典树"],
-        lastAttempt: "2023-05-16"
+        tags: ["无"],
+        ref: 14
       }
     ]
   }

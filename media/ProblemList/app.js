@@ -6,7 +6,7 @@ function switchPageToMain() {
 
 // 更新统计信息
 function updateStats() {
-  const problems = problemSets["list_1"].problems;
+  const problems = problemSets["list_2"].problems;
   const totalCount = problems.length;
   const passedCount = problems.filter(p => p.passed).length;
   const progress = Math.round((passedCount / totalCount) * 100);
@@ -19,7 +19,7 @@ function updateStats() {
 // 渲染题目列表
 function renderProblemList() {
   const problemListElement = document.getElementById('problem-list');
-  const problems = problemSets["list_1"].problems;
+  const problems = problemSets["list_2"].problems;
 
   // 更新统计信息
   updateStats();
