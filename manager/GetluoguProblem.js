@@ -1,7 +1,7 @@
-const rp = require('request-promise');
-const cheerio = require('cheerio');
-const fs = require('fs');
-const path = require('path');
+//const rp = require('request-promise');
+//const cheerio = require('cheerio');
+//const fs = require('fs');
+//const path = require('path');
 
 const baseUrl = 'https://www.luogu.com.cn/problem/';
 
