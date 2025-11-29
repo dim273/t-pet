@@ -69,12 +69,12 @@ class Live2dViewProvider {
 				case "switchPageToProblemList":
 					this._history.push(this._page);
 					this._page = 'list';
+					this._currentProblemListId = data.listId || 1;
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToProblem":
 					// 由于fetchPage是异步函数，需要等待它完成后再渲染页面
 					fetchPage(data.id).then(() => {
-						console.log('题目获取完成，开始渲染页面');
 						this._history.push(this._page);
 						this._page = 'problem';
 						webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
@@ -276,6 +276,11 @@ class Live2dViewProvider {
 		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "data.js"));
 		const appUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "app.js"));
 
+		let listTitle = 1;
+		if (this._currentProblemListId) {
+			listTitle = this._currentProblemListId;
+		}
+
 		return `
 			<!DOCTYPE html>
 			<html lang="zh-CN">
@@ -290,7 +295,7 @@ class Live2dViewProvider {
 			<body>
 				<div class="header">
         	<button class="back-btn" id="back-btn" onclick="switchPageToMain()">←</button>
-        	<h3 style="font-weight: 600;">知识树</h3>
+        	<h3 style="font-weight: 600;" id="listTitle">知识树</h3>
     		</div>
 
 				<div class="stats">
@@ -312,6 +317,9 @@ class Live2dViewProvider {
 				</div>
 				<script src="${dataUri}"></script>
 				<script src="${appUri}"></script>
+				<script>
+					window.currentListId = "${listTitle}";
+				</script>
 			</body>
 
 			</html>`

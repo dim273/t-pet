@@ -104,7 +104,7 @@
     });
 
     document.getElementById('switchPageToProblemList').addEventListener('click', () => {
-      vscode.postMessage({ type: 'switchPageToProblemList' });
+      vscode.postMessage({ type: 'switchPageToProblemList', listId: 1 });
     });
 
     document.getElementById('reloadExtension').addEventListener('click', () => {

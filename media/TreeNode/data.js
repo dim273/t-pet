@@ -7,6 +7,7 @@ nodes: [
         icon: "🔒",         // 图标
         type: "",           // 节点类型，控制节点的显示
         unlocked: false,    // 解锁状态
+        lay: 2,             // 节点所在层级
         questionList:       // 对应的题单编号，值为0时表示没有
         parent: "",         // 父节点，只能有一个
         children: []        // 儿子节点，可以有很多，也可以没有
@@ -34,9 +35,9 @@ const treeNode_1 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
-        questionList: 0,
-        parent: ["编程基础"],
-        children: ["模拟与枚举"],
+        questionList: 1,
+        parent: ["编程语言基础"],
+        children: [""],
         lay: 2
       },
       {
@@ -44,9 +45,9 @@ const treeNode_1 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
-        questionList: 0,
-        parent: ["编程基础"],
-        children: ["模拟与枚举"],
+        questionList: 2,
+        parent: ["编程语言基础"],
+        children: [""],
         lay: 2
       },
       {
@@ -54,9 +55,9 @@ const treeNode_1 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
-        questionList: 0,
-        parent: ["编程基础"],
-        children: ["模拟与枚举"],
+        questionList: 3,
+        parent: ["编程语言基础"],
+        children: [""],
         lay: 2
       },
       {
@@ -64,9 +65,9 @@ const treeNode_1 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
-        questionList: 0,
-        parent: ["编程基础"],
-        children: ["模拟与枚举"],
+        questionList: 4,
+        parent: ["编程语言基础"],
+        children: [""],
         lay: 2
       },
       {
@@ -74,9 +75,9 @@ const treeNode_1 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
-        questionList: 0,
-        parent: ["编程基础"],
-        children: ["模拟与枚举"],
+        questionList: 5,
+        parent: ["编程语言基础"],
+        children: [""],
         lay: 2
       },
       {
@@ -85,8 +86,8 @@ const treeNode_1 = [
         type: "tech",
         unlocked: false,
         questionList: 0,
-        parent: ["编程基础"],
-        children: ["模拟与枚举"],
+        parent: ["编程语言基础"],
+        children: [""],
         lay: 2
       },
       {
@@ -95,8 +96,8 @@ const treeNode_1 = [
         type: "tech",
         unlocked: false,
         questionList: 0,
-        parent: ["编程基础"],
-        children: ["模拟与枚举"],
+        parent: ["编程语言基础"],
+        children: [""],
         lay: 2
       },
       {
@@ -105,8 +106,8 @@ const treeNode_1 = [
         type: "tech",
         unlocked: false,
         questionList: 0,
-        parent: ["编程基础"],
-        children: ["模拟与枚举"],
+        parent: ["编程语言基础"],
+        children: [""],
         lay: 2
       }
     ]
@@ -135,7 +136,7 @@ const treeNode_2 = [
         lay: 2,
         questionList: 0,
         parent: ["模拟与枚举"],
-        children: ["基础算法"],
+        children: [""],
       },
       {
         id: "枚举",
@@ -145,7 +146,7 @@ const treeNode_2 = [
         lay: 2,
         questionList: 0,
         parent: ["模拟与枚举"],
-        children: ["基础算法"],
+        children: [""],
       }
     ]
   }
@@ -153,22 +154,16 @@ const treeNode_2 = [
 
 const treeNode_3 = [
   {
-    level: 4,
+    level: 0,
     title: "基础算法",
-    nodes: [
-      {
-        id: "基础算法",
-        icon: "🔒",
-        type: "tech",
-        unlocked: false,
-        questionList: 0,
-        parent: ["模拟", "枚举"],
-        children: ["递推", "二分", "递归", "贪心", "倍增", "简单排序算法", "分治算法", "前缀和差分"]
-      }
-    ]
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["递推", "二分", "递归", "贪心", "倍增", "简单排序算法", "分治算法", "前缀和差分"]
   },
   {
-    level: 5,
+    level: 1,
     title: "",
     nodes: [
       {
@@ -176,72 +171,80 @@ const treeNode_3 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["基础算法"],
-        children: ["简单搜索算法"]
+        children: [""]
       },
       {
         id: "二分",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["基础算法"],
-        children: ["简单搜索算法"]
+        children: [""]
       },
       {
         id: "递归",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["基础算法"],
-        children: ["简单搜索算法"]
+        children: [""]
       },
       {
         id: "贪心",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["基础算法"],
-        children: ["简单搜索算法"]
+        children: [""]
       },
       {
         id: "倍增",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["基础算法"],
-        children: ["简单搜索算法"]
+        children: [""]
       },
       {
         id: "简单排序算法",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["基础算法"],
-        children: ["简单搜索算法"]
+        children: [""]
       },
       {
         id: "分治算法",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["基础算法"],
-        children: ["简单搜索算法"]
+        children: [""]
       },
       {
         id: "前缀和差分",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["基础算法"],
-        children: ["简单搜索算法"]
+        children: [""]
       },
     ]
   }
@@ -249,22 +252,16 @@ const treeNode_3 = [
 
 const treeNode_4 = [
   {
-    level: 6,
+    level: 0,
     title: "简单搜索算法",
-    nodes: [
-      {
-        id: "简单搜索算法",
-        icon: "🔒",
-        type: "tech",
-        unlocked: false,
-        questionList: 0,
-        parent: ["递推", "二分", "递归", "贪心", "倍增", "简单排序算法", "分治算法", "前缀和差分"],
-        children: ["DFS", "BFS"]
-      }
-    ]
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["DFS", "BFS"]
   },
   {
-    level: 7,
+    level: 1,
     title: "",
     nodes: [
       {
@@ -272,18 +269,20 @@ const treeNode_4 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["简单搜索算法"],
-        children: ["字符串匹配"]
+        children: [""]
       },
       {
         id: "BFS",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["简单搜索算法"],
-        children: ["字符串匹配"]
+        children: [""]
       }
     ]
   }
@@ -291,17 +290,27 @@ const treeNode_4 = [
 
 const treeNode_5 = [
   {
-    level: 8,
+    level: 0,
     title: "字符串匹配",
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["字符串匹配算法"]
+  },
+  {
+    level: 1,
+    title: "",
     nodes: [
       {
-        id: "字符串匹配",
+        id: "字符串匹配算法",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
-        parent: ["DFS", "BFS"],
-        children: ["线性结构"]
+        parent: ["字符串匹配"],
+        children: [""]
       }
     ]
   }
@@ -309,22 +318,16 @@ const treeNode_5 = [
 
 const treeNode_6 = [
   {
-    level: 9,
+    level: 0,
     title: "线性结构",
-    nodes: [
-      {
-        id: "线性结构",
-        icon: "🔒",
-        type: "tech",
-        unlocked: false,
-        questionList: 0,
-        parent: ["字符串匹配"],
-        children: ["栈", "队列", "链表"]
-      }
-    ]
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["栈", "队列", "链表"]
   },
   {
-    level: 10,
+    level: 1,
     title: "",
     nodes: [
       {
@@ -332,27 +335,30 @@ const treeNode_6 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["线性结构"],
-        children: ["简单动态规划"]
+        children: [""]
       },
       {
         id: "队列",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["线性结构"],
-        children: ["简单动态规划"]
+        children: [""]
       },
       {
         id: "链表",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["线性结构"],
-        children: ["简单动态规划"]
+        children: [""]
       }
     ]
   }
@@ -360,22 +366,16 @@ const treeNode_6 = [
 
 const treeNode_7 = [
   {
-    level: 11,
+    level: 0,
     title: "简单动态规划",
-    nodes: [
-      {
-        id: "简单动态规划",
-        icon: "🔒",
-        type: "tech",
-        unlocked: false,
-        questionList: 0,
-        parent: ["栈", "队列", "链表"],
-        children: ["一维DP", "背包问题"]
-      }
-    ]
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["一维DP", "背包问题"]
   },
   {
-    level: 12,
+    level: 1,
     title: "",
     nodes: [
       {
@@ -383,18 +383,20 @@ const treeNode_7 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["简单动态规划"],
-        children: ["简单树"]
+        children: [""]
       },
       {
         id: "背包问题",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["简单动态规划"],
-        children: ["简单树"]
+        children: [""]
       }
     ]
   }
@@ -402,35 +404,55 @@ const treeNode_7 = [
 
 const treeNode_8 = [
   {
-    level: 13,
+    level: 0,
     title: "简单树",
+    icon: "🚩",
+    type: "true",
+    unlocked: false,
+    questionList: 0,
+    children: ["简单树算法"]
+  },
+  {
+    level: 1,
+    title: "",
     nodes: [
       {
-        id: "简单树",
+        id: "简单树算法",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
-        parent: ["一维DP", "背包问题"],
-        children: ["特殊树"]
-      },
+        parent: ["简单树"],
+        children: [""],
+      }
     ]
   }
 ]
 
 const treeNode_9 = [
   {
-    level: 14,
+    level: 0,
     title: "特殊树",
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["特殊树算法"]
+  },
+  {
+    level: 1,
+    title: "",
     nodes: [
       {
-        id: "特殊树",
+        id: "特殊树算法",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
-        parent: ["简单树"],
-        children: ["深入搜索算法"]
+        parent: ["特殊树"],
+        children: [""]
       }
     ]
   }
@@ -438,22 +460,16 @@ const treeNode_9 = [
 
 const treeNode_10 = [
   {
-    level: 15,
+    level: 0,
     title: "深入搜索算法",
-    nodes: [
-      {
-        id: "深入搜索算法",
-        icon: "🔒",
-        type: "tech",
-        unlocked: false,
-        questionList: 0,
-        parent: ["特殊树"],
-        children: ["剪枝/记忆化", "双向BFS/迭代加深"]
-      }
-    ]
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["剪枝/记忆化", "双向BFS/迭代加深"]
   },
   {
-    level: 16,
+    level: 1,
     title: "",
     nodes: [
       {
@@ -461,18 +477,20 @@ const treeNode_10 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["深入搜索算法"],
-        children: ["深入排序算法"]
+        children: [""]
       },
       {
         id: "双向BFS/迭代加深",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["深入搜索算法"],
-        children: ["深入排序算法"]
+        children: [""]
       }
     ]
   }
@@ -480,22 +498,16 @@ const treeNode_10 = [
 
 const treeNode_11 = [
   {
-    level: 17,
+    level: 0,
     title: "深入排序算法",
-    nodes: [
-      {
-        id: "深入排序算法",
-        icon: "🔒",
-        type: "tech",
-        unlocked: false,
-        questionList: 0,
-        parent: ["剪枝/记忆化", "双向BFS/迭代加深"],
-        children: ["归并算法", "快速排序", "堆", "桶", "基数"]
-      }
-    ]
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["归并算法", "快速排序", "堆", "桶", "基数"]
   },
   {
-    level: 18,
+    level: 1,
     title: "",
     nodes: [
       {
@@ -503,42 +515,47 @@ const treeNode_11 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["深入排序算法"],
-        children: ["复杂动态规划"]
+        children: [""]
       },
       {
         id: "快速排序",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["深入排序算法"],
-        children: ["复杂动态规划"]
+        children: [""]
       },
       {
         id: "堆",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["深入排序算法"],
-        children: ["复杂动态规划"]
+        children: [""]
       },
       {
         id: "桶",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["深入排序算法"],
-        children: ["复杂动态规划"]
+        children: [""]
       },
       {
         id: "基数",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["深入排序算法"],
         children: ["复杂动态规划"]
@@ -549,22 +566,16 @@ const treeNode_11 = [
 
 const treeNode_12 = [
   {
-    level: 19,
+    level: 0,
     title: "复杂动态规划",
-    nodes: [
-      {
-        id: "复杂动态规划",
-        icon: "🔒",
-        type: "tech",
-        unlocked: false,
-        questionList: 0,
-        parent: ["归并算法", "快速排序", "堆", "桶", "基数"],
-        children: ["复杂DP优化", "树型DP", "区间DP", "状态压缩DP"]
-      }
-    ]
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["复杂DP优化", "树型DP", "区间DP", "状态压缩DP"]
   },
   {
-    level: 20,
+    level: 1,
     title: "",
     nodes: [
       {
@@ -572,36 +583,40 @@ const treeNode_12 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["复杂动态规划"],
-        children: ["图"]
+        children: [""]
       },
       {
         id: "树型DP",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["复杂动态规划"],
-        children: ["图"]
+        children: [""]
       },
       {
         id: "区间DP",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["复杂动态规划"],
-        children: ["图"]
+        children: [""]
       },
       {
         id: "状态压缩DP",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
         parent: ["复杂动态规划"],
-        children: ["图"]
+        children: [""]
       },
     ]
   }
@@ -609,17 +624,27 @@ const treeNode_12 = [
 
 const treeNode_13 = [
   {
-    level: 21,
-    title: "图",
+    level: 0,
+    title: "图*",
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["图"]
+  },
+  {
+    level: 1,
+    title: "",
     nodes: [
       {
         id: "图",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
-        parent: ["复杂DP优化", "树型DP", "区间DP", "状态压缩DP"],
-        children: ["图论算法"]
+        parent: ["图*"],
+        children: [""]
       }
     ]
   }
@@ -627,16 +652,26 @@ const treeNode_13 = [
 
 const treeNode_14 = [
   {
-    level: 22,
-    title: "图论算法",
+    level: 0,
+    title: "图论算法*",
+    icon: "🚩",
+    type: "root",
+    unlocked: true,
+    questionList: 0,
+    children: ["图论算法"]
+  },
+  {
+    level: 1,
+    title: "",
     nodes: [
       {
         id: "图论算法",
         icon: "🔒",
         type: "tech",
         unlocked: false,
+        lay: 2,
         questionList: 0,
-        parent: ["图"],
+        parent: ["图论算法*"],
         children: [""]
       }
     ]
@@ -654,7 +689,7 @@ const treeMain = [
     children: ["编程语言基础"]
   },
   {
-    level: 2,
+    level: 1,
     title: "",
     nodes: [
       {
@@ -687,6 +722,168 @@ const treeMain = [
       },
     ]
   },
+  {
+    level: 3,
+    title: "",
+    nodes: [
+      {
+        id: "基础算法",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["模拟与枚举"],
+        children: [""],
+        myNode: treeNode_3,
+        lay: 1
+      },
+    ]
+  },
+  {
+    level: 4,
+    title: "",
+    nodes: [
+      {
+        id: "简单搜索算法",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["基础算法"],
+        children: ["简单动态规划"],
+        myNode: treeNode_4,
+        lay: 1
+      },
+      {
+        id: "线性结构",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["基础算法"],
+        children: ["简单树"],
+        myNode: treeNode_6,
+        lay: 1
+      },
+      {
+        id: "字符串匹配",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["基础算法"],
+        children: [""],
+        myNode: treeNode_5,
+        lay: 1
+      }
+    ]
+  },
+  {
+    level: 5,
+    title: "",
+    nodes: [
+      {
+        id: "简单动态规划",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["简单搜索算法"],
+        children: [""],
+        myNode: treeNode_7,
+        lay: 1
+      },
+      {
+        id: "简单树",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["线性结构"],
+        children: ["特殊树", "图"],
+        myNode: treeNode_8,
+        lay: 1
+      }
+    ]
+  },
+  {
+    level: 6,
+    title: "",
+    nodes: [
+      {
+        id: "图",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["简单树"],
+        children: ["图论算法"],
+        myNode: treeNode_13,
+        lay: 1
+      },
+      {
+        id: "特殊树",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["简单树"],
+        children: ["深入排序算法", "深入搜索算法", "复杂动态规划"],
+        myNode: treeNode_9,
+        lay: 1
+      }
+    ]
+  },
+  {
+    level: 7,
+    title: "",
+    nodes: [
+      {
+        id: "图论算法",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["图"],
+        children: [""],
+        myNode: treeNode_14,
+        lay: 1
+      },
+      {
+        id: "深入搜索算法",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["特殊树"],
+        children: [""],
+        myNode: treeNode_10,
+        lay: 1
+      },
+      {
+        id: "深入排序算法",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["特殊树"],
+        children: [""],
+        myNode: treeNode_11,
+        lay: 1
+      },
+      {
+        id: "复杂动态规划",
+        icon: "🔒",
+        type: "tech",
+        unlocked: false,
+        questionList: 0,
+        parent: ["特殊树"],
+        children: [""],
+        myNode: treeNode_12,
+        lay: 1
+      }
+    ]
+  }
 ]
 
 let treeData = treeMain;

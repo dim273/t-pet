@@ -1,12 +1,15 @@
 const vscode = acquireVsCodeApi();
 const MainOrigin = "vscode-file://vscode-app";
+
+let currentListId = "list_2"; // 默认显示list_2
+
 function switchPageToMain() {
-  vscode.postMessage({ type: 'switchPageToMain' });
+  vscode.postMessage({ type: 'goBack' });
 }
 
 // 更新统计信息
 function updateStats() {
-  const problems = problemSets["list_2"].problems;
+  const problems = problemSets[currentListId].problems;
   const totalCount = problems.length;
   const passedCount = problems.filter(p => p.passed).length;
   const progress = Math.round((passedCount / totalCount) * 100);
@@ -19,7 +22,9 @@ function updateStats() {
 // 渲染题目列表
 function renderProblemList() {
   const problemListElement = document.getElementById('problem-list');
-  const problems = problemSets["list_2"].problems;
+  const problems = problemSets[currentListId].problems;
+
+  document.getElementById('listTitle').textContent = problemSets[currentListId].name;
 
   // 更新统计信息
   updateStats();
@@ -56,7 +61,8 @@ function renderProblemList() {
   `).join('');
 }
 
-// 初始化
-document.addEventListener('DOMContentLoaded', () => {
+window.onload = function () {
+  let listIdFromVSCode = window.currentListId;
+  currentListId = `list_${listIdFromVSCode}` || currentListId;
   renderProblemList();
-});
+}

@@ -153,23 +153,96 @@ const problemSets = {
         ref: 14
       }
     ]
+  },
+  "list_4": {
+    name: "数组与字符串",
+    problems: [
+      {
+        id: 1,
+        title: "小鱼的数字游戏",
+        url: "https://www.luogu.com.cn/problem/P1427",
+        difficulty: "easy",
+        passed: false,
+        tags: ["栈"],
+        ref: 15
+      },
+      {
+        id: 2,
+        title: "找出字符串中第一个匹配项的下标",
+        url: "https://leetcode-cn.com/problems/implement-strstr",
+        difficulty: "easy",
+        passed: false,
+        tags: ["字符串"],
+        ref: 16
+      },
+      {
+        id: 3,
+        title: "小鱼比可爱",
+        url: "https://www.luogu.com.cn/problem/P1428",
+        difficulty: "easy",
+        passed: false,
+        tags: ["模拟"],
+        ref: 17
+      },
+      {
+        id: 4,
+        title: "自动修正",
+        url: "https://www.luogu.com.cn/problem/P5733",
+        difficulty: "easy",
+        passed: false,
+        tags: ["无"],
+        ref: 18
+      },
+      {
+        id: 5,
+        title: "验证回文串",
+        url: "https://leetcode-cn.com/problems/valid-palindrome",
+        difficulty: "easy",
+        passed: false,
+        tags: ["字符串"],
+        ref: 19
+      }
+    ]
+  },
+  "list_5": {
+    name: "指针与引用",
+    problems: [
+      {
+        id: 1,
+        title: "约瑟夫问题",
+        url: "https://www.luogu.com.cn/problem/P1996",
+        difficulty: "easy",
+        passed: false,
+        tags: ["模拟", "队列", "链表", "树状数组"],
+        ref: 20
+      },
+      {
+        id: 2,
+        title: "【模板】堆",
+        url: "https://www.luogu.com.cn/problem/P3378",
+        difficulty: "easy",
+        passed: false,
+        tags: ["堆", "O2优化"],
+        ref: 21
+      },
+      {
+        id: 3,
+        title: "反转链表",
+        url: "https://leetcode.cn/problems/reverse-linked-list",
+        difficulty: "easy",
+        passed: false,
+        tags: ["递归", "链表"],
+        ref: 22
+      },
+      {
+        id: 4,
+        title: "合并两个有序链表",
+        url: "https://leetcode.cn/problems/merge-two-sorted-lists",
+        difficulty: "easy",
+        passed: false,
+        tags: ["递归", "链表"],
+        ref: 23
+      }
+    ]
   }
 };
-
-// 当前选中的题单
-let currentProblemSet = "dynamic-programming";
-
-// 获取当前题单的题目列表
-function getCurrentProblems() {
-  return problemSets[currentProblemSet].problems;
-}
-
-// 获取所有题单信息
-function getProblemSetInfo() {
-  return Object.keys(problemSets).map(key => ({
-    id: key,
-    name: problemSets[key].name,
-    description: problemSets[key].description,
-    problemCount: problemSets[key].problems.length
-  }));
-}

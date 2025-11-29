@@ -86,21 +86,23 @@ function createTechNode(nodeData) {
 
   // 添加点击事件
   node.addEventListener('click', function () {
-    console.log("Clicked node:", nodeData.id || nodeData.title);
     if (nodeData.type === "root") return;   // 若为根节点, 暂无点击事件
-    if ((!nodeData.unlocked && CheckParentUnlocked(nodeData)) || nodeData.unlocked) {
-      if (nodeData.lay == 1) {
-        // 通过消息机制通知扩展端切换子树
-        vscode.postMessage({
-          type: 'switchToSubTree',
-          subTreeId: nodeData.id || nodeData.title
-        });
-      }
-      else if (nodeData.lay == 2) {
-        if (nodeData.questionList != 0)
-          switchPageToProblemList(nodeData.questionList);
-      }
+
+    // 下面的注释是为方便测试，实际应该启用
+    //if ((!nodeData.unlocked && CheckParentUnlocked(nodeData)) || nodeData.unlocked) {
+
+    if (nodeData.lay == 1) {
+      // 通过消息机制通知扩展端切换子树
+      vscode.postMessage({
+        type: 'switchToSubTree',
+        subTreeId: nodeData.id || nodeData.title
+      });
     }
+    else if (nodeData.lay == 2) {
+      if (nodeData.questionList != 0)
+        switchPageToProblemList(nodeData.questionList);
+    }
+    //}
     //if (nodeData.questionList === 0)
     //  unlockNode(nodeData.id || nodeData.title);
   });
