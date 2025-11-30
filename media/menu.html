@@ -68,7 +68,7 @@
     </div>
 
     <div class="button-row">
-      <button id="switchPageToTest3" class="menu-button bg-gradient-to-br from-red-200 to-red-500 btn-effect">
+      <button id="switchPageToProblemList" class="menu-button bg-gradient-to-br from-red-200 to-red-500 btn-effect">
         <i class="fa fa-book"></i>
         <span>题单</span>
       </button>
@@ -103,8 +103,8 @@
       vscode.postMessage({ type: 'switchPageToAiChat' });
     });
 
-    document.getElementById('switchPageToTest3').addEventListener('click', () => {
-      vscode.postMessage({ type: 'switchPageToTest3' });
+    document.getElementById('switchPageToProblemList').addEventListener('click', () => {
+      vscode.postMessage({ type: 'switchPageToProblemList', listId: 1 });
     });
 
     document.getElementById('reloadExtension').addEventListener('click', () => {

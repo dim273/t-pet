@@ -55,7 +55,6 @@ class Live2dViewProvider {
 		};
 
 		// 设置 HTML 内容
-		// webviewView.webview.html = this._getTest3Html(webviewView.webview);
 		webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 
 		// 处理来自 Webview 的消息
@@ -67,15 +66,15 @@ class Live2dViewProvider {
 					this._page = 'main';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
-				case "switchPageToTest3":
+				case "switchPageToProblemList":
 					this._history.push(this._page);
-					this._page = 'test3';
+					this._page = 'list';
+					this._currentProblemListId = data.listId || 1;
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToProblem":
 					// 由于fetchPage是异步函数，需要等待它完成后再渲染页面
 					fetchPage(data.id).then(() => {
-						console.log('题目获取完成，开始渲染页面');
 						this._history.push(this._page);
 						this._page = 'problem';
 						webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
@@ -89,6 +88,12 @@ class Live2dViewProvider {
 				case "switchPageTotree":
 					this._history.push(this._page);
 					this._page = 'tree';
+					this._currentSubTree = null; // 重置当前子树
+					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					break;
+				case "switchToSubTree":
+					// 切换到指定的子树
+					this._currentSubTree = data.subTreeId;
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToCalender":
@@ -115,11 +120,6 @@ class Live2dViewProvider {
 				case "switchPageToAiChat":
 					this._history.push(this._page);
 					this._page = 'aiChat';
-					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
-					break;
-				case "switchToNode1":
-					this._history.push(this._page);
-					this._page = 'node1';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "goBack":
@@ -149,8 +149,8 @@ class Live2dViewProvider {
 		switch (this._page) {
 			case 'main':
 				return this._getMainHtml(webview);
-			case 'test3':
-				return this._getTestHtml3(webview);
+			case 'list':
+				return this._getProblemListHtml(webview);
 			case 'problem':
 				return this._getProblemHtml(webview);
 			case 'login':
@@ -161,8 +161,6 @@ class Live2dViewProvider {
 				return this._getTreeHtml(webview);
 			case 'aiChat':
 				return this._getAiChatHtml(webview);
-			case 'node1':
-				return this._getNode1Html(webview);
 			default:
 				return this._getSettingHtml(webview);
 		}
@@ -271,147 +269,60 @@ class Live2dViewProvider {
 		return htmlContent;
 	}
 
-	_getTestHtml3(webview) {
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const testCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "test3.css"));
+	// 生成题单
+	_getProblemListHtml(webview) {
+		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "styles.css"));
+		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "data.js"));
+		const appUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "app.js"));
 
+		let listTitle = 1;
+		if (this._currentProblemListId) {
+			listTitle = this._currentProblemListId;
+		}
 
-		return `<!DOCTYPE html>
-			<html lang="en">
+		return `
+			<!DOCTYPE html>
+			<html lang="zh-CN">
+
 			<head>
 				<meta charset="UTF-8">
-				<link href="${styleVSCodeUri}" rel="stylesheet"> 
-				<link href="${testCssUri}" rel="stylesheet">
-				<title>Live 2d</title>
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>算法题单</title>
+				<link rel="stylesheet" href="${vscodeCssUri}">
+				<link rel="stylesheet" href="${styleCssUri}">
 			</head>
 			<body>
-    		<div style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
-        	<button class="common-button" onclick= "switchPageToMain()"
-            style="padding: 5px 10px; background: #58CC02; border: none; border-radius: 3px; cursor: pointer;">
-            返回主界面
-        	</button>
-    		</div>
-    		<div class="problem-sidebar">
-        <!-- 题目卡片1 -->
-        <div class="problem-card" data-id="P1301">
-            <div class="card-header">
-                <div class="problem-title">两数之和</div>
-                <div class="difficulty easy">简单</div>
-            </div>
-            <div class="problem-desc">
-                在数组中找到两个数，使它们的和等于目标值
-            </div>
-            <div class="tag-container">
-                <span class="problem-tag">数组</span>
-                <span class="problem-tag">哈希表</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
-            </div>
-            <div class="card-footer">
-                <span>68% 通过</span>
-                <span>🔥 126k</span>
-            </div>
-        	</div>
-
-        	<!-- 题目卡片2 -->
-        	<div class="problem-card" data-id="P1302">
-            <div class="card-header">
-                <div class="problem-title">反转链表</div>
-                <div class="difficulty medium">中等</div>
-            </div>
-            <div class="problem-desc">
-                使用迭代和递归两种方式反转单链表
-            </div>
-            <div class="tag-container">
-                <span class="problem-tag">链表</span>
-                <span class="problem-tag">递归</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: 45%"></div>
-            </div>
-            <div class="card-footer">
-                <span>52% 通过</span>
-                <span>⭐ 89k</span>
-            </div>
-        	</div>
-
-        	<!-- 题目卡片3 -->
-        	<div class="problem-card" data-id="P1303">
-            <div class="card-header">
-                <div class="problem-title">二叉树遍历</div>
-                <div class="difficulty medium">中等</div>
-            </div>
-            <div class="problem-desc">
-                实现二叉树的先序、中序、后序遍历的迭代算法
-            </div>
-            <div class="tag-container">
-                <span class="problem-tag">二叉树</span>
-                <span class="problem-tag">栈</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: 38%"></div>
-            </div>
-            <div class="card-footer">
-                <span>61% 通过</span>
-                <span>📚 常考</span>
-            </div>
-        	</div>
-
-        	<!-- 题目卡片4 -->
-        	<div class="problem-card" data-id="P1304">
-            <div class="card-header">
-                <div class="problem-title">动态规划</div>
-                <div class="difficulty hard">困难</div>
-            </div>
-            <div class="problem-desc">
-                硬币找零问题：计算凑成总金额的最少硬币个数
-            </div>
-            <div class="tag-container">
-                <span class="problem-tag">DP</span>
-                <span class="problem-tag">背包问题</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: 28%"></div>
-            </div>
-            <div class="card-footer">
-                <span>32% 通过</span>
-                <span>🏆 大厂</span>
-            </div>
-        	</div>
+				<div class="header">
+        	<button class="back-btn" id="back-btn" onclick="switchPageToMain()">←</button>
+        	<h3 style="font-weight: 600;" id="listTitle">知识树</h3>
     		</div>
 
-    		<script>
-       	 	const vscode = acquireVsCodeApi();
-					const MainOrigin = "vscode-file://vscode-app";
-        	function switchPageToMain() {
-						vscode.postMessage({ type: 'switchPageToMain' });
-					}
-					function switchPageToProblemCard() {
-						const questionItem = event.currentTarget;
-						const problemId = questionItem.getAttribute('data-id');
+				<div class="stats">
+					<div class="stat-item">
+						<div class="stat-value" id="total-count">0</div>
+						<div class="stat-label">总题目数</div>
+					</div>
+					<div class="stat-item">
+						<div class="stat-value" id="passed-count">0</div>
+						<div class="stat-label">已通过</div>
+					</div>
+					<div class="stat-item">
+						<div class="stat-value" id="progress">0%</div>
+						<div class="stat-label">完成进度</div>
+					</div>
+				</div>
 
-						vscode.postMessage({ 
-							type: 'switchPageToProblem',
-							id: problemId
-						});
-					}
-					function goBack() {
-						vscode.postMessage({ type: 'goBack' });
-					}
-
-					// 为题目卡片添加点击事件监听
-					document.addEventListener('DOMContentLoaded', function() {
-						const questionItems = document.querySelectorAll('.problem-card');
-						questionItems.forEach(item => {
-							item.addEventListener('click', switchPageToProblemCard);
-						});
-					});
-    		</script>
+				<div class="problem-list" id="problem-list">
+				</div>
+				<script src="${dataUri}"></script>
+				<script src="${appUri}"></script>
+				<script>
+					window.currentListId = "${listTitle}";
+				</script>
 			</body>
-		</html>
-		      
-		`;
+
+			</html>`
 	}
 
 	// 生成题目界面
@@ -450,7 +361,7 @@ class Live2dViewProvider {
 					
 
 					function goBack() {
-						vscode.postMessage({ type: 'switchPageToTest3' });
+						vscode.postMessage({ type: 'switchPageToProblemList' });
 					}
 
 					function renderMarkdown() {
@@ -510,6 +421,12 @@ class Live2dViewProvider {
 		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "style.css"))
 		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"))
 
+		// 根据当前子树ID决定显示的标题
+		let treeTitle = "知识树";
+		if (this._currentSubTree) {
+			treeTitle = this._currentSubTree;
+		}
+
 		return `
 			<!DOCTYPE html>
 			<html lang="zh-CN">
@@ -525,7 +442,7 @@ class Live2dViewProvider {
 			<body>
 				<div class="header">
         	<button class="back-btn" id="back-btn" onclick="switchPageToMain()">←</button>
-        	<h3 style="font-weight: 600;">知识树</h3>
+        	<h3 style="font-weight: 600;">${treeTitle}</h3>
     		</div>
 				
 				<div class="controls">
@@ -541,20 +458,14 @@ class Live2dViewProvider {
 
 				<script src="${dataUri}"></script>
 				<script src="${logicUri}"></script>
+				<script>
+					// 设置当前子树ID
+					window.currentSubTreeId = "${this._currentSubTree || "知识树"}";
+				</script>
 			</body>
 
 			</html>
 		`
-	}
-
-	_getNode1Html(webview) {
-		const d3Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "d3.v7.min.js"));
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const htmlPath = path.join(this._extensionUri.fsPath, "media", "node1.html");
-		let htmlContent = fs.readFileSync(htmlPath, 'utf8');
-		htmlContent = htmlContent.replace(/{{d3Uri}}/g, d3Uri.toString())
-			.replace(/{{styleVSCodeUri}}/g, styleVSCodeUri.toString());
-		return htmlContent;
 	}
 
 	// 生成日历 
@@ -566,7 +477,6 @@ class Live2dViewProvider {
 
 		return htmlContent;
 	}
-
 }
 Live2dViewProvider.viewType = "vscode-live2d.live2dView";
 // 生成随机字符串用于 CSP（内容安全策略）
