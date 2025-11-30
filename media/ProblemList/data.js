@@ -567,5 +567,396 @@ const problemSets = {
         ref: 55
       }
     ]
+  },
+  "list_13": {
+    name: "递归",
+    problems: [
+      {
+        id: 1,
+        title: "求正整数 2 和 n 之间的完全数",
+        url: "https://www.luogu.com.cn/problem/B2127",
+        difficulty: "easy",
+        passed: false,
+        tags: ["函数与递归"],
+        ref: 56
+      },
+      {
+        id: 2,
+        title: "素数个数",
+        url: "https://www.luogu.com.cn/problem/B2128",
+        difficulty: "easy",
+        passed: false,
+        tags: ["函数与递归"],
+        ref: 57
+      },
+      {
+        id: 3,
+        title: "进制转换",
+        url: "https://www.luogu.com.cn/problem/B2143",
+        difficulty: "easy",
+        passed: false,
+        tags: ["函数与递归"],
+        ref: 58
+      },
+      {
+        id: 4,
+        title: "区间内的真素数",
+        url: "https://www.luogu.com.cn/problem/B2139",
+        difficulty: "easy",
+        passed: false,
+        tags: ["函数与递归"],
+        ref: 59
+      },
+      {
+        id: 5,
+        title: "灵感",
+        url: "https://www.luogu.com.cn/problem/B4026",
+        difficulty: "easy",
+        passed: false,
+        tags: ["分支结构", "O2优化"],
+        ref: 60
+      }
+    ]
+  },
+  "list_14": {
+    name: "贪心",
+    problems: [
+      {
+        id: 1,
+        title: "种花问题",
+        url: "https://leetcode.cn/problems/can-place-flowers/description/",
+        difficulty: "easy",
+        passed: false,
+        tags: ["贪心", "数组"],
+        ref: 61
+      },
+      {
+        id: 2,
+        title: "盛最多水的容器",
+        url: "https://leetcode.cn/problems/container-with-most-water/description/",
+        difficulty: "medium",
+        passed: false,
+        tags: ["贪心", "数组", "双指针"],
+        ref: 62
+      },
+      {
+        id: 3,
+        title: "独木桥",
+        url: "https://www.luogu.com.cn/problem/P1007",
+        difficulty: "medium",
+        passed: false,
+        tags: ["贪心", "模拟"],
+        ref: 63
+      },
+      {
+        id: 4,
+        title: "删数问题",
+        url: "https://www.luogu.com.cn/problem/P1106",
+        difficulty: "medium",
+        passed: false,
+        tags: ["贪心", "字符串"],
+        ref: 64
+      },
+      {
+        id: 5,
+        title: "矩形分割",
+        url: "https://www.luogu.com.cn/problem/P1324",
+        difficulty: "medium",
+        passed: false,
+        tags: ["贪心"],
+        ref: 65
+      }
+    ]
+  },
+  "list_15": {
+    name: "简单排序算法",
+    problems: [
+      {
+        id: 1,
+        title: "对链表进行插入排序",
+        url: "https://leetcode.cn/problems/insertion-sort-list/description/",
+        difficulty: "medium",
+        passed: false,
+        tags: ["链表", "排序"],
+        ref: 66
+      },
+      {
+        id: 2,
+        title: "多数元素",
+        url: "https://leetcode.cn/problems/majority-element/description/",
+        difficulty: "easy",
+        passed: false,
+        tags: ["排序", "数组", "分治", "计数"],
+        ref: 67
+      },
+      {
+        id: 3,
+        title: "第k小整数",
+        url: "https://www.luogu.com.cn/problem/P1138",
+        difficulty: "easy",
+        passed: false,
+        tags: ["排序", "模拟"],
+        ref: 68
+      },
+      {
+        id: 4,
+        title: "谁拿了最多奖学金",
+        url: "https://www.luogu.com.cn/problem/P1051",
+        difficulty: "easy",
+        passed: false,
+        tags: ["排序", "字符串"],
+        ref: 69
+      },
+      {
+        id: 5,
+        title: "最大数",
+        url: "https://leetcode.cn/problems/largest-number/description/",
+        difficulty: "medium",
+        passed: false,
+        tags: ["贪心", "排序", "字符串"],
+        ref: 70
+      }
+    ]
+  },
+  "list_16": {
+    name: "分治算法",
+    problems: [
+      {
+        id: 1,
+        title: "最大子数组和",
+        url: "https://leetcode.cn/problems/maximum-subarray/description/",
+        difficulty: "medium",
+        passed: false,
+        tags: ["分治", "数组", "动态规划"],
+        ref: 71
+      },
+      {
+        id: 2,
+        title: "盛最多水的容器",
+        url: "https://leetcode.cn/problems/reverse-bits/description/",
+        difficulty: "easy",
+        passed: false,
+        tags: ["位运算", "分治"],
+        ref: 72
+      },
+      {
+        id: 3,
+        title: "数组中的第K个最大元素",
+        url: "https://leetcode.cn/problems/kth-largest-element-in-an-array/description/ ",
+        difficulty: "medium",
+        passed: false,
+        tags: ["数组", "分治", "快速选择", "排序"],
+        ref: 73
+      },
+      {
+        id: 4,
+        title: "平面最近点对(加强版)",
+        url: "https://www.luogu.com.cn/problem/P1429",
+        difficulty: "hard",
+        passed: false,
+        tags: ["分治", "递归", "计算几何"],
+        ref: 74
+      }
+    ]
+  },
+  "list_17": {
+    name: "前缀和与差分",
+    problems: [
+      {
+        id: 1,
+        title: "区域和检索 - 数组不可变",
+        url: "https://leetcode.cn/problems/range-sum-query-immutable/description/  ",
+        difficulty: "easy",
+        passed: false,
+        tags: ["设计", "数组", "前缀和"],
+        ref: 75
+      },
+      {
+        id: 2,
+        title: "和为K的子数组",
+        url: "https://leetcode.cn/problems/subarray-sum-equals-k/description/ ",
+        difficulty: "medium",
+        passed: false,
+        tags: ["哈希表", "数组", "前缀和"],
+        ref: 76
+      },
+      {
+        id: 3,
+        title: "连续数组",
+        url: "https://leetcode.cn/problems/contiguous-array/description/",
+        difficulty: "medium",
+        passed: false,
+        tags: ["数组", "哈希表", "前缀和"],
+        ref: 77
+      },
+      {
+        id: 4,
+        title: "航班预订统计",
+        url: "https://leetcode.cn/problems/corporate-flight-bookings/description/?envType=problem-list-v2&envId=prefix-sum",
+        difficulty: "medium",
+        passed: false,
+        tags: ["数组", "前缀和"],
+        ref: 78
+      },
+      {
+        id: 5,
+        title: "拼车",
+        url: "https://leetcode.cn/problems/car-pooling/description/?envType=problem-list-v2&envId=prefix-sum",
+        difficulty: "medium",
+        passed: false,
+        tags: ["数组", "排序", "前缀和", "模拟", "堆"],
+        ref: 79
+      }
+    ]
+  },
+  "list_18": {
+    name: "倍增",
+    problems: [
+      {
+        id: 1,
+        title: "调和级数求和",
+        url: "https://www.luogu.com.cn/problem/P5702",
+        difficulty: "hard",
+        passed: false,
+        tags: ["数学", "倍增"],
+        ref: 80
+      },
+      {
+        id: 2,
+        title: "修学旅行",
+        url: "https://www.luogu.com.cn/problem/P6043",
+        difficulty: "hard",
+        passed: false,
+        tags: ["数学", "倍增"],
+        ref: 81
+      },
+      {
+        id: 3,
+        title: "整式递推",
+        url: "https://www.luogu.com.cn/problem/P6115",
+        difficulty: "hard",
+        passed: false,
+        tags: ["数学", "倍增"],
+        ref: 82
+      },
+      {
+        id: 4,
+        title: "[ICPC 2022 Xi'an R] Contests",
+        url: "https://www.luogu.com.cn/problem/P9361",
+        difficulty: "hard",
+        passed: false,
+        tags: ["倍增"],
+        ref: 83
+      },
+      {
+        id: 5,
+        title: "魔法值",
+        url: "https://www.luogu.com.cn/problem/P6569",
+        difficulty: "hard",
+        passed: false,
+        tags: ["倍增", "矩阵运算"],
+        ref: 84
+      }
+    ]
+  },
+  "list_19": {
+    name: "DFS",
+    problems: [
+      {
+        id: 1,
+        title: "八皇后",
+        url: "https://www.luogu.com.cn/problem/P1219",
+        difficulty: "medium",
+        passed: false,
+        tags: ["搜索", "深度优先搜索"],
+        ref: 85
+      },
+      {
+        id: 2,
+        title: "字典序排数",
+        url: "https://leetcode.cn/problems/lexicographical-numbers/description/?envType=problem-list-v2&envId=depth-first-search",
+        difficulty: "medium",
+        passed: false,
+        tags: ["深度优先搜索", "字典树"],
+        ref: 86
+      },
+      {
+        id: 3,
+        title: "吃奶酪",
+        url: "https://www.luogu.com.cn/problem/P1433",
+        difficulty: "hard",
+        passed: false,
+        tags: ["动态规划DP", "搜索", "深度优先搜索", "剪枝", "记忆化搜索"],
+        ref: 87
+      },
+      {
+        id: 4,
+        title: "扫雷游戏",
+        url: "https://leetcode.cn/problems/minesweeper/description/?envType=problem-list-v2&envId=depth-first-search",
+        difficulty: "medium",
+        passed: false,
+        tags: ["深度优先搜索", "广度优先搜索", "数组", "矩阵"],
+        ref: 88
+      },
+      {
+        id: 5,
+        title: "取数游戏",
+        url: "https://www.luogu.com.cn/problem/P1123",
+        difficulty: "medium",
+        passed: false,
+        tags: ["搜索", "深度优先搜索", "枚举"],
+        ref: 89
+      }
+    ]
+  },
+  "list_20": {
+    name: "BFS",
+    problems: [
+      {
+        id: 1,
+        title: "腐烂的橘子",
+        url: "https://leetcode.cn/problems/rotting-oranges/description/?envType=problem-list-v2&envId=breadth-first-search",
+        difficulty: "medium",
+        passed: false,
+        tags: ["广度优先搜索", "数组", "矩阵"],
+        ref: 90
+      },
+      {
+        id: 2,
+        title: "跳跃游戏III",
+        url: "https://leetcode.cn/problems/jump-game-iii/description/?envType=problem-list-v2&envId=breadth-first-search",
+        difficulty: "medium",
+        passed: false,
+        tags: ["广度优先搜索", "数组", "矩阵"],
+        ref: 91
+      },
+      {
+        id: 3,
+        title: "所有可能的路径",
+        url: "https://leetcode.cn/problems/all-paths-from-source-to-target/description/?envType=problem-list-v2&envId=breadth-first-search ",
+        difficulty: "medium",
+        passed: false,
+        tags: ["深度优先搜索", "广度优先搜索", "图", "回溯"],
+        ref: 92
+      },
+      {
+        id: 4,
+        title: "钥匙和房间",
+        url: "https://leetcode.cn/problems/keys-and-rooms/?envType=problem-list-v2&envId=breadth-first-search",
+        difficulty: "medium",
+        passed: false,
+        tags: ["广度优先搜索", "深度优先搜索", "图"],
+        ref: 93
+      },
+      {
+        id: 5,
+        title: "01矩阵",
+        url: "https://leetcode.cn/problems/01-matrix/description/?envType=problem-list-v2&envId=breadth-first-search",
+        difficulty: "medium",
+        passed: false,
+        tags: ["广度优先搜索", "动态规划DP", "矩阵", "数组"],
+        ref: 94
+      }
+    ]
   }
 };
