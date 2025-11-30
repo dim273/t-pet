@@ -85,7 +85,7 @@ const treeNode_1 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
-        questionList: 0,
+        questionList: 6,
         parent: ["编程语言基础"],
         children: [""],
         lay: 2
@@ -95,7 +95,7 @@ const treeNode_1 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
-        questionList: 0,
+        questionList: 7,
         parent: ["编程语言基础"],
         children: [""],
         lay: 2
@@ -105,7 +105,7 @@ const treeNode_1 = [
         icon: "🔒",
         type: "tech",
         unlocked: false,
-        questionList: 0,
+        questionList: 8,
         parent: ["编程语言基础"],
         children: [""],
         lay: 2
@@ -134,7 +134,7 @@ const treeNode_2 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 9,
         parent: ["模拟与枚举"],
         children: [""],
       },
@@ -144,7 +144,7 @@ const treeNode_2 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 10,
         parent: ["模拟与枚举"],
         children: [""],
       }
@@ -172,7 +172,7 @@ const treeNode_3 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 11,
         parent: ["基础算法"],
         children: [""]
       },
@@ -182,7 +182,7 @@ const treeNode_3 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 12,
         parent: ["基础算法"],
         children: [""]
       },
