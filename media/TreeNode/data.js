@@ -192,7 +192,7 @@ const treeNode_3 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 13,
         parent: ["基础算法"],
         children: [""]
       },
@@ -202,7 +202,7 @@ const treeNode_3 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 14,
         parent: ["基础算法"],
         children: [""]
       },
@@ -212,7 +212,7 @@ const treeNode_3 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 18,
         parent: ["基础算法"],
         children: [""]
       },
@@ -222,7 +222,7 @@ const treeNode_3 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 15,
         parent: ["基础算法"],
         children: [""]
       },
@@ -232,17 +232,17 @@ const treeNode_3 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 16,
         parent: ["基础算法"],
         children: [""]
       },
       {
-        id: "前缀和差分",
+        id: "前缀和与差分",
         icon: "🔒",
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 17,
         parent: ["基础算法"],
         children: [""]
       },
@@ -270,7 +270,7 @@ const treeNode_4 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 19,
         parent: ["简单搜索算法"],
         children: [""]
       },
@@ -280,7 +280,7 @@ const treeNode_4 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 20,
         parent: ["简单搜索算法"],
         children: [""]
       }
@@ -308,7 +308,7 @@ const treeNode_5 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 21,
         parent: ["字符串匹配"],
         children: [""]
       }
@@ -336,7 +336,7 @@ const treeNode_6 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 22,
         parent: ["线性结构"],
         children: [""]
       },
@@ -346,7 +346,7 @@ const treeNode_6 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 23,
         parent: ["线性结构"],
         children: [""]
       },
@@ -356,7 +356,7 @@ const treeNode_6 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 24,
         parent: ["线性结构"],
         children: [""]
       }
@@ -384,7 +384,7 @@ const treeNode_7 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 25,
         parent: ["简单动态规划"],
         children: [""]
       },
@@ -394,7 +394,7 @@ const treeNode_7 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 26,
         parent: ["简单动态规划"],
         children: [""]
       }
@@ -407,8 +407,8 @@ const treeNode_8 = [
     level: 0,
     title: "简单树",
     icon: "🚩",
-    type: "true",
-    unlocked: false,
+    type: "root",
+    unlocked: true,
     questionList: 0,
     children: ["简单树算法"]
   },
@@ -422,7 +422,7 @@ const treeNode_8 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 27,
         parent: ["简单树"],
         children: [""],
       }
@@ -450,7 +450,7 @@ const treeNode_9 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 28,
         parent: ["特殊树"],
         children: [""]
       }
@@ -478,7 +478,7 @@ const treeNode_10 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 29,
         parent: ["深入搜索算法"],
         children: [""]
       },
@@ -488,7 +488,7 @@ const treeNode_10 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 30,
         parent: ["深入搜索算法"],
         children: [""]
       }
@@ -516,7 +516,7 @@ const treeNode_11 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 31,
         parent: ["深入排序算法"],
         children: [""]
       },
@@ -526,7 +526,7 @@ const treeNode_11 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 32,
         parent: ["深入排序算法"],
         children: [""]
       },
@@ -536,7 +536,7 @@ const treeNode_11 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 33,
         parent: ["深入排序算法"],
         children: [""]
       },
@@ -546,7 +546,7 @@ const treeNode_11 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 34,
         parent: ["深入排序算法"],
         children: [""]
       },
@@ -556,7 +556,7 @@ const treeNode_11 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 35,
         parent: ["深入排序算法"],
         children: ["复杂动态规划"]
       }
@@ -584,7 +584,7 @@ const treeNode_12 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 36,
         parent: ["复杂动态规划"],
         children: [""]
       },
@@ -594,7 +594,7 @@ const treeNode_12 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 37,
         parent: ["复杂动态规划"],
         children: [""]
       },
@@ -604,7 +604,7 @@ const treeNode_12 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 38,
         parent: ["复杂动态规划"],
         children: [""]
       },
@@ -614,7 +614,7 @@ const treeNode_12 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 39,
         parent: ["复杂动态规划"],
         children: [""]
       },
@@ -642,7 +642,7 @@ const treeNode_13 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 40,
         parent: ["图*"],
         children: [""]
       }
@@ -670,7 +670,7 @@ const treeNode_14 = [
         type: "tech",
         unlocked: false,
         lay: 2,
-        questionList: 0,
+        questionList: 41,
         parent: ["图论算法*"],
         children: [""]
       }

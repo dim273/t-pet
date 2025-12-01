@@ -9,7 +9,6 @@ const Main_1 = require("../live2dModify/Main");
 const fs = require('fs');
 const path = require('path');
 const { FileStorage } = require('../../manager/fileStorage');
-const { fetchPage } = require('../../manager/GetluoguProblem');
 
 // 扩展激活入口函数
 function activateLive2d(context) {
@@ -73,12 +72,11 @@ class Live2dViewProvider {
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToProblem":
-					// 由于fetchPage是异步函数，需要等待它完成后再渲染页面
-					fetchPage(data.id).then(() => {
-						this._history.push(this._page);
-						this._page = 'problem';
-						webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
-					});
+					this._history.push(this._page);
+					this._page = 'problem';
+					this._currentProblemRef = data.ref;
+					this._currentProblemTitle = data.title;
+					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToLogin":
 					this._history.push(this._page);
@@ -125,6 +123,8 @@ class Live2dViewProvider {
 				case "goBack":
 					if (this._history.length > 0) {
 						this._page = this._history.pop(); // 取出上一个页面
+						if (this._page === 'problem')
+							this._page = this._history.pop(); // 如果是题目页，再取一次上一个页面
 						webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					}
 					break;
@@ -277,9 +277,8 @@ class Live2dViewProvider {
 		const appUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "app.js"));
 
 		let listTitle = 1;
-		if (this._currentProblemListId) {
+		if (this._currentProblemListId)
 			listTitle = this._currentProblemListId;
-		}
 
 		return `
 			<!DOCTYPE html>
@@ -327,12 +326,21 @@ class Live2dViewProvider {
 
 	// 生成题目界面
 	_getProblemHtml(webview) {
+		const appUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemPage", "app.js"));
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));		// css主题
 		const katex_min_css_Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "katex", "katex.min.css")); // katex.min.css
 		const katex_min_js_Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "katex", "katex.min.js")); // katex.min.js
 		const katex_auto_render_min_js_Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "katex", "auto-render.min.js")); // auto-render.min.js
 
-		const filePath = path.join(this._extensionUri.fsPath, "saveData", "example.md");
+		let title = "整型与布尔型的转换";
+		let ref = 1;
+		let listId = 1;
+		if (this._currentProblemRef) ref = this._currentProblemRef;
+		if (this._currentProblemTitle) title = this._currentProblemTitle;
+		if (this._currentProblemListId) listId = this._currentProblemListId;
+		console.log("当前题单id", listId);
+
+		const filePath = path.join(this._extensionUri.fsPath, "res", "Problem", `${ref}.md`);
 		const fileContent = fs.readFileSync(filePath, 'utf8');
 
 		return `<!DOCTYPE html>
@@ -350,33 +358,18 @@ class Live2dViewProvider {
 			</head>
 
 			<body>
-				<button onclick="renderMarkdown()" class="common-button">渲染</button>
-				<button onclick="goBack()" class="common-button">返回主界面</button>
+				<div class="header">
+        	<button class="back-btn" id="back-btn" onclick="switchPageToProblemList()">←</button>
+        	<h3 style="font-weight: 600;" id="listTitle">题目</h3>
+    		</div>
 				<div id="markdownDisplay"></div>
-				<script>
-					const vscode = acquireVsCodeApi();
-					const MainOrigin = "vscode-file://vscode-app";
-					const fs = require('fs');
-					const path = require('path');
-					
-
-					function goBack() {
-						vscode.postMessage({ type: 'switchPageToProblemList' });
-					}
-
-					function renderMarkdown() {
-						var markdownDisplay = document.getElementById('markdownDisplay');
-						var markdownText = ${JSON.stringify(fileContent)};
-						var htmlContent = marked.parse(markdownText);
-						markdownDisplay.innerHTML = htmlContent;
-						renderMathInElement(markdownDisplay, {
-        			delimiters: [
-          			{ left: "$$", right: "$$", display: true },
-          			{ left: "$", right: "$", display: false }
-        			]
-      			});
-					}
+				<script> 
+					let markdownText = ${JSON.stringify(fileContent)}; 
+					window.currentProblemTitle = "${title || "整型与布尔型的转换"}";
+					window.currentProblemListID = "${listId || 1}";
 				</script>
+				<script src="${appUri}"></script>
+				<scr>
 			</body>
 
 			</html>`;

@@ -1,10 +1,25 @@
 const vscode = acquireVsCodeApi();
 const MainOrigin = "vscode-file://vscode-app";
 
-let currentListId = "list_2"; // 默认显示list_2
+let currentListId = "list_1"; // 默认显示list_1
+let listIdFromVSCode = 1;
 
 function switchPageToMain() {
   vscode.postMessage({ type: 'goBack' });
+}
+
+function switchPageToProblem(problemId) {
+  const problems = problemSets[currentListId].problems;
+  const problem = problems.find(p => p.id === problemId);
+
+  if (problem) {
+    vscode.postMessage({
+      type: 'switchPageToProblem',
+      title: problem.title,
+      ref: problem.ref,
+      listId: listIdFromVSCode
+    });
+  }
 }
 
 // 更新统计信息
@@ -40,7 +55,7 @@ function renderProblemList() {
   }
 
   problemListElement.innerHTML = problems.map(problem => `
-    <div class="problem-item" data-id="${problem.id}">
+    <div class="problem-item" data-id="${problem.id}" onclick="switchPageToProblem(${problem.id})">
       <div class="problem-info">
         <div class="problem-title">
           <a href="${problem.url}" target="_blank">${problem.title}</a>
@@ -48,7 +63,7 @@ function renderProblemList() {
         <div class="problem-meta">
           <span class="difficulty ${problem.difficulty}">
             ${problem.difficulty === 'easy' ? '简单' :
-      problem.difficulty === 'medium' ? '中等' : '困难'}
+      problem.difficulty === 'medium' ? '中等' : '困难'}  
           </span>
           <span>${problem.tags.join(', ')}</span>
         </div>
@@ -62,7 +77,7 @@ function renderProblemList() {
 }
 
 window.onload = function () {
-  let listIdFromVSCode = window.currentListId;
+  listIdFromVSCode = window.currentListId;
   currentListId = `list_${listIdFromVSCode}` || currentListId;
   renderProblemList();
 }

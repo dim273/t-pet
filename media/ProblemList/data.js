@@ -46,7 +46,7 @@ const problemSets = {
       {
         id: 4,
         title: "统计数字字符个数",
-        url: "https://www.luogu.com.cn/problem/B2019",
+        url: "https://www.luogu.com.cn/problem/B2109",
         difficulty: "easy",
         passed: false,
         tags: ["字符串"],
