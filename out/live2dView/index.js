@@ -9,6 +9,7 @@ const Main_1 = require("../live2dModify/Main");
 const fs = require('fs');
 const path = require('path');
 const { FileStorage } = require('../../manager/fileStorage');
+const { console } = require("inspector");
 
 // 扩展激活入口函数
 function activateLive2d(context) {
@@ -377,34 +378,69 @@ class Live2dViewProvider {
 
 	// 生成登录界面
 	_getLoginHtml(webview) {
-		const styleVSCodeUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
-		);
-		const logoUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this._extensionUri, "res", "image", "logo.png")
-		);
-		const backgroundUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this._extensionUri, "res", "image", "back.jpg")
-		);
-		const htmlPath = path.join(this._extensionUri.fsPath, "media", "login.html");
-		const leetcodeIcon = webview.asWebviewUri(
-			vscode.Uri.joinPath(this._extensionUri, "res", "image", "leetcode.png")
-		);
-		const luoguIcon = webview.asWebviewUri(
-			vscode.Uri.joinPath(this._extensionUri, "res", "image", "luogu.png")
-		);
-		const githubIcon = webview.asWebviewUri(
-			vscode.Uri.joinPath(this._extensionUri, "res", "image", "github.png")
-		);
-		let htmlContent = fs.readFileSync(htmlPath, 'utf8');
+		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const loginCssPath = path.join(this._extensionUri.fsPath, "media", "login", "login.css");
+		const loginJsUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "login", "login.js"));
 
-		htmlContent = htmlContent.replace(/{{styleVSCodeUri}}/g, styleVSCodeUri.toString())
-			.replace(/{{logoUri}}/g, logoUri.toString())
-			.replace(/{{backgroundUri}}/g, backgroundUri.toString())
-			.replace(/{{leetcodeIcon}}/g, leetcodeIcon.toString())
-			.replace(/{{luoguIcon}}/g, luoguIcon.toString())
-			.replace(/{{githubIcon}}/g, githubIcon.toString());
-		return htmlContent;
+		// 图片信息
+		const leetcodeIcon = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "leetcode.png"));
+		const luoguIcon = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "luogu.png"));
+		const githubIcon = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "github.png"));
+		const logoUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "logo.png"));
+		const backgroundUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "back.jpg"));
+
+		// 读取CSS文件内容并替换占位符
+		let cssContent = fs.readFileSync(loginCssPath, 'utf8');
+		cssContent = cssContent.replace(/{{logoUri}}/g, logoUri.toString())
+			.replace(/{{backgroundUri}}/g, backgroundUri.toString());
+
+		return `<!DOCTYPE html>
+			<html lang="en">
+
+			<head>
+				<meta charset="UTF-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+				<link href="${styleVSCodeUri}" rel="stylesheet" />
+				<style>
+					${cssContent}
+				</style>
+			</head>
+
+			<body>
+				<div class="top-background"></div>
+
+				<div class="logo-container">
+					<div class="logo"></div>
+					<div class="logo-method">智能助手</div>
+				</div>
+
+				<div class="login-card" id="accountList">
+						<h2 style="text-align:center">本地账号</h2>
+						<button id="createAccountBtn" class="button">新建账号</button>
+					<div id="accountsContainer" class="accounts-container">
+						<!-- 账号列表将在这里动态生成 -->
+					</div>
+				</div>
+
+				<div class="divider"></div>
+				<div class="alt-login-title">可关联平台</div>
+				<div class="alt-login">
+					<img src="${leetcodeIcon}" title="LeetCode" data-method="LeetCode" />
+					<img src="${luoguIcon}" alt="洛谷" data-method="洛谷" />
+					<img src="${githubIcon}" alt="github" data-method="github" />
+				</div>
+
+				<div class="bottom-options">
+					<span id="importAccount">导入账号</span>
+					<span id="exportAccount">帮助</span>
+				</div>
+
+				<div class="success-message" id="successMsg">操作成功</div>
+
+				<script src="${loginJsUri}"></script>
+			</body>
+
+			</html>`;
 	}
 
 	// 生成题目树
