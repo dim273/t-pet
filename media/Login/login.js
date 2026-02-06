@@ -6,6 +6,9 @@ const successMsg = document.getElementById('successMsg');
 const importAccount = document.getElementById('importAccount');
 const exportAccount = document.getElementById('exportAccount');
 
+// 弹窗相关变量
+let currentDeleteAccountId = null;
+
 // 初始化界面
 function initAccountManager() {
   renderAccounts();
@@ -90,10 +93,64 @@ function selectAccount(accountId) {
 
 // 删除账号
 function deleteAccount(accountId) {
-  if (confirm('确定要删除这个账号吗？此操作不可恢复。')) {
-    accounts = accounts.filter(account => account.id !== accountId);
+  currentDeleteAccountId = accountId;
+  showDeleteConfirmModal();
+}
+
+// 显示删除确认弹窗
+function showDeleteConfirmModal() {
+  // 创建弹窗HTML
+  const modalHtml = `
+    <div class="delete-modal-overlay" id="deleteModal">
+      <div class="delete-modal">
+        <div class="modal-header">
+          <h3>确认删除</h3>
+          <button class="close-button" onclick="closeDeleteModal()">×</button>
+        </div>
+        <div class="modal-content">
+          <p>确定要删除这个账号吗？此操作不可恢复。</p>
+        </div>
+        <div class="modal-actions">
+          <button class="confirm-button" onclick="confirmDeleteAccount()">确认</button>
+          <button class="cancel-button" onclick="closeDeleteModal()">取消</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // 添加到body
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  // 显示弹窗动画
+  setTimeout(() => {
+    const modal = document.getElementById('deleteModal');
+    if (modal) {
+      modal.classList.add('show');
+    }
+  }, 10);
+}
+
+// 关闭删除确认弹窗
+function closeDeleteModal() {
+  const modal = document.getElementById('deleteModal');
+  if (modal) {
+    modal.classList.remove('show');
+    setTimeout(() => {
+      modal.remove();
+      currentDeleteAccountId = null;
+    }, 300);
+  }
+}
+
+// 确认删除账号
+function confirmDeleteAccount() {
+  if (currentDeleteAccountId !== null) {
+    vscode.postMessage({ type: 'deleteAccount', accountId: currentDeleteAccountId });
+    accounts = accounts.filter(account => account.id !== currentDeleteAccountId);
+
     renderAccounts();
     showSuccessMessage('账号删除成功');
+    closeDeleteModal();
   }
 }
 

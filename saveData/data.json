@@ -2,7 +2,7 @@
   "userInfo": {
     "accounts": [
       {
-        "id": 0,
+        "id": 10,
         "name": "默认账号",
         "platforms": {
           "leetcode": true,
@@ -18,7 +18,7 @@
         }
       },
       {
-        "id": 1,
+        "id": 220,
         "name": "测试",
         "platforms": {
           "leetcode": false,

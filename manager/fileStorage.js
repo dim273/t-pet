@@ -101,7 +101,7 @@ class FileStorage {
     }
   }
 
-  // 根据索引获取指定账号信息
+  // 根据信息id获取指定账号信息
   getAccountByIndex(index) {
     try {
       const data = this.readData();
@@ -109,12 +109,10 @@ class FileStorage {
       if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
         return null;
       }
-
-      if (index < 0 || index >= data.userInfo.accounts.length) {
+      const account = data.userInfo.accounts.find(account => account.id === index);
+      if (!account)
         return null;
-      }
-
-      return data.userInfo.accounts[index];
+      return account;
     } catch (error) {
       console.error(`获取索引 ${index} 的账号信息失败:`, error);
       return null;
@@ -150,13 +148,8 @@ class FileStorage {
       if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
         return false;
       }
-
-      if (index < 0 || index >= data.userInfo.accounts.length) {
-        return false;
-      }
-
-      // 删除指定索引的账号
-      data.userInfo.accounts.splice(index, 1);
+      const newAccounts = data.userInfo.accounts.filter(account => account.id !== index);
+      data.userInfo.accounts = newAccounts;
 
       return this.saveData(data);
     } catch (error) {

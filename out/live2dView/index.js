@@ -25,7 +25,7 @@ function activateLive2d(context) {
 class Live2dViewProvider {
 	constructor(_extensionUri) {
 		this._extensionUri = _extensionUri;  // 扩展安装目录URI
-		this._page = 'login';                // 当前页面状态，初始化为test5
+		this._page = 'login';                // 当前页面状态，初始化为登陆界面
 
 		// 初始化文件存储管理器和账号信息
 		this.storage = new FileStorage(_extensionUri);
@@ -144,12 +144,17 @@ class Live2dViewProvider {
 					// 处理选择账号
 					this._currentAccountId = data.accountId;
 					this.saveData = this.storage.getAccountByIndex(data.accountId) || this.saveData;
+					// console.log("当前账号信息", this.saveData.name);
+					break;
+				case "deleteAccount":
+					this.storage.deleteAccountByIndex(data.accountId);
 					break;
 				// 处理日历打卡数据
 				case "saveCalenderData":
 					this.saveData.checkInDays = data.data;
 					this.storage.updateAccountByIndex(this._currentAccountId, this.saveData);
 					break;
+
 			}
 		});
 	}
@@ -404,7 +409,7 @@ class Live2dViewProvider {
 
 		// 加载账号信息
 		const accounts = this.storage.readData().userInfo.accounts || [];
-
+		if (accounts == []) console.log("账号列表为空");
 		return `<!DOCTYPE html>
 			<html lang="en">
 
