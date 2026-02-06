@@ -1,8 +1,13 @@
 {
   "userInfo": {
-    "name": "张三",
-    "email": "zhangsan@example.com",
-    "department": "开发部"
+    "id": 1,
+    "name": "默认账号",
+    "platforms": {
+      "leetcode": true,
+      "luogu": false,
+      "github": true
+    },
+    "lastLogin": "2025-02-05"
   },
   "checkIn": {
     "checkInDays": {
