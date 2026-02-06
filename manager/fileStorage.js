@@ -100,6 +100,115 @@ class FileStorage {
       return false;
     }
   }
+
+  // 根据索引获取指定账号信息
+  getAccountByIndex(index) {
+    try {
+      const data = this.readData();
+      // 获取全部的信息，然后根据索引返回对应的账号信息
+      if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
+        return null;
+      }
+
+      if (index < 0 || index >= data.userInfo.accounts.length) {
+        return null;
+      }
+
+      return data.userInfo.accounts[index];
+    } catch (error) {
+      console.error(`获取索引 ${index} 的账号信息失败:`, error);
+      return null;
+    }
+  }
+
+  // 根据索引更新指定账号信息
+  updateAccountByIndex(index, updatedAccount) {
+    try {
+      const data = this.readData();
+      if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
+        return false;
+      }
+
+      if (index < 0 || index >= data.userInfo.accounts.length) {
+        return false;
+      }
+
+      // 更新指定索引的账号信息
+      data.userInfo.accounts[index] = { ...data.userInfo.accounts[index], ...updatedAccount };
+
+      return this.saveData(data);
+    } catch (error) {
+      console.error(`更新索引 ${index} 的账号信息失败:`, error);
+      return false;
+    }
+  }
+
+  // 根据索引删除指定账号
+  deleteAccountByIndex(index) {
+    try {
+      const data = this.readData();
+      if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
+        return false;
+      }
+
+      if (index < 0 || index >= data.userInfo.accounts.length) {
+        return false;
+      }
+
+      // 删除指定索引的账号
+      data.userInfo.accounts.splice(index, 1);
+
+      return this.saveData(data);
+    } catch (error) {
+      console.error(`删除索引 ${index} 的账号失败:`, error);
+      return false;
+    }
+  }
+
+  // 添加新账号
+  addAccount(newAccount) {
+    try {
+      const data = this.readData() || { userInfo: { accounts: [] } };
+
+      if (!data.userInfo) {
+        data.userInfo = { accounts: [] };
+      }
+      if (!Array.isArray(data.userInfo.accounts)) {
+        data.userInfo.accounts = [];
+      }
+
+      // 生成新的ID（最大ID+1）
+      const maxId = data.userInfo.accounts.reduce((max, account) =>
+        Math.max(max, account.id || 0), 0);
+
+      const accountWithId = {
+        ...newAccount,
+        id: maxId + 1
+      };
+
+      data.userInfo.accounts.push(accountWithId);
+
+      return this.saveData(data);
+    } catch (error) {
+      console.error('添加新账号失败:', error);
+      return false;
+    }
+  }
+
+  // 获取所有账号数量
+  getAccountCount() {
+    try {
+      const data = this.readData();
+      if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
+        return 0;
+      }
+
+      return data.userInfo.accounts.length;
+    } catch (error) {
+      console.error('获取账号数量失败:', error);
+      return 0;
+    }
+  }
 }
 
 module.exports = { FileStorage };

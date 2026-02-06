@@ -27,17 +27,19 @@ class Live2dViewProvider {
 		this._extensionUri = _extensionUri;  // 扩展安装目录URI
 		this._page = 'login';                // 当前页面状态，初始化为test5
 
-		// 初始化文件存储管理器
+		// 初始化文件存储管理器和账号信息
 		this.storage = new FileStorage(_extensionUri);
+		this._currentAccountId = 0;
 		this.saveData = {
-			userInfo: {
-				name: "张三",
-				email: "zhangsan@example.com",
-				department: "开发部"
+			id: 1,
+			name: "错误警告账号",
+			platforms: {
+				leetcode: true,
+				luogu: true,
+				github: true
 			},
-			checkIn: {
-				checkInDays: []
-			}
+			lastLogin: "2025-02-05",
+			checkInDays: []
 		};
 
 	}
@@ -82,6 +84,7 @@ class Live2dViewProvider {
 				case "switchPageToLogin":
 					this._history.push(this._page);
 					this._page = 'login';
+
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageTotree":
@@ -101,15 +104,13 @@ class Live2dViewProvider {
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 
 					// 加载日历数据并在DOMContentLoaded后发送
-					const allData = this.storage.readData();
-					const calenderData = allData.checkIn.checkInDays;
+					const calenderData = this.saveData.checkInDays;
 					if (this._view && this._view.webview) {
 						this._view.webview.postMessage({
 							type: 'loadCalenderData',
 							data: calenderData
 						});
 					}
-
 					break;
 				case "switchPageToSetting":
 					this._history.push(this._page);
@@ -129,6 +130,8 @@ class Live2dViewProvider {
 						webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					}
 					break;
+
+				/*----------------------- 资源管理----------------------------- */
 				case "generateResources":
 					// 生成资源文件
 					Main_1.Main.Instance && Main_1.Main.Instance.generateResources();
@@ -137,10 +140,15 @@ class Live2dViewProvider {
 					// 移除资源文件
 					Main_1.Main.Instance && Main_1.Main.Instance.removeResources(true);
 					break;
+				case "selectAccount":
+					// 处理选择账号
+					this._currentAccountId = data.accountId;
+					this.saveData = this.storage.getAccountByIndex(data.accountId) || this.saveData;
+					break;
 				// 处理日历打卡数据
 				case "saveCalenderData":
-					this.saveData.checkIn.checkInDays = data.data;
-					this.storage.saveData(this.saveData);
+					this.saveData.checkInDays = data.data;
+					this.storage.updateAccountByIndex(this._currentAccountId, this.saveData);
 					break;
 			}
 		});
@@ -394,6 +402,9 @@ class Live2dViewProvider {
 		cssContent = cssContent.replace(/{{logoUri}}/g, logoUri.toString())
 			.replace(/{{backgroundUri}}/g, backgroundUri.toString());
 
+		// 加载账号信息
+		const accounts = this.storage.readData().userInfo.accounts || [];
+
 		return `<!DOCTYPE html>
 			<html lang="en">
 
@@ -436,7 +447,10 @@ class Live2dViewProvider {
 				</div>
 
 				<div class="success-message" id="successMsg">操作成功</div>
-
+				<script>
+					// 加载账号信息
+					let accounts = ${JSON.stringify(accounts)};
+				</script>
 				<script src="${loginJsUri}"></script>
 			</body>
 

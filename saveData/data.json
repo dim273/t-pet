@@ -1,19 +1,40 @@
 {
   "userInfo": {
-    "id": 1,
-    "name": "默认账号",
-    "platforms": {
-      "leetcode": true,
-      "luogu": false,
-      "github": true
-    },
-    "lastLogin": "2025-02-05"
-  },
-  "checkIn": {
-    "checkInDays": {
-      "2025-9-17": true,
-      "2025-9-18": true,
-      "2025-9-19": true
-    }
+    "accounts": [
+      {
+        "id": 0,
+        "name": "默认账号",
+        "platforms": {
+          "leetcode": true,
+          "luogu": false,
+          "github": true
+        },
+        "lastLogin": "2025-02-05",
+        "checkInDays": {
+          "2025-9-17": true,
+          "2025-9-18": true,
+          "2025-9-19": true,
+          "2026-1-7": true
+        }
+      },
+      {
+        "id": 1,
+        "name": "测试",
+        "platforms": {
+          "leetcode": false,
+          "luogu": false,
+          "github": true
+        },
+        "lastLogin": "2025-02-07",
+        "checkInDays": {
+          "2025-9-17": true,
+          "2026-2-5": true,
+          "2026-2-4": true,
+          "2026-2-3": true,
+          "2026-2-2": true,
+          "2026-2-1": true
+        }
+      }
+    ]
   }
 }

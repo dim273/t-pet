@@ -1,53 +1,10 @@
 const vscode = acquireVsCodeApi();
+
 const accountsContainer = document.getElementById('accountsContainer');
 const createAccountBtn = document.getElementById('createAccountBtn');
 const successMsg = document.getElementById('successMsg');
 const importAccount = document.getElementById('importAccount');
 const exportAccount = document.getElementById('exportAccount');
-
-// 模拟账号数据
-let accounts = [
-  {
-    id: 1,
-    name: "默认账号",
-    platforms: {
-      leetcode: true,
-      luogu: false,
-      github: true
-    },
-    lastLogin: "2025-02-05"
-  },
-  {
-    id: 2,
-    name: "cdw账号",
-    platforms: {
-      leetcode: true,
-      luogu: true,
-      github: true
-    },
-    lastLogin: "2025-02-08"
-  },
-  {
-    id: 3,
-    name: "cdw账号",
-    platforms: {
-      leetcode: true,
-      luogu: true,
-      github: true
-    },
-    lastLogin: "2025-02-08"
-  },
-  {
-    id: 4,
-    name: "cdw账号",
-    platforms: {
-      leetcode: true,
-      luogu: true,
-      github: true
-    },
-    lastLogin: "2025-02-08"
-  }
-];
 
 // 初始化界面
 function initAccountManager() {
@@ -57,6 +14,7 @@ function initAccountManager() {
 
 // 渲染账号列表
 function renderAccounts() {
+  // 处理无账号情况
   if (accounts.length === 0) {
     accountsContainer.innerHTML = `
       <div class="no-accounts">
@@ -125,10 +83,8 @@ function selectAccount(accountId) {
     });
 
     // 切换到主界面
-    vscode.postMessage({
-      type: 'switchPageToMain',
-      accountId: accountId
-    });
+    vscode.postMessage({ type: 'switchPageToMain' });
+    vscode.postMessage({ type: 'selectAccount', accountId });
   }
 }
 
@@ -180,10 +136,11 @@ function setupEventListeners() {
   });
 
   exportAccount.addEventListener('click', () => {
-    showSuccessMessage('导出功能开发中...');
+    showSuccessMessage('帮助功能开发中...');
   });
 }
 
 // 初始化
-initAccountManager();
-
+window.onload = function () {
+  initAccountManager();
+}
