@@ -75,11 +75,16 @@ class Live2dViewProvider {
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
 				case "switchPageToProblem":
-					this._history.push(this._page);
-					this._page = 'problem';
-					this._currentProblemRef = data.ref;
-					this._currentProblemTitle = data.title;
-					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					const problemFilePath = path.join(this._extensionUri.fsPath, "res", "Problem", `${data.ref}.md`);
+					if (fs.existsSync(problemFilePath)) {
+						this._history.push(this._page);
+						this._page = 'problem';
+						this._currentProblemRef = data.ref;
+						this._currentProblemTitle = data.title;
+						webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					} else {
+						vscode.window.showErrorMessage(`无法打开题目：找不到文件 ${data.ref}.md`);
+					}
 					break;
 				case "switchPageToLogin":
 					this._history.push(this._page);
