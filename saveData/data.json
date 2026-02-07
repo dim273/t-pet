@@ -14,25 +14,27 @@
           "2025-9-17": true,
           "2025-9-18": true,
           "2025-9-19": true,
-          "2026-1-7": true
+          "2026-1-7": true,
+          "2026-2-5": true,
+          "2026-2-4": true
         }
       },
       {
-        "id": 220,
-        "name": "测试",
+        "id": 1770433382943,
+        "name": "text",
         "platforms": {
           "leetcode": false,
           "luogu": false,
-          "github": true
+          "github": false
         },
-        "lastLogin": "2025-02-07",
+        "lastLogin": "2026-02-07",
         "checkInDays": {
-          "2025-9-17": true,
-          "2026-2-5": true,
           "2026-2-4": true,
           "2026-2-3": true,
+          "2026-2-1": true,
           "2026-2-2": true,
-          "2026-2-1": true
+          "2026-1-15": true,
+          "2026-1-9": true
         }
       }
     ]

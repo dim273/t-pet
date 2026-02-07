@@ -119,24 +119,29 @@ class FileStorage {
     }
   }
 
-  // 根据索引更新指定账号信息
-  updateAccountByIndex(index, updatedAccount) {
+  // 根据id更新指定账号信息
+  updateAccountByIndex(id, updatedAccount) {
     try {
       const data = this.readData();
       if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
         return false;
       }
 
-      if (index < 0 || index >= data.userInfo.accounts.length) {
+      const accountIndex = data.userInfo.accounts.findIndex(account => account.id === id);
+      if (accountIndex === -1) {
         return false;
       }
 
-      // 更新指定索引的账号信息
-      data.userInfo.accounts[index] = { ...data.userInfo.accounts[index], ...updatedAccount };
+      // 更新指定id的账号信息
+      data.userInfo.accounts[accountIndex] = {
+        ...data.userInfo.accounts[accountIndex],
+        ...updatedAccount
+      };
 
+      console.log("更新成功");
       return this.saveData(data);
     } catch (error) {
-      console.error(`更新索引 ${index} 的账号信息失败:`, error);
+      console.error(`更新ID ${id} 的账号信息失败:`, error);
       return false;
     }
   }
@@ -170,16 +175,7 @@ class FileStorage {
         data.userInfo.accounts = [];
       }
 
-      // 生成新的ID（最大ID+1）
-      const maxId = data.userInfo.accounts.reduce((max, account) =>
-        Math.max(max, account.id || 0), 0);
-
-      const accountWithId = {
-        ...newAccount,
-        id: maxId + 1
-      };
-
-      data.userInfo.accounts.push(accountWithId);
+      data.userInfo.accounts.push(newAccount);
 
       return this.saveData(data);
     } catch (error) {

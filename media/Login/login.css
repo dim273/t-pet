@@ -364,7 +364,8 @@ body {
   justify-content: flex-end;
 }
 
-.cancel-button, .confirm-button {
+.cancel-button,
+.confirm-button {
   padding: 8px 20px;
   border: none;
   border-radius: 6px;
@@ -392,4 +393,14 @@ body {
 .confirm-button:hover {
   background: linear-gradient(135deg, #bd2130, #a71e2a);
   transform: translateY(-1px);
+}
+
+input[type=text] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: none;
+  background-color: #4d4d4d;
+  color: white;
 }

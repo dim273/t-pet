@@ -105,14 +105,14 @@ function showDeleteConfirmModal() {
       <div class="delete-modal">
         <div class="modal-header">
           <h3>确认删除</h3>
-          <button class="close-button" onclick="closeDeleteModal()">×</button>
+          <button class="close-button" onclick="closeModal('deleteModal')">×</button>
         </div>
         <div class="modal-content">
           <p>确定要删除这个账号吗？此操作不可恢复。</p>
         </div>
         <div class="modal-actions">
           <button class="confirm-button" onclick="confirmDeleteAccount()">确认</button>
-          <button class="cancel-button" onclick="closeDeleteModal()">取消</button>
+          <button class="cancel-button" onclick="closeModal('deleteModal')">取消</button>
         </div>
       </div>
     </div>
@@ -130,18 +130,6 @@ function showDeleteConfirmModal() {
   }, 10);
 }
 
-// 关闭删除确认弹窗
-function closeDeleteModal() {
-  const modal = document.getElementById('deleteModal');
-  if (modal) {
-    modal.classList.remove('show');
-    setTimeout(() => {
-      modal.remove();
-      currentDeleteAccountId = null;
-    }, 300);
-  }
-}
-
 // 确认删除账号
 function confirmDeleteAccount() {
   if (currentDeleteAccountId !== null) {
@@ -150,29 +138,146 @@ function confirmDeleteAccount() {
 
     renderAccounts();
     showSuccessMessage('账号删除成功');
-    closeDeleteModal();
+    closeModal('deleteModal');
   }
 }
 
 // 创建新账号
 function createNewAccount() {
-  const accountName = prompt('请输入新账号名称：');
-  if (accountName && accountName.trim()) {
-    const newAccount = {
-      id: Date.now(),
-      name: accountName.trim(),
-      platforms: {
-        leetcode: false,
-        luogu: false,
-        github: false
-      },
-      lastLogin: new Date().toISOString().split('T')[0]
-    };
+  showCreateAccountModal();
+}
 
-    accounts.push(newAccount);
-    renderAccounts();
-    showSuccessMessage('账号创建成功');
+// 显示创建账号弹窗
+function showCreateAccountModal() {
+  const modalHtml = `
+    <div class="delete-modal-overlay" id="createModal">
+      <div class="delete-modal">
+        <div class="modal-header">
+          <h3>创建新账号</h3>
+          <button class="close-button" onclick="closeModal('createModal')">×</button>
+        </div>
+        <div class="modal-content">
+          <p>请输入新账号名称：</p>
+          <input type="text" id="newAccountName" placeholder="NAME">
+        </div>
+        <div class="modal-actions">
+          <button class="confirm-button" onclick="confirmCreateAccount()">确认创建</button>
+          <button class="cancel-button" onclick="closeModal('createModal')">取消</button>
+        </div>
+      </div>
+    </div>
+  `;
+  // 添加到body
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  // 显示弹窗动画
+  setTimeout(() => {
+    const modal = document.getElementById('createModal');
+    if (modal) {
+      modal.classList.add('show');
+    }
+  }, 10);
+}
+
+// 确认创建账号
+function confirmCreateAccount() {
+  const newAccountName = document.getElementById('newAccountName').value.trim();
+  if (!newAccountName) {
+    closeModal('createModal')
+    showErrorMessage('账号名称不能为空');
+    return;
   }
+  const newAccount = {
+    id: Date.now(),
+    name: newAccountName,
+    platforms: {
+      leetcode: false,
+      luogu: false,
+      github: false
+    },
+    lastLogin: new Date().toISOString().split('T')[0],
+    checkInDays: {}
+  };
+  accounts.push(newAccount);
+  renderAccounts();
+  closeModal('createModal');
+  vscode.postMessage({ type: 'addAccount', account: newAccount });
+}
+
+// 错误信息弹窗
+function showErrorMessage(message) {
+  const modalHtml = `
+    <div class="delete-modal-overlay" id="warningModal">
+      <div class="delete-modal">
+        <h2 style="text-align:center">警告</h2>
+        <div class="modal-content">
+          <p>${message}</p>
+        </div>
+        <div class="modal-actions">
+          <button class="cancel-button" onclick="closeModal('warningModal')">确认</button>
+        </div>
+      </div>
+    </div>
+  `;
+  // 添加到body
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  // 显示弹窗动画
+  setTimeout(() => {
+    const modal = document.getElementById('warningModal');
+    if (modal) {
+      modal.classList.add('show');
+    }
+  }, 10);
+}
+
+// 关闭弹窗函数
+function closeModal(_id) {
+  const modal = document.getElementById(_id);
+  if (modal) {
+    modal.classList.remove('show');
+    setTimeout(() => {
+      modal.remove();
+    }, 300);
+  }
+}
+
+// 显示帮助弹窗
+function showHelpModal() {
+  const modalHtml = `
+    <div class="delete-modal-overlay" id="helpModal">
+      <div class="delete-modal">
+        <div class="modal-header">
+          <h3>帮助信息</h3>
+          <button class="close-button" onclick="closeModal('helpModal')">×</button>
+        </div>
+        <div class="modal-content">
+          <div style="text-align: left; line-height: 1.6;">
+            <p style="margin: 8px 0;">点击"新建账号"创建本地账号，只需输入账号名称即可，名称不能为空</p>
+            <p style="margin: 8px 0;">在账号列表选择要使用的账号，点击即可登陆。也可以选择导入外部的数据，请确保数据格式正确！</p>
+            <p style="margin: 8px 0;">在账号信息里面可以查看账号所绑定的平台，绿色为绑定成功，支持 LeetCode、洛谷、GitHub 平台的绑定，绑定后可以让我们根据您的学习情况，为您给出更好的学习计划</p>
+            <p style="margin: 8px 0;">每个账号独立保存学习记录，并且账号信息储存在本地，一旦删除将无法恢复！</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // 添加到body
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  // 显示弹窗动画
+  setTimeout(() => {
+    const modal = document.getElementById('helpModal');
+    if (modal) {
+      modal.classList.add('show');
+    }
+  }, 10);
+}
+
+// 打开数据文件夹
+function openDataFolder() {
+  vscode.postMessage({ type: 'openDataFolder' });
 }
 
 // 显示成功消息
@@ -189,11 +294,11 @@ function setupEventListeners() {
   createAccountBtn.addEventListener('click', createNewAccount);
 
   importAccount.addEventListener('click', () => {
-    showSuccessMessage('导入功能开发中...');
+    openDataFolder();
   });
 
   exportAccount.addEventListener('click', () => {
-    showSuccessMessage('帮助功能开发中...');
+    showHelpModal();
   });
 }
 

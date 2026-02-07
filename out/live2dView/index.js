@@ -39,7 +39,7 @@ class Live2dViewProvider {
 				github: true
 			},
 			lastLogin: "2025-02-05",
-			checkInDays: []
+			checkInDays: {}
 		};
 
 	}
@@ -147,12 +147,21 @@ class Live2dViewProvider {
 					// console.log("当前账号信息", this.saveData.name);
 					break;
 				case "deleteAccount":
+					// 处理删除账号
 					this.storage.deleteAccountByIndex(data.accountId);
 					break;
-				// 处理日历打卡数据
+				case "addAccount":
+					// 处理添加账号
+					this.storage.addAccount(data.account);
+					break;
 				case "saveCalenderData":
+					// 处理日历打卡数据
 					this.saveData.checkInDays = data.data;
 					this.storage.updateAccountByIndex(this._currentAccountId, this.saveData);
+					break;
+				case "openDataFolder":
+					// 打开数据文件夹
+					this.openDataFolder();
 					break;
 
 			}
@@ -383,7 +392,6 @@ class Live2dViewProvider {
 					window.currentProblemListID = "${listId || 1}";
 				</script>
 				<script src="${appUri}"></script>
-				<scr>
 			</body>
 
 			</html>`;
@@ -409,7 +417,7 @@ class Live2dViewProvider {
 
 		// 加载账号信息
 		const accounts = this.storage.readData().userInfo.accounts || [];
-		if (accounts == []) console.log("账号列表为空");
+		if (accounts.length === 0) console.log("账号列表为空");
 		return `<!DOCTYPE html>
 			<html lang="en">
 
@@ -525,7 +533,27 @@ class Live2dViewProvider {
 
 		return htmlContent;
 	}
+
+	// 打开数据文件夹
+	openDataFolder() {
+		try {
+			// 获取数据文件夹路径
+			const dataFolderPath = path.join(this._extensionUri.fsPath, 'saveData');
+
+			// 检查文件夹是否存在
+			if (fs.existsSync(dataFolderPath)) {
+				vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(dataFolderPath));
+			} else {
+				// 如果文件夹不存在，创建它
+				fs.mkdirSync(dataFolderPath, { recursive: true });
+				vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(dataFolderPath));
+			}
+		} catch (error) {
+			vscode.window.showErrorMessage(`打开数据文件夹失败: ${error.message}`);
+		}
+	}
 }
+
 Live2dViewProvider.viewType = "vscode-live2d.live2dView";
 // 生成随机字符串用于 CSP（内容安全策略）
 function getNonce() {
