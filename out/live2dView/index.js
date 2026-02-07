@@ -144,7 +144,23 @@ class Live2dViewProvider {
 					// 处理选择账号
 					this._currentAccountId = data.accountId;
 					this.saveData = this.storage.getAccountByIndex(data.accountId) || this.saveData;
+					// Ensure progress object exists
+					if (!this.saveData.progress) {
+						this.saveData.progress = { passedProblems: [] };
+					}
 					// console.log("当前账号信息", this.saveData.name);
+					break;
+				case "problemPassed":
+					// 处理题目完成
+					if (!this.saveData.progress) {
+						this.saveData.progress = { passedProblems: [] };
+					}
+					const problemRef = data.ref;
+					if (!this.saveData.progress.passedProblems.includes(problemRef)) {
+						this.saveData.progress.passedProblems.push(problemRef);
+						this.storage.updateAccountByIndex(this._currentAccountId, this.saveData);
+						vscode.window.showInformationMessage(`恭喜！你已完成题目 #${problemRef}`);
+					}
 					break;
 				case "deleteAccount":
 					// 处理删除账号
@@ -303,6 +319,8 @@ class Live2dViewProvider {
 		if (this._currentProblemListId)
 			listTitle = this._currentProblemListId;
 
+		const passedProblems = this.saveData.progress ? this.saveData.progress.passedProblems : [];
+
 		return `
 			<!DOCTYPE html>
 			<html lang="zh-CN">
@@ -341,6 +359,7 @@ class Live2dViewProvider {
 				<script src="${appUri}"></script>
 				<script>
 					window.currentListId = "${listTitle}";
+					window.passedProblems = ${JSON.stringify(passedProblems)};
 				</script>
 			</body>
 
@@ -383,13 +402,15 @@ class Live2dViewProvider {
 			<body>
 				<div class="header">
         	<button class="back-btn" id="back-btn" onclick="switchPageToProblemList()">←</button>
-        	<h3 style="font-weight: 600;" id="listTitle">题目</h3>
-    		</div>
+        <h3 style="font-weight: 600;" id="listTitle">题目</h3>
+        <button class="complete-btn" onclick="completeProblem()" style="margin-left: auto; background-color: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">完成题目</button>
+    </div>
 				<div id="markdownDisplay"></div>
 				<script> 
 					let markdownText = ${JSON.stringify(fileContent)}; 
 					window.currentProblemTitle = "${title || "整型与布尔型的转换"}";
 					window.currentProblemListID = "${listId || 1}";
+					window.currentProblemRef = ${ref};
 				</script>
 				<script src="${appUri}"></script>
 			</body>
@@ -474,6 +495,7 @@ class Live2dViewProvider {
 	_getTreeHtml(webview) {
 		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "data.js"));
 		const logicUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "logic.js"));
+		const problemDataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "data.js"));
 		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "style.css"))
 		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"))
 
@@ -482,6 +504,8 @@ class Live2dViewProvider {
 		if (this._currentSubTree) {
 			treeTitle = this._currentSubTree;
 		}
+
+		const passedProblems = this.saveData.progress ? this.saveData.progress.passedProblems : [];
 
 		return `
 			<!DOCTYPE html>
@@ -501,11 +525,6 @@ class Live2dViewProvider {
         	<h3 style="font-weight: 600;">${treeTitle}</h3>
     		</div>
 				
-				<div class="controls">
-					<h3>测试控制（可删除）</h3>
-					<button class="reset-btn" onclick="resetTechTree()">重置</button>
-					<div class="info">点击蓝色节点解锁</div>
-				</div>
 			  <div class="spacer"></div>
 				<div class="tech-tree-container">
 					<div class="tech-tree" id="techTree">
@@ -513,11 +532,13 @@ class Live2dViewProvider {
 				</div>
 
 				<script src="${dataUri}"></script>
-				<script src="${logicUri}"></script>
+				<script src="${problemDataUri}"></script>
 				<script>
 					// 设置当前子树ID
 					window.currentSubTreeId = "${this._currentSubTree || "知识树"}";
+					window.passedProblems = ${JSON.stringify(passedProblems)};
 				</script>
+				<script src="${logicUri}"></script>
 			</body>
 
 			</html>

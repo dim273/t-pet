@@ -79,5 +79,17 @@ function renderProblemList() {
 window.onload = function () {
   listIdFromVSCode = window.currentListId;
   currentListId = `list_${listIdFromVSCode}` || currentListId;
+
+  // 根据传入的 passedProblems 更新题目状态
+  if (window.passedProblems && Array.isArray(window.passedProblems)) {
+    if (problemSets[currentListId] && problemSets[currentListId].problems) {
+      problemSets[currentListId].problems.forEach(p => {
+        if (window.passedProblems.includes(p.ref)) {
+          p.passed = true;
+        }
+      });
+    }
+  }
+
   renderProblemList();
 }

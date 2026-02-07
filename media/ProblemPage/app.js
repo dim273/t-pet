@@ -1,11 +1,23 @@
 const vscode = acquireVsCodeApi();
-const MainOrigin = "vscode-file://vscode-app";
-
 let problemListID = 1;
 let problemTitle = "整型与布尔型的转换";
 
 function switchPageToProblemList() {
-  vscode.postMessage({ type: 'switchPageToProblemList', listId: problemListID });
+  vscode.postMessage({ type: 'goBack' });
+}
+
+function completeProblem() {
+  const ref = window.currentProblemRef;
+  vscode.postMessage({
+    type: 'problemPassed',
+    ref: ref
+  });
+  const btn = document.querySelector('.complete-btn');
+  if (btn) {
+    btn.textContent = "已完成";
+    btn.style.backgroundColor = "#888";
+    btn.disabled = true;
+  }
 }
 
 function renderMarkdown() {
