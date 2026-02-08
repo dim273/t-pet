@@ -3,6 +3,13 @@ const MainOrigin = "vscode-file://vscode-app";
 
 let currentListId = "list_1"; // 默认显示list_1
 let listIdFromVSCode = 1;
+let userProfile = {
+  passedProblems: [],
+  weakTags: [],
+  currentTags: [],
+  targetDifficulty: "easy"
+};
+
 
 function switchPageToMain() {
   vscode.postMessage({ type: 'goBack' });
@@ -75,7 +82,6 @@ function renderProblemList() {
     </div>
   `).join('');
 }
-
 window.onload = function () {
   listIdFromVSCode = window.currentListId;
   currentListId = `list_${listIdFromVSCode}` || currentListId;
@@ -90,6 +96,5 @@ window.onload = function () {
       });
     }
   }
-
   renderProblemList();
 }

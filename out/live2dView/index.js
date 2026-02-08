@@ -86,6 +86,12 @@ class Live2dViewProvider {
 						vscode.window.showErrorMessage(`无法打开题目：找不到文件 ${data.ref}.md`);
 					}
 					break;
+				case "switchPageToReProblemList":
+					this._history.push(this._page);
+					this._page = 'Reproblem';
+					this._currentProblemListId = data.listId || 1;
+					this._view.webview.html = this._getRecommendProblemListHtml(this._view.webview);
+					break;
 				case "switchPageToLogin":
 					this._history.push(this._page);
 					this._page = 'login';
@@ -205,6 +211,8 @@ class Live2dViewProvider {
 				return this._getTreeHtml(webview);
 			case 'aiChat':
 				return this._getAiChatHtml(webview);
+			case 'Reproblem':
+				return this._getRecommendProblemListHtml(webview);
 			default:
 				return this._getSettingHtml(webview);
 		}
@@ -357,7 +365,6 @@ class Live2dViewProvider {
 						<div class="stat-label">完成进度</div>
 					</div>
 				</div>
-
 				<div class="problem-list" id="problem-list">
 				</div>
 				<script src="${dataUri}"></script>
@@ -370,7 +377,6 @@ class Live2dViewProvider {
 
 			</html>`
 	}
-
 	// 生成题目界面
 	_getProblemHtml(webview) {
 		const appUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemPage", "app.js"));
@@ -421,6 +427,61 @@ class Live2dViewProvider {
 			</body>
 
 			</html>`;
+	}
+	_getRecommendProblemListHtml(webview) {
+		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "styles.css"));
+
+		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "data.js"));
+		// 先暂时复用 ProblemList/data.js
+
+		const appUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "app.js"));
+
+		const passedProblems = this.saveData.progress ? this.saveData.progress.passedProblems : [];
+
+		return `
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>推荐题单</title>
+      <link rel="stylesheet" href="${vscodeCssUri}">
+      <link rel="stylesheet" href="${styleCssUri}">
+    </head>
+    <body>
+      <div class="header">
+        <button class="back-btn" onclick="switchPageToMain()">←</button>
+        <h3 id="listTitle">推荐题单</h3>
+      </div>
+
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-value" id="total-count">0</div>
+          <div class="stat-label">推荐题目数</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="passed-count">0</div>
+          <div class="stat-label">已通过</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="progress">0%</div>
+          <div class="stat-label">完成进度</div>
+        </div>
+      </div>
+
+      <div class="reproblem-list" id="reproblem-list"></div>
+
+      <script src="${dataUri}"></script>
+
+      <script>
+        window.passedProblems = ${JSON.stringify(passedProblems)};
+      </script>
+
+      <script type="module" src="${appUri}"></script>
+    </body>
+    </html>
+  `;
 	}
 
 	// 生成登录界面
