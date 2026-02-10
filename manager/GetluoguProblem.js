@@ -37,9 +37,9 @@ const fetchPage = async (problemId) => {
             .replace(sectionRegex, '')
             .replace(/^[ \t]+/gm, '');
 
-        const saveDir = path.join(__dirname, '..', 'saveData');
+        const saveDir = path.join(__dirname, '..', 'res/Problem');
         // 写入 Markdown 文件，使用 example 标签的内容作为文件名
-        const filename = path.join(saveDir, 'example.md');
+        const filename = path.join(saveDir, '175.md');
         fs.writeFileSync(filename, markdown.trim());
     } catch (error) {
         console.error(`题目获取出错 ${problemId}:`, error);
@@ -49,7 +49,7 @@ const fetchPage = async (problemId) => {
 // 如果直接运行此文件，则执行默认的问题ID列表
 if (require.main === module) {
     const problemIds = [
-        'P1996'
+        'P1352'
     ];
 
     // 批量下载
