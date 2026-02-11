@@ -8,6 +8,7 @@ const vscode = require("vscode");
 const Main_1 = require("../live2dModify/Main");
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 const { FileStorage } = require('../../manager/fileStorage');
 const { console } = require("inspector");
 
@@ -190,9 +191,143 @@ class Live2dViewProvider {
 					// 打开数据文件夹
 					this.openDataFolder();
 					break;
+				case "aiRequest":
+					this._handleAiRequest(data.payload);
+					break;
 
 			}
 		});
+	}
+
+	async _handleAiRequest(payload) {
+		const { mode, message, extraData, workspaceCode } = payload;
+
+		// 读取本地 AI 配置文件
+		let apiKey = "";
+		let model = "deepseek/deepseek-r1-0528:free";
+		try {
+			const configPath = path.join(this._extensionUri.fsPath, 'aiConfig.json');
+			if (fs.existsSync(configPath)) {
+				const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+				apiKey = config.openrouter?.apiKey || "";
+				model = config.openrouter?.model || model;
+			}
+		} catch (error) {
+			console.error("读取 aiConfig.json 失败:", error);
+		}
+
+		// 如果本地配置没有，再尝试从设置获取
+		if (!apiKey) {
+			apiKey = vscode.workspace.getConfiguration('t-pet').get('openrouterApiKey') || process.env.OPENROUTER_API_KEY;
+		}
+
+		if (!apiKey || apiKey === "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" || apiKey === "<OPENROUTER_API_KEY>") {
+			if (this._view && this._view.webview) {
+				this._view.webview.postMessage({
+					type: 'aiError',
+					text: "无效或未配置 API Key。请在插件设置中配置 't-pet.openrouterApiKey'。您可以从 openrouter.ai 获取免费 Key。"
+				});
+			}
+			return;
+		}
+
+		try {
+			const postData = JSON.stringify({
+				"model": model,
+				"messages": [
+					{
+						"role": "user",
+						"content": message
+					}
+				],
+				"stream": true
+			});
+
+			const options = {
+				hostname: 'openrouter.ai',
+				port: 443,
+				path: '/api/v1/chat/completions',
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${apiKey}`,
+					'HTTP-Referer': 'https://github.com/t-pet',
+					'X-Title': 'T-Pet VSCode Extension',
+					'Content-Length': Buffer.byteLength(postData)
+				}
+			};
+
+			const req = https.request(options, (res) => {
+				let buffer = '';
+
+				res.on('data', (chunk) => {
+					buffer += chunk.toString();
+					
+					// 处理 SSE 数据流
+					const lines = buffer.split('\n');
+					buffer = lines.pop(); // 保留不完整的一行
+
+					for (const line of lines) {
+						if (line.trim() === '') continue;
+						if (line.startsWith('data: ')) {
+							const data = line.slice(6);
+							if (data === '[DONE]') {
+								if (this._view && this._view.webview) {
+									this._view.webview.postMessage({ type: 'aiStreamDone' });
+								}
+								continue;
+							}
+
+							try {
+								const parsed = JSON.parse(data);
+								const delta = parsed.choices[0]?.delta || {};
+								const content = delta.content || "";
+								// 兼容不同的思考过程字段名：reasoning_content 或 reasoning
+								const reasoning = delta.reasoning_content || delta.reasoning || "";
+								
+								if (content || reasoning) {
+									if (this._view && this._view.webview) {
+										this._view.webview.postMessage({
+											type: 'aiStreamChunk',
+											content: content,
+											reasoning: reasoning
+										});
+									}
+								}
+							} catch (e) {
+								console.error("解析流数据失败:", e, data);
+							}
+						}
+					}
+				});
+
+				res.on('end', () => {
+					if (this._view && this._view.webview) {
+						this._view.webview.postMessage({ type: 'aiStreamDone' });
+					}
+				});
+			});
+
+			req.on('error', (e) => {
+				if (this._view && this._view.webview) {
+					this._view.webview.postMessage({
+						type: 'aiError',
+						text: `网络请求失败: ${e.message}`
+					});
+				}
+			});
+
+			req.write(postData);
+			req.end();
+
+		} catch (error) {
+			if (this._view && this._view.webview) {
+				this._view.webview.postMessage({
+					type: 'aiError',
+					text: error.message
+				});
+			}
+		}
 	}
 
 	updateWebviewContent(webview) {
@@ -295,11 +430,11 @@ class Live2dViewProvider {
 
 	// 生成Ai助手
 	_getAiChatHtml(webview) {
-		const aiHtmlPath = path.join(this._extensionUri.fsPath, 'media', 'ai-assistant.html');
+		const aiHtmlPath = path.join(this._extensionUri.fsPath, 'media', 'AIAssistant', 'ai-assistant.html');
 		let html = fs.readFileSync(aiHtmlPath, 'utf8');
 
 		const scriptUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this._extensionUri, 'media', 'ai-assistant.js')
+			vscode.Uri.joinPath(this._extensionUri, 'media', 'AIAssistant', 'ai-assistant.js')
 		);
 
 		html = html.replace('<!--SCRIPT_PLACEHOLDER-->', `<script type="module" src="${scriptUri}"></script>`);

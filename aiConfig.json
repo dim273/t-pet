@@ -1,0 +1,8 @@
+{
+    "openrouter": {
+        "apiKey": "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",
+        "model": "deepseek/deepseek-r1-0528:free",
+        "referer": "https://github.com/t-pet",
+        "title": "T-Pet AI Assistant"
+    }
+}

@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>编程学习助手 - VSCode插件</title>
+    <title>AI 编程助手</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
             --vscode-bg: #1e1e1e;
@@ -442,6 +443,62 @@
         .assistant .message-body ol {
             margin-bottom: 12px;
         }
+
+        /* 思考过程样式 */
+        .thought-container {
+            margin-bottom: 10px;
+            border-left: 2px solid #555;
+            padding-left: 10px;
+        }
+
+        .thought-header {
+            font-size: 12px;
+            color: #888;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            margin-bottom: 4px;
+        }
+
+        .thought-header::before {
+            content: '▶';
+            display: inline-block;
+            margin-right: 5px;
+            font-size: 8px;
+            transition: transform 0.2s;
+        }
+
+        .thought-container.expanded .thought-header::before {
+            transform: rotate(90deg);
+        }
+
+        .thought-content {
+            font-size: 12px;
+            color: #777;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .thought-container.expanded .thought-content {
+            display: block;
+        }
+
+        .thought-container.streaming .thought-content {
+            display: block;
+        }
+
+        .thought-container.streaming .thought-header::before {
+            content: '●';
+            color: var(--vscode-accent);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
 
@@ -548,217 +605,7 @@
         </div>
     </div>
 
-    <script>
-        const vscode = acquireVsCodeApi();
-        function goBack() {
-            vscode.postMessage({ type: 'goBack' });
-        }
-        document.addEventListener('DOMContentLoaded', function () {
-            // DOM元素
-            const chatContainer = document.getElementById('chat-container');
-            const chatContent = document.getElementById('chat-content');
-            const initState = document.getElementById('init-state');
-            const modeBtns = document.querySelectorAll('.mode-btn');
-            const modeIndicator = document.getElementById('mode-indicator');
-            const inputGroups = document.querySelectorAll('.input-group');
-            const backBtn = document.getElementById('back-btn');
-
-            // 发送按钮
-            const sendCodeBtn = document.getElementById('send-code');
-            const sendProblemBtn = document.getElementById('send-problem');
-            const sendKnowledgeBtn = document.getElementById('send-knowledge');
-
-            // 输入框
-            const codeInput = document.getElementById('code-input');
-            const problemIdInput = document.getElementById('problem-id');
-            const problemInput = document.getElementById('problem-input');
-            const knowledgeSelect = document.getElementById('knowledge-select');
-            const knowledgeInput = document.getElementById('knowledge-input');
-
-            // 初始设置指示器位置
-            updateModeIndicator(document.querySelector('.mode-btn.active'));
-
-            // 模式切换
-            modeBtns.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    // 更新按钮状态
-                    modeBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-
-                    // 更新指示器位置
-                    updateModeIndicator(this);
-
-                    // 显示对应的输入区域
-                    const mode = this.dataset.mode;
-                    inputGroups.forEach(group => {
-                        group.classList.toggle('active', group.dataset.mode === mode);
-                    });
-                });
-            });
-
-            function updateModeIndicator(btn) {
-                const btnRect = btn.getBoundingClientRect();
-                const containerRect = btn.parentElement.getBoundingClientRect();
-
-                modeIndicator.style.width = `${btnRect.width}px`;
-                modeIndicator.style.left = `${btnRect.left - containerRect.left}px`;
-            }
-
-            // 发送消息函数
-            function sendMessage(type, message, extraData = {}) {
-                // 隐藏初始状态
-                if (!initState.classList.contains('hidden')) {
-                    initState.classList.add('hidden');
-                    chatContent.style.display = 'block';
-                }
-
-                // 添加用户消息
-                addMessage('user', message);
-
-                // 根据消息类型模拟AI回复
-                setTimeout(() => {
-                    simulateAIResponse(type, message, extraData);
-                }, 1000);
-            }
-
-            function addMessage(sender, text) {
-                const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const name = sender === 'user' ? '您' : '编程助手';
-
-                const messageEl = document.createElement('div');
-                messageEl.className = `message ${sender}`;
-                messageEl.innerHTML = `
-                    <div class="avatar">${sender === 'user' ? 'U' : 'AI'}</div>
-                    <div class="message-content">
-                        <div class="name">${name}</div>
-                        <div class="message-body">${text}</div>
-                        <div class="timestamp">${timestamp}</div>
-                    </div>
-                `;
-
-                chatContent.appendChild(messageEl);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-
-            function simulateAIResponse(type, userMessage, extraData) {
-                let response = "";
-
-                if (type === 'code') {
-                    const workspaceEnabled = document.getElementById('workspace-code').checked;
-
-                    response = `我分析了${workspaceEnabled ? '您提供的' : ''}代码，发现以下优化点：<br><br>
-                    <div class="code-block">// 原始实现：
-function processData(arr) {
-    let result = [];
-    for (let i = 0; i < arr.length; i++) {
-        if (arr[i] > 5) {
-            result.push(arr[i]);
-        }
-    }
-    return result;
-}</div>
-                    更高效的实现：<br>
-                    <div class="code-block">// 优化版本 (使用filter):
-function processData(arr) {
-    return arr.filter(item => item > 5);
-}</div>
-                    <strong>性能提升</strong>：使用filter方法减少了代码量并提升可读性`;
-                }
-                else if (type === 'problem') {
-                    const problemId = extraData.problemId;
-
-                    response = `对于问题${problemId ? ` #${problemId}` : ''} "${userMessage}"，我建议分解如下步骤：<br>
-                    <ol class="olist">
-                        <li>理解问题核心需求：识别问题核心目标</li>
-                        <li>边界条件分析：找出特殊情况和边界条件</li>
-                        <li>数据结构选择：确定最适合的数据结构</li>
-                        <li>算法设计：选择高效的解决算法</li>
-                    </ol>`;
-                }
-                else {
-                    const knowledge = extraData.knowledge;
-
-                    if (!knowledge) {
-                        response = `请选择一个知识点，我会根据您的学习进度提供详细的解释和示例。`;
-                    } else {
-                        // 根据不同知识点返回不同内容
-                        const knowledgeResponses = {
-                            array: `数组是一种基本数据结构，特点如下：<br>
-                            <ul class="olist">
-                                <li><strong>内存连续</strong>：元素在内存中连续存储</li>
-                                <li><strong>O(1)访问</strong>：按索引访问的时间复杂度为O(1)</li>
-                                <li><strong>固定大小</strong>：大多数语言中数组大小固定</li>
-                            </ul>`,
-                            recursion: `递归算法的核心思想是：函数调用自身<br>
-                            <div class="code-block">// 递归示例：阶乘计算
-function factorial(n) {
-    if (n <= 1) return 1;  // 基线条件
-    return n * factorial(n - 1); // 递归调用
-}</div>`
-                        };
-
-                        response = knowledgeResponses[knowledge] || `关于${knowledgeSelect.options[knowledgeSelect.selectedIndex].text}的详细解释`;
-                    }
-                }
-
-                addMessage('assistant', response);
-            }
-
-            // 事件监听器
-            sendCodeBtn.addEventListener('click', function () {
-                const message = codeInput.value.trim();
-                if (!message) return;
-
-                sendMessage('code', message);
-                codeInput.value = '';
-            });
-
-            sendProblemBtn.addEventListener('click', function () {
-                const problemId = problemIdInput.value.trim();
-                const message = problemInput.value.trim();
-                if (!message) return;
-
-                sendMessage('problem', message, { problemId });
-                problemIdInput.value = '';
-                problemInput.value = '';
-            });
-
-            sendKnowledgeBtn.addEventListener('click', function () {
-                const knowledge = knowledgeSelect.value;
-                const message = knowledgeInput.value.trim();
-
-                sendMessage('knowledge', message, { knowledge });
-                knowledgeInput.value = '';
-            });
-
-            // 输入框回车支持
-            codeInput.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendCodeBtn.click();
-                }
-            });
-
-            problemInput.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendProblemBtn.click();
-                }
-            });
-
-            knowledgeInput.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendKnowledgeBtn.click();
-                }
-            });
-
-            // 初始化
-            window.addEventListener('resize', () => {
-                updateModeIndicator(document.querySelector('.mode-btn.active'));
-            });
-        });
-    </script>
+    <!--SCRIPT_PLACEHOLDER-->
 </body>
 
 </html>
