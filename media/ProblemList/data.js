@@ -1066,7 +1066,7 @@ const problemSets = {
       {
         id: 1,
         title: "最近的请求次数",
-        url: "https://leetcode.cn/problems/number-of-recent-calls/solutions/1467662/zui-jin-de-qing-qiu-ci-shu-by-leetcode-s-ncm1/",
+        url: "https://leetcode.cn/problems/number-of-recent-calls/description/",
         difficulty: "easy",
         passed: false,
         tags: ["队列", "设计"],
@@ -1075,7 +1075,7 @@ const problemSets = {
       {
         id: 2,
         title: "图书整理 II",
-        url: "https://leetcode.cn/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/solutions/?envType=problem-list-v2&envId=queue",
+        url: "https://leetcode.cn/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/description/",
         difficulty: "easy",
         passed: false,
         tags: ["栈", "队列", "设计"],
@@ -1084,7 +1084,7 @@ const problemSets = {
       {
         id: 3,
         title: "数据流中的移动平均值",
-        url: "https://leetcode.cn/problems/qIsx9U/solutions/?envType=problem-list-v2&envId=queue",
+        url: "https://leetcode.cn/problems/qIsx9U/description/?envType=problem-list-v2&envId=queue",
         difficulty: "easy",
         passed: false,
         tags: ["队列", "设计", "滑动窗口"],
@@ -1102,7 +1102,7 @@ const problemSets = {
       {
         id: 5,
         title: "按递增顺序显示卡牌",
-        url: "https://leetcode.cn/problems/reveal-cards-in-increasing-order/solutions/",
+        url: "https://leetcode.cn/problems/reveal-cards-in-increasing-order/description/",
         difficulty: "medium",
         passed: false,
         tags: ["队列", "数组", "排序", "模拟"],
@@ -1166,7 +1166,7 @@ const problemSets = {
       {
         id: 1,
         title: "ICPC 2023 Nanjing R 背包",
-        url: "https://www.luogu.com.cn/problem/solution/P13957",
+        url: "https://www.luogu.com.cn/problem/P13957",
         difficulty: "medium",
         passed: false,
         tags: ["动态规划", "01背包"],
@@ -1184,7 +1184,7 @@ const problemSets = {
       {
         id: 3,
         title: "最大子数组和",
-        url: "https://leetcode.cn/problems/maximum-subarray/solutions/228009/zui-da-zi-xu-he-by-leetcode-solution/",
+        url: "https://leetcode.cn/problems/maximum-subarray/description/",
         difficulty: "easy",
         passed: false,
         tags: ["动态规划", "数组"],
@@ -1193,7 +1193,7 @@ const problemSets = {
       {
         id: 4,
         title: "单词拆分",
-        url: "https://leetcode.cn/problems/word-break/solutions/302471/dan-ci-chai-fen-by-leetcode-solution/?envType=problem-list-v2&envId=dynamic-programming",
+        url: "https://leetcode.cn/problems/word-break/description/?envType=problem-list-v2&envId=dynamic-programming",
         difficulty: "medium",
         passed: false,
         tags: ["动态规划", "完全背包"],

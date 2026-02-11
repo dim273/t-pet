@@ -10,9 +10,8 @@ window.switchPageToMain = function () {
 };
 
 // 跳转到题目界面
-window.switchPageToProblem = function (problemId) {
-  const problem = recommendedProblems.find(p => p.id === problemId);
-
+window.switchPageToProblem = function (problemRef) {
+  const problem = recommendedProblems.find(p => p.ref === problemRef);
   if (problem) {
     vscode.postMessage({
       type: "switchPageToProblem",
@@ -52,7 +51,7 @@ function renderProblemList() {
   }
 
   problemListElement.innerHTML = recommendedProblems.map(problem => `
-    <div class="problem-item" onclick="switchPageToProblem(${problem.id})">
+    <div class="problem-item" onclick="switchPageToProblem(${problem.ref})">
       <div class="problem-info">
         <div class="problem-title">
           <a href="${problem.url}" target="_blank">${problem.title}</a>
