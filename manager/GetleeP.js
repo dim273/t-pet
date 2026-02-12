@@ -100,7 +100,7 @@ async function fetchLeetCodeProblem(slug) {
     }
 
     const safeTitle = title.replace(/[\\/:*?"<>|]/g, "_");
-    const filename = path.join(saveDir, '199.md');
+    const filename = path.join(saveDir, '94.md');
 
     fs.writeFileSync(filename, markdown, "utf-8");
     console.log("保存成功:", filename);
@@ -159,7 +159,7 @@ ${contentMd}
 // 直接运行
 if (require.main === module) {
   const slugs = [
-    "minimum-time-to-visit-disappearing-nodes"         // 两数之和
+    "01-matrix"         // 两数之和
   ];
 
   slugs.forEach(slug => fetchLeetCodeProblem(slug));

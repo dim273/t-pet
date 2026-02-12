@@ -733,7 +733,7 @@ const problemSets = {
       },
       {
         id: 2,
-        title: "盛最多水的容器",
+        title: "颠倒二进制位",
         url: "https://leetcode.cn/problems/reverse-bits/description/",
         difficulty: "easy",
         passed: false,
