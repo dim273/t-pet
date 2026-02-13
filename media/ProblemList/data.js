@@ -1911,7 +1911,7 @@ const problemSets = {
     ]
   },
   "list_40": {
-    name: "图",
+    name: "图*",
     problems: [
       {
         id: 1,
@@ -1961,7 +1961,7 @@ const problemSets = {
     ]
   },
   "list_41": {
-    name: "图论算法",
+    name: "图论算法*",
     problems: [
       {
         id: 1,

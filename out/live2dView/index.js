@@ -10,6 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const { FileStorage } = require('../../manager/fileStorage');
+const { AIAssistantLogic } = require('../AIAssistant/logic');
 const { console } = require("inspector");
 
 // 扩展激活入口函数
@@ -43,6 +44,20 @@ class Live2dViewProvider {
 			checkInDays: {}
 		};
 
+		// --- 代码建议上下文追踪 ---
+		this._lastActiveEditorContext = null;
+		this.aiLogic = new AIAssistantLogic(this);
+
+		// 初始化当前活动的编辑器
+		this.aiLogic.updateLastActiveContext(vscode.window.activeTextEditor);
+		// 监听编辑器切换
+		vscode.window.onDidChangeActiveTextEditor(editor => {
+			this.aiLogic.updateLastActiveContext(editor);
+		});
+		// 监听选区变化
+		vscode.window.onDidChangeTextEditorSelection(event => {
+			this.aiLogic.updateLastActiveContext(event.textEditor);
+		});
 	}
 
 	// 解析 Webview 视图
@@ -133,6 +148,13 @@ class Live2dViewProvider {
 					this._history.push(this._page);
 					this._page = 'aiChat';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					// 默认开启新对话 (如果当前没有会话或者当前会话已有消息)
+					if (!this.saveData.aiHistory || !this.saveData.aiHistory.currentSessionId || 
+						(this.saveData.aiHistory.sessions.find(s => s.id === this.saveData.aiHistory.currentSessionId)?.messages.length > 0)) {
+						this.aiLogic.handleCreateNewAiSession();
+					} else {
+						this.aiLogic.handleLoadAiHistory();
+					}
 					break;
 				case "goBack":
 					if (this._history.length > 0) {
@@ -192,142 +214,57 @@ class Live2dViewProvider {
 					this.openDataFolder();
 					break;
 				case "aiRequest":
-					this._handleAiRequest(data.payload);
+					this.aiLogic.handleAiRequest(data.payload);
+					break;
+				case "loadAiHistory":
+					this.aiLogic.handleLoadAiHistory();
+					break;
+				case "switchAiSession":
+					this.aiLogic.handleSwitchAiSession(data.sessionId);
+					break;
+				case "createNewAiSession":
+					this.aiLogic.handleCreateNewAiSession();
+					break;
+				case "deleteAiSession":
+					this.aiLogic.handleDeleteAiSession(data.sessionId);
 					break;
 
 			}
 		});
 	}
 
-	async _handleAiRequest(payload) {
-		const { mode, message, extraData, workspaceCode } = payload;
+	/**
+	 * 异步生成会话标题
+	 */
+	async _generateSessionTitle(sessionId, userMessage, aiResponse, apiKey, model) {
+		return this.aiLogic.generateSessionTitle(sessionId, userMessage, aiResponse, apiKey, model);
+	}
 
-		// 读取本地 AI 配置文件
-		let apiKey = "";
-		let model = "deepseek/deepseek-r1-0528:free";
-		try {
-			const configPath = path.join(this._extensionUri.fsPath, 'aiConfig.json');
-			if (fs.existsSync(configPath)) {
-				const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-				apiKey = config.openrouter?.apiKey || "";
-				model = config.openrouter?.model || model;
-			}
-		} catch (error) {
-			console.error("读取 aiConfig.json 失败:", error);
-		}
+	_saveAssistantMessageToHistory(content, thought) {
+		return this.aiLogic.saveAssistantMessageToHistory(content, thought);
+	}
 
-		// 如果本地配置没有，再尝试从设置获取
-		if (!apiKey) {
-			apiKey = vscode.workspace.getConfiguration('t-pet').get('openrouterApiKey') || process.env.OPENROUTER_API_KEY;
-		}
+	_handleLoadAiHistory() {
+		return this.aiLogic.handleLoadAiHistory();
+	}
 
-		if (!apiKey || apiKey === "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" || apiKey === "<OPENROUTER_API_KEY>") {
-			if (this._view && this._view.webview) {
-				this._view.webview.postMessage({
-					type: 'aiError',
-					text: "无效或未配置 API Key。请在插件设置中配置 't-pet.openrouterApiKey'。您可以从 openrouter.ai 获取免费 Key。"
-				});
-			}
-			return;
-		}
+	_handleSwitchAiSession(sessionId) {
+		return this.aiLogic.handleSwitchAiSession(sessionId);
+	}
 
-		try {
-			const postData = JSON.stringify({
-				"model": model,
-				"messages": [
-					{
-						"role": "user",
-						"content": message
-					}
-				],
-				"stream": true
-			});
+	_handleCreateNewAiSession() {
+		return this.aiLogic.handleCreateNewAiSession();
+	}
 
-			const options = {
-				hostname: 'openrouter.ai',
-				port: 443,
-				path: '/api/v1/chat/completions',
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${apiKey}`,
-					'HTTP-Referer': 'https://github.com/t-pet',
-					'X-Title': 'T-Pet VSCode Extension',
-					'Content-Length': Buffer.byteLength(postData)
-				}
-			};
+	_handleDeleteAiSession(sessionId) {
+		return this.aiLogic.handleDeleteAiSession(sessionId);
+	}
 
-			const req = https.request(options, (res) => {
-				let buffer = '';
-
-				res.on('data', (chunk) => {
-					buffer += chunk.toString();
-					
-					// 处理 SSE 数据流
-					const lines = buffer.split('\n');
-					buffer = lines.pop(); // 保留不完整的一行
-
-					for (const line of lines) {
-						if (line.trim() === '') continue;
-						if (line.startsWith('data: ')) {
-							const data = line.slice(6);
-							if (data === '[DONE]') {
-								if (this._view && this._view.webview) {
-									this._view.webview.postMessage({ type: 'aiStreamDone' });
-								}
-								continue;
-							}
-
-							try {
-								const parsed = JSON.parse(data);
-								const delta = parsed.choices[0]?.delta || {};
-								const content = delta.content || "";
-								// 兼容不同的思考过程字段名：reasoning_content 或 reasoning
-								const reasoning = delta.reasoning_content || delta.reasoning || "";
-								
-								if (content || reasoning) {
-									if (this._view && this._view.webview) {
-										this._view.webview.postMessage({
-											type: 'aiStreamChunk',
-											content: content,
-											reasoning: reasoning
-										});
-									}
-								}
-							} catch (e) {
-								console.error("解析流数据失败:", e, data);
-							}
-						}
-					}
-				});
-
-				res.on('end', () => {
-					if (this._view && this._view.webview) {
-						this._view.webview.postMessage({ type: 'aiStreamDone' });
-					}
-				});
-			});
-
-			req.on('error', (e) => {
-				if (this._view && this._view.webview) {
-					this._view.webview.postMessage({
-						type: 'aiError',
-						text: `网络请求失败: ${e.message}`
-					});
-				}
-			});
-
-			req.write(postData);
-			req.end();
-
-		} catch (error) {
-			if (this._view && this._view.webview) {
-				this._view.webview.postMessage({
-					type: 'aiError',
-					text: error.message
-				});
-			}
-		}
+	/**
+	 * 获取学习进度摘要，包括知识树完成情况和最近发展区 (ZPD)
+	 */
+	_getLearningProgressSummary() {
+		return this.aiLogic.getLearningProgressSummary();
 	}
 
 	updateWebviewContent(webview) {

@@ -26,8 +26,37 @@ document.addEventListener('DOMContentLoaded', function () {
     const knowledgeSelect = document.getElementById('knowledge-select');
     const knowledgeInput = document.getElementById('knowledge-input');
 
+    // 侧边栏元素
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebarClose = document.getElementById('sidebar-close');
+    const newChatBtn = document.getElementById('new-chat-btn');
+    const historyList = document.getElementById('history-list');
+
     // 初始设置指示器位置
     updateModeIndicator(document.querySelector('.mode-btn.active'));
+
+    // 侧边栏控制
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        sidebarOverlay.style.display = 'block';
+        // 打开侧边栏时加载历史
+        vscode.postMessage({ type: 'loadAiHistory' });
+    });
+
+    const closeSidebar = () => {
+        sidebar.classList.remove('active');
+        sidebarOverlay.style.display = 'none';
+    };
+
+    sidebarClose.addEventListener('click', closeSidebar);
+    sidebarOverlay.addEventListener('click', closeSidebar);
+
+    newChatBtn.addEventListener('click', () => {
+        vscode.postMessage({ type: 'createNewAiSession' });
+        closeSidebar();
+    });
 
     // 模式切换
     modeBtns.forEach(btn => {
@@ -71,6 +100,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     removeLoading();
                     currentAssistantMessageEl = createAssistantMessageElement();
                     chatContent.appendChild(currentAssistantMessageEl);
+                    currentThoughtText = "";
+                    currentContentText = "";
                 }
                 
                 if (message.reasoning) {
@@ -99,6 +130,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 currentThoughtText = "";
                 currentContentText = "";
                 lastRenderTime = 0;
+                
+                // AI 完成输出后，检查并同步最后一条用户消息的脚注（如果是“正在读取...”状态）
+                const messages = document.querySelectorAll('.message.user');
+                if (messages.length > 0) {
+                    const lastUserMsg = messages[messages.length - 1];
+                    const footer = lastUserMsg.querySelector('.message-footer');
+                    if (footer && footer.textContent.includes('正在读取...')) {
+                        // 触发一次历史记录刷新，获取最终保存的文件名
+                        setTimeout(() => {
+                            vscode.postMessage({ type: 'loadAiHistory' });
+                        }, 500);
+                    }
+                }
                 break;
 
             case 'aiResponse':
@@ -109,8 +153,97 @@ document.addEventListener('DOMContentLoaded', function () {
                 removeLoading();
                 addMessage('assistant', `错误: ${message.text}`);
                 break;
+            case 'aiHistoryLoaded':
+                renderHistoryList(message.history);
+                renderCurrentSession(message.history);
+                // 更新知识学习下拉框
+                if (message.history && message.history.zpdNodes) {
+                    updateKnowledgeSelect(message.history.zpdNodes);
+                }
+                break;
         }
     });
+
+    function updateKnowledgeSelect(nodes) {
+        if (!knowledgeSelect) return;
+        
+        // 保留第一个默认选项
+        const firstOption = knowledgeSelect.options[0];
+        knowledgeSelect.innerHTML = '';
+        knowledgeSelect.appendChild(firstOption);
+        
+        if (nodes && nodes.length > 0) {
+            nodes.forEach(node => {
+                const option = document.createElement('option');
+                option.value = node.id;
+                option.textContent = node.label;
+                knowledgeSelect.appendChild(option);
+            });
+        }
+    }
+
+    function renderHistoryList(history) {
+        historyList.innerHTML = '';
+        
+        // 过滤掉没有消息的会话（除非是当前选中的空会话，但通常我们只想在记录里看到有内容的）
+        const displaySessions = (history.sessions || []).filter(session => session.messages.length > 0);
+        
+        if (displaySessions.length === 0) {
+            historyList.innerHTML = '<div style="padding: 20px; text-align: center; opacity: 0.5;">暂无历史记录</div>';
+            return;
+        }
+
+        displaySessions.forEach(session => {
+            const item = document.createElement('div');
+            item.className = `history-item ${session.id === history.currentSessionId ? 'active' : ''}`;
+            
+            const title = document.createElement('div');
+            title.className = 'history-title';
+            title.textContent = session.title || '新对话';
+            title.onclick = () => {
+                vscode.postMessage({ type: 'switchAiSession', sessionId: session.id });
+                closeSidebar();
+            };
+
+            const deleteBtn = document.createElement('div');
+            deleteBtn.className = 'delete-session';
+            deleteBtn.innerHTML = '&times;';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                vscode.postMessage({ type: 'deleteAiSession', sessionId: session.id });
+            };
+
+            item.appendChild(title);
+            item.appendChild(deleteBtn);
+            historyList.appendChild(item);
+        });
+    }
+
+    function renderCurrentSession(history) {
+        const currentSession = history.sessions.find(s => s.id === history.currentSessionId);
+        
+        // 清空当前聊天
+        chatContent.innerHTML = '';
+        
+        if (!currentSession || currentSession.messages.length === 0) {
+            initState.classList.remove('hidden');
+            chatContent.style.display = 'none';
+            return;
+        }
+
+        initState.classList.add('hidden');
+        chatContent.style.display = 'block';
+
+        currentSession.messages.forEach(msg => {
+            if (msg.role === 'user') {
+                addMessage('user', msg.content, msg.time, null, msg.footer);
+            } else {
+                addMessage('assistant', msg.content, msg.time, msg.thought);
+            }
+        });
+        
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 
     function createAssistantMessageElement() {
         const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -165,8 +298,19 @@ document.addEventListener('DOMContentLoaded', function () {
             chatContent.style.display = 'block';
         }
 
+        // 构建脚注内容
+        let footerText = "";
+        if (type === 'code') {
+            // 获取文件名（从 index.js 缓存中读取，这里前端暂时显示为“当前工作区”）
+            footerText = "当前提问代码文件：正在读取...";
+        } else if (type === 'problem') {
+            footerText = `当前提问题目编号：${extraData.problemId || '未知'}`;
+        } else if (type === 'knowledge') {
+            footerText = `当前提问知识点：${extraData.knowledge || '未知'}`;
+        }
+
         // 添加用户消息
-        addMessage('user', message);
+        addMessage('user', message, null, null, footerText);
 
         // 添加加载状态
         addLoading();
@@ -183,8 +327,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function addMessage(sender, text) {
-        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    function addMessage(sender, text, time = null, thought = null, footer = null) {
+        const timestamp = time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const name = sender === 'user' ? '您' : '编程助手';
 
         const messageEl = document.createElement('div');
@@ -194,15 +338,18 @@ document.addEventListener('DOMContentLoaded', function () {
         if (sender === 'assistant') {
             // 统一使用流式显示的更新逻辑来处理非流式消息
             const tempDiv = document.createElement('div');
-            updateAssistantDisplay({ querySelector: () => tempDiv }, "", text);
+            updateAssistantDisplay({ querySelector: () => tempDiv }, thought || "", text);
             formattedText = tempDiv.innerHTML;
         }
+
+        let footerHtml = footer ? `<div class="message-footer">${footer}</div>` : "";
 
         messageEl.innerHTML = `
             <div class="avatar">${sender === 'user' ? 'U' : 'AI'}</div>
             <div class="message-content">
                 <div class="name">${name}</div>
                 <div class="message-body">${formattedText}</div>
+                ${footerHtml}
                 <div class="timestamp">${timestamp}</div>
             </div>
         `;
@@ -282,4 +429,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', () => {
         updateModeIndicator(document.querySelector('.mode-btn.active'));
     });
+
+    // 初始加载历史记录
+    vscode.postMessage({ type: 'loadAiHistory' });
 });

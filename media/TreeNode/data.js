@@ -625,25 +625,25 @@ const treeNode_12 = [
 const treeNode_13 = [
   {
     level: 0,
-    title: "图*",
+    title: "图",
     icon: "🚩",
     type: "root",
     unlocked: true,
     questionList: 0,
-    children: ["图"]
+    children: ["图*"]
   },
   {
     level: 1,
     title: "",
     nodes: [
       {
-        id: "图",
+        id: "图*",
         icon: "🔒",
         type: "tech",
         unlocked: false,
         lay: 2,
         questionList: 40,
-        parent: ["图*"],
+        parent: ["图"],
         children: [""]
       }
     ]
@@ -653,25 +653,25 @@ const treeNode_13 = [
 const treeNode_14 = [
   {
     level: 0,
-    title: "图论算法*",
+    title: "图论算法",
     icon: "🚩",
     type: "root",
     unlocked: true,
     questionList: 0,
-    children: ["图论算法"]
+    children: ["图论算法*"]
   },
   {
     level: 1,
     title: "",
     nodes: [
       {
-        id: "图论算法",
+        id: "图论算法*",
         icon: "🔒",
         type: "tech",
         unlocked: false,
         lay: 2,
         questionList: 41,
-        parent: ["图论算法*"],
+        parent: ["图论算法"],
         children: [""]
       }
     ]
