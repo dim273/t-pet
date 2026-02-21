@@ -268,7 +268,8 @@
             20,
             21,
             23,
-            22
+            22,
+            26
           ]
         },
         "aiHistory": {
@@ -313,6 +314,22 @@
             }
           ],
           "currentSessionId": "1771030637110"
+        }
+      },
+      {
+        "id": 1771644854450,
+        "name": "test",
+        "platforms": {
+          "leetcode": false,
+          "luogu": false,
+          "github": false
+        },
+        "lastLogin": "2026-02-21",
+        "checkInDays": {},
+        "progress": {
+          "passedProblems": [
+            1
+          ]
         }
       }
     ]

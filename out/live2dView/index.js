@@ -76,8 +76,26 @@ class Live2dViewProvider {
 		webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 
 		// 处理来自 Webview 的消息
-		webviewView.webview.onDidReceiveMessage((data) => {
+		webviewView.webview.onDidReceiveMessage(async (data) => {
 			switch (data.type) {
+				case "judge":
+					console.log("收到评测请求, ref=", data.ref);
+
+					try {
+						const results = await this._judgeProblem(data.ref);
+						webviewView.webview.postMessage({
+							type: "judgeResult",
+							results: results
+						});
+
+					} catch (err) {
+						console.error("评测异常:", err);
+						webviewView.webview.postMessage({
+							type: "judgeResult",
+							results: [{ id: "0", status: "RE", got: String(err) }]
+						});
+					}
+					break;
 				// 切换页面
 				case "switchPageToMain":
 					this._history.push(this._page); // <-- 保存当前页
@@ -149,7 +167,7 @@ class Live2dViewProvider {
 					this._page = 'aiChat';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					// 默认开启新对话 (如果当前没有会话或者当前会话已有消息)
-					if (!this.saveData.aiHistory || !this.saveData.aiHistory.currentSessionId || 
+					if (!this.saveData.aiHistory || !this.saveData.aiHistory.currentSessionId ||
 						(this.saveData.aiHistory.sessions.find(s => s.id === this.saveData.aiHistory.currentSessionId)?.messages.length > 0)) {
 						this.aiLogic.handleCreateNewAiSession();
 					} else {
@@ -289,7 +307,120 @@ class Live2dViewProvider {
 				return this._getSettingHtml(webview);
 		}
 	}
+	//评测逻辑
+	async _judgeProblem(ref) {
+		console.log(`[judgeProblem] ref=${ref}`);
 
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			vscode.window.showErrorMessage("没有打开任何代码文件");
+			return "RE";
+		}
+
+		const userFile = editor.document.fileName;
+		const ext = path.extname(userFile).toLowerCase();
+
+		const judgePath = path.join(this._extensionUri.fsPath, "res", "JudgeData", `P${ref}`, "tests");
+		if (!fs.existsSync(judgePath)) {
+			console.log("找不到评测数据目录:", judgePath);
+			return "RE";
+		}
+
+		const inFiles = fs.readdirSync(judgePath).filter(f => f.endsWith(".in"));
+		if (inFiles.length === 0) {
+			console.log("没有找到输入文件");
+			return "RE";
+		}
+
+		for (const inFile of inFiles) {
+			const base = inFile.replace(".in", "");
+			const inputPath = path.join(judgePath, inFile);
+			const outputPath = path.join(judgePath, `${base}.out`);
+
+			if (!fs.existsSync(outputPath)) continue;
+
+			const input = fs.readFileSync(inputPath, "utf8");
+			const expected = fs.readFileSync(outputPath, "utf8").trim();
+
+			try {
+				let userOutput = "";
+
+				if (ext === ".py") {
+					userOutput = await this._runCommand(`python "${userFile}"`, input, 3000);
+				} else if (ext === ".js") {
+					userOutput = await this._runCommand(`node "${userFile}"`, input, 3000);
+				} else if (ext === ".c" || ext === ".cpp") {
+					const exeName = path.join(path.dirname(userFile), `${path.basename(userFile, ext)}.exe`);
+					const compiler = ext === ".c" ? "gcc" : "g++";
+
+					// 编译
+					await this._runCommand(`${compiler} "${userFile}" -o "${exeName}"`, "", 5000);
+
+					// 执行
+					userOutput = await this._runCommand(`"${exeName}"`, input, 3000);
+				} else {
+					return "Unsupported";
+				}
+
+				userOutput = userOutput.trim();
+
+				if (userOutput !== expected) {
+					console.log(`[judgeProblem] 用例 ${base} WA`);
+					return "WA";  // 遇到 WA 立即返回
+				}
+
+			} catch (err) {
+				console.log(`[judgeProblem] 用例 ${base} 异常:`, err);
+				if (err === "Timeout") return "Timeout"; // 超时立即返回
+				return "RE";  // 运行错误
+			}
+		}
+
+		// 全部 AC
+		return "AC";
+	}
+
+	// 执行命令函数，支持超时短路
+	_runCommand(cmd, input, timeoutMs) {
+		return new Promise((resolve, reject) => {
+			const { spawn } = require("child_process");
+			const child = spawn(cmd, [], { shell: true });
+
+			let output = "";
+			let finished = false;
+
+			// 超时处理
+			const timer = setTimeout(() => {
+				if (!finished) {
+					finished = true;
+					try { child.kill("SIGKILL"); } catch { }
+					reject("Timeout");  // <-- 注意这里改成 Timeout
+				}
+			}, timeoutMs);
+
+			child.stdin.write(input);
+			child.stdin.end();
+
+			child.stdout.on("data", data => output += data.toString());
+			child.stderr.on("data", data => console.error("[stderr]", data.toString()));
+
+			child.on("close", code => {
+				if (!finished) {
+					finished = true;
+					clearTimeout(timer);
+					resolve(output);  // 即使 code !== 0 也先返回输出，由上层 judge 判定
+				}
+			});
+
+			child.on("error", err => {
+				if (!finished) {
+					finished = true;
+					clearTimeout(timer);
+					reject(err.message);
+				}
+			});
+		});
+	}
 	// 生成设置
 	_getSettingHtml(webview) {
 		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
@@ -487,8 +618,30 @@ class Live2dViewProvider {
         	<button class="back-btn" id="back-btn" onclick="switchPageToProblemList()">←</button>
         <h3 style="font-weight: 600;" id="listTitle">题目</h3>
         <button class="complete-btn" onclick="completeProblem()" style="margin-left: auto; background-color: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">完成题目</button>
+				<button id="judgeBtn" style="
+					margin-left: 10px; 
+					background-color: #2196F3; 
+					color: white; 
+					border: none; 
+					padding: 5px 10px; 
+					border-radius: 4px; 
+					cursor: pointer;">
+					评测
+				</button>
     </div>
 				<div id="markdownDisplay"></div>
+				<div id="judgeStatus" style="
+					margin-top: 12px;
+					padding: 12px 16px;
+					border-radius: 12px;
+					background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+					box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+					font-family: Arial, 'Microsoft YaHei', sans-serif;
+					font-size: 14px;
+					color: #004040;
+					white-space: pre-wrap;
+					word-break: break-word;
+				"></div>
 				<script> 
 					let markdownText = ${JSON.stringify(fileContent)}; 
 					window.currentProblemTitle = "${title || "整型与布尔型的转换"}";

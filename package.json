@@ -29,6 +29,7 @@
     "Other"
   ],
   "activationEvents": [
+    "*",
     "onView:vscode-live2d.live2dView"
   ],
   "main": "./out/extension.js",
