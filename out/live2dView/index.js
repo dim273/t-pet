@@ -366,6 +366,7 @@ class Live2dViewProvider {
 
 				if (userOutput !== expected) {
 					console.log(`[judgeProblem] 用例 ${base} WA`);
+					console.log("userOutput:", userOutput);
 					return "WA";  // 遇到 WA 立即返回
 				}
 
