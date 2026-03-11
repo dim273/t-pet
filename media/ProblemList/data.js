@@ -1234,7 +1234,7 @@ const problemSets = {
       {
         id: 3,
         title: "旅行商的背包",
-        url: "https://www.luogu.com.cn/problem/solution/P1782",
+        url: "https://www.luogu.com.cn/problem/P1782",
         difficulty: "medium",
         passed: false,
         tags: ["动态规划", "多重背包"],
@@ -1252,7 +1252,7 @@ const problemSets = {
       {
         id: 5,
         title: "ICPC 2023 Nanjing R 背包",
-        url: "https://www.luogu.com.cn/problem/solution/P13957",
+        url: "https://www.luogu.com.cn/problem/P13957",
         difficulty: "medium",
         passed: false,
         tags: ["动态规划", "01背包"],
