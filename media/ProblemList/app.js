@@ -1,7 +1,8 @@
 const vscode = acquireVsCodeApi();
 const MainOrigin = "vscode-file://vscode-app";
 
-let currentListId = "list_1"; // 默认显示list_1
+let currentListId = "list_1";
+let currentListName = "";
 let listIdFromVSCode = 1;
 let userProfile = {
   passedProblems: [],
@@ -27,6 +28,16 @@ function switchPageToProblem(problemId) {
       listId: listIdFromVSCode
     });
   }
+}
+
+function aiKnowledgeLearn() {
+  vscode.postMessage({
+    type: 'switchPageToAiChat',
+    bootstrap: {
+      mode: 'knowledge',
+      knowledgeName: currentListName
+    }
+  });
 }
 
 // 更新统计信息
@@ -86,7 +97,10 @@ window.onload = function () {
   listIdFromVSCode = window.currentListId;
   currentListId = `list_${listIdFromVSCode}` || currentListId;
 
-  // 根据传入的 passedProblems 更新题目状态
+  if (problemSets[currentListId]) {
+    currentListName = problemSets[currentListId].name || "";
+  }
+
   if (window.passedProblems && Array.isArray(window.passedProblems)) {
     if (problemSets[currentListId] && problemSets[currentListId].problems) {
       problemSets[currentListId].problems.forEach(p => {
@@ -97,4 +111,11 @@ window.onload = function () {
     }
   }
   renderProblemList();
+
+  const aiLearnBtn = document.getElementById('aiLearnBtn');
+  if (aiLearnBtn) {
+    aiLearnBtn.addEventListener('click', () => {
+      aiKnowledgeLearn();
+    });
+  }
 }

@@ -4,9 +4,12 @@ const vscode = require('vscode'); // 确保引入vscode模块
 
 class FileStorage {
   constructor(_extensionUri) {
-    // 设置存储路径
+    const workspaceFolder = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0
+      ? vscode.workspace.workspaceFolders[0].uri.fsPath
+      : _extensionUri.fsPath;
+
     this._storagePath = path.join(
-      vscode.workspace.fsPath || _extensionUri.fsPath,
+      workspaceFolder,
       'saveData',
       'data.json'
     );
@@ -104,12 +107,7 @@ class FileStorage {
   // 根据信息id获取指定账号信息
   getAccountByIndex(index) {
     try {
-      const data = this.readData();
-      // 获取全部的信息，然后根据索引返回对应的账号信息
-      if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
-        return null;
-      }
-      const account = data.userInfo.accounts.find(account => account.id === index);
+      const account = this.getAccounts().find(account => account.id === index);
       if (!account)
         return null;
       return account;
@@ -187,16 +185,19 @@ class FileStorage {
   // 获取所有账号数量
   getAccountCount() {
     try {
-      const data = this.readData();
-      if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
-        return 0;
-      }
-
-      return data.userInfo.accounts.length;
+      return this.getAccounts().length;
     } catch (error) {
       console.error('获取账号数量失败:', error);
       return 0;
     }
+  }
+
+  getAccounts() {
+    const data = this.readData();
+    if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
+      return [];
+    }
+    return data.userInfo.accounts;
   }
 }
 

@@ -112,7 +112,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            group: hover;
         }
 
         .history-item:hover {
@@ -395,23 +394,6 @@
             margin-right: 8px;
         }
 
-        .knowledge-select {
-            width: 100%;
-            background: var(--vscode-input-bg);
-            color: var(--vscode-text);
-            border: 1px solid var(--vscode-input-border);
-            border-radius: 4px;
-            padding: 8px 12px;
-            margin-bottom: 10px;
-            height: 36px;
-            font-size: 13px;
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23d4d4d4' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 16px;
-        }
-
         .send-btn {
             background: var(--vscode-button-bg);
             color: white;
@@ -517,7 +499,7 @@
             padding: 10px 15px;
             border-radius: 8px;
             line-height: 1.5;
-            max-width: 100% - 40px;
+            max-width: calc(100% - 40px);
             word-wrap: break-word;
             white-space: pre-wrap;
         }
@@ -746,16 +728,7 @@
 
         <!-- 知识学习输入区域 -->
         <div class="input-group" data-mode="knowledge">
-            <select class="knowledge-select" id="knowledge-select">
-                <option value="">选择知识点</option>
-                <option value="array">数组操作</option>
-                <option value="linkedlist">链表数据结构</option>
-                <option value="recursion">递归算法</option>
-                <option value="tree">二叉树遍历</option>
-                <option value="graph">图算法</option>
-                <option value="sorting">排序算法</option>
-                <option value="dp">动态规划</option>
-            </select>
+            <input type="text" class="problem-id-input" id="knowledge-input-text" placeholder="知识点名称">
             <textarea class="text-input" id="knowledge-input" placeholder="输入关于知识点的问题..."></textarea>
             <div class="actions">
                 <div></div> <!-- 占位元素 -->

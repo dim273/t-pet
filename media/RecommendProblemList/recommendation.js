@@ -13,11 +13,12 @@ export function recommendProblems(allProblemSets, userProfile, recommendCount = 
   }
 
   const passedSet = new Set(userProfile.passedProblems || []);
+  const masteryByTag = buildTagMastery(allProblems, passedSet);
   const candidateProblems = allProblems.filter(p => !passedSet.has(p.ref));
 
   const scoredProblems = candidateProblems.map(problem => ({
     ...problem,
-    score: computeProblemScore(problem, userProfile)
+    score: computeProblemScore(problem, userProfile, masteryByTag)
   }));
 
   scoredProblems.sort((a, b) => b.score - a.score);
@@ -47,7 +48,7 @@ function flattenAllProblems(allProblemSets) {
   return all;
 }
 
-function computeProblemScore(problem, userProfile) {
+function computeProblemScore(problem, userProfile, masteryByTag) {
   let score = 0;
 
   const difficultyScore = difficultyScoreMap[problem.difficulty] || 1;
@@ -59,12 +60,68 @@ function computeProblemScore(problem, userProfile) {
   tags.forEach(tag => {
     if (weakTags.includes(tag)) score += 3;
     if (currentTags.includes(tag)) score += 1;
+    const tagMastery = masteryByTag[tag] || 0;
+    score += 2 - Math.abs(tagMastery - 0.6) * 4;
   });
 
   const targetDifficulty = userProfile.targetDifficulty || "easy";
   const targetScore = difficultyScoreMap[targetDifficulty] || 1;
 
   score += 5 - Math.abs(difficultyScore - targetScore) * 2;
+  score += getProgressiveChallengeBonus(problem, userProfile, difficultyScoreMap[targetDifficulty] || 1);
+  score += Math.min(tags.length, 3) * 0.2;
 
   return score;
 }
+
+function buildTagMastery(allProblems, passedSet) {
+  const tagStats = {};
+
+  allProblems.forEach(problem => {
+    const tags = problem.tags || [];
+    tags.forEach(tag => {
+      if (!tagStats[tag]) {
+        tagStats[tag] = { total: 0, passed: 0 };
+      }
+      tagStats[tag].total += 1;
+      if (passedSet.has(problem.ref)) {
+        tagStats[tag].passed += 1;
+      }
+    });
+  });
+
+  return Object.keys(tagStats).reduce((acc, tag) => {
+    const stat = tagStats[tag];
+    acc[tag] = stat.total > 0 ? stat.passed / stat.total : 0;
+    return acc;
+  }, {});
+}
+
+function getProgressiveChallengeBonus(problem, userProfile, targetScore) {
+  const recentDifficulty = userProfile.recentDifficulty || userProfile.targetDifficulty || "easy";
+  const recentScore = difficultyScoreMap[recentDifficulty] || 1;
+  const currentScore = difficultyScoreMap[problem.difficulty] || 1;
+  const towardTarget = Math.max(0, targetScore - recentScore);
+  const step = currentScore - recentScore;
+
+  if (towardTarget === 0) {
+    return step === 0 ? 1 : -1;
+  }
+
+  if (step === towardTarget || step === towardTarget - 1) {
+    return 2;
+  }
+
+  if (step > towardTarget + 1) {
+    return -2;
+  }
+
+  return 0.5;
+}
+
+export const __test__ = {
+  flattenAllProblems,
+  computeProblemScore,
+  buildTagMastery,
+  getProgressiveChallengeBonus
+};

@@ -165,8 +165,26 @@ class Live2dViewProvider {
 				case "switchPageToAiChat":
 					this._history.push(this._page);
 					this._page = 'aiChat';
+					if (data.bootstrap) {
+						if (Number.isInteger(Number.parseInt(data.bootstrap.problemId, 10))) {
+							const safeProblemId = Number.parseInt(data.bootstrap.problemId, 10);
+							this._aiBootstrap = {
+								mode: "problem",
+								requestType: data.bootstrap.requestType === "decompose" ? "decompose" : "default",
+								problemId: safeProblemId
+							};
+						} else if (data.bootstrap.mode === "knowledge" && data.bootstrap.knowledgeName) {
+							this._aiBootstrap = {
+								mode: "knowledge",
+								knowledgeName: data.bootstrap.knowledgeName
+							};
+						} else {
+							this._aiBootstrap = null;
+						}
+					} else {
+						this._aiBootstrap = null;
+					}
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
-					// 默认开启新对话 (如果当前没有会话或者当前会话已有消息)
 					if (!this.saveData.aiHistory || !this.saveData.aiHistory.currentSessionId ||
 						(this.saveData.aiHistory.sessions.find(s => s.id === this.saveData.aiHistory.currentSessionId)?.messages.length > 0)) {
 						this.aiLogic.handleCreateNewAiSession();
@@ -176,9 +194,7 @@ class Live2dViewProvider {
 					break;
 				case "goBack":
 					if (this._history.length > 0) {
-						this._page = this._history.pop(); // 取出上一个页面
-						if (this._page === 'problem')
-							this._page = this._history.pop(); // 如果是题目页，再取一次上一个页面
+						this._page = this._history.pop();
 						webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					}
 					break;
@@ -501,12 +517,21 @@ class Live2dViewProvider {
 	_getAiChatHtml(webview) {
 		const aiHtmlPath = path.join(this._extensionUri.fsPath, 'media', 'AIAssistant', 'ai-assistant.html');
 		let html = fs.readFileSync(aiHtmlPath, 'utf8');
+		const bootstrap = this._aiBootstrap ? {
+			mode: this._aiBootstrap.mode,
+			requestType: this._aiBootstrap.requestType,
+			problemId: this._aiBootstrap.problemId,
+			knowledgeName: this._aiBootstrap.knowledgeName
+		} : null;
 
 		const scriptUri = webview.asWebviewUri(
 			vscode.Uri.joinPath(this._extensionUri, 'media', 'AIAssistant', 'ai-assistant.js')
 		);
 
-		html = html.replace('<!--SCRIPT_PLACEHOLDER-->', `<script type="module" src="${scriptUri}"></script>`);
+		html = html.replace(
+			'<!--SCRIPT_PLACEHOLDER-->',
+			`<script>window.__AI_BOOTSTRAP__ = ${JSON.stringify(bootstrap)};</script><script type="module" src="${scriptUri}"></script>`
+		);
 
 		return html;
 	}
@@ -553,6 +578,16 @@ class Live2dViewProvider {
 				<div class="header">
         	<button class="back-btn" id="back-btn" onclick="switchPageToMain()">←</button>
         	<h3 style="font-weight: 600;" id="listTitle">知识树</h3>
+        	<button id="aiLearnBtn" style="
+						margin-left: auto;
+						background-color: #8b5cf6;
+						color: white;
+						border: none;
+						padding: 5px 10px;
+						border-radius: 4px;
+						cursor: pointer;
+						font-size: 12px;
+					">AI指导学习</button>
     		</div>
 
 				<div class="stats">
@@ -618,7 +653,15 @@ class Live2dViewProvider {
 				<div class="header">
         	<button class="back-btn" id="back-btn" onclick="switchPageToProblemList()">←</button>
         <h3 style="font-weight: 600;" id="listTitle">题目</h3>
-        <button class="complete-btn" onclick="completeProblem()" style="margin-left: auto; background-color: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">完成题目</button>
+				<button id="decomposeBtn" style="
+					margin-left: auto;
+					background-color: #8b5cf6;
+					color: white;
+					border: none;
+					padding: 5px 10px;
+					border-radius: 4px;
+					cursor: pointer;">AI问题分解</button>
+        <button class="complete-btn" onclick="completeProblem()" style="margin-left: 10px; background-color: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">完成题目</button>
 				<button id="judgeBtn" style="
 					margin-left: 10px; 
 					background-color: #2196F3; 
@@ -656,7 +699,7 @@ class Live2dViewProvider {
 	}
 	_getRecommendProblemListHtml(webview) {
 		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "styles.css"));
+		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "styles.css"));
 
 		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "data.js"));
 		// 先暂时复用 ProblemList/data.js
@@ -696,7 +739,7 @@ class Live2dViewProvider {
         </div>
       </div>
 
-      <div class="reproblem-list" id="reproblem-list"></div>
+      <div class="problem-list" id="reproblem-list"></div>
 
       <script src="${dataUri}"></script>
 
@@ -713,8 +756,8 @@ class Live2dViewProvider {
 	// 生成登录界面
 	_getLoginHtml(webview) {
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const loginCssPath = path.join(this._extensionUri.fsPath, "media", "login", "login.css");
-		const loginJsUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "login", "login.js"));
+		const loginCssPath = path.join(this._extensionUri.fsPath, "media", "Login", "login.css");
+		const loginJsUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "Login", "login.js"));
 
 		// 图片信息
 		const leetcodeIcon = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "leetcode.png"));
@@ -729,7 +772,7 @@ class Live2dViewProvider {
 			.replace(/{{backgroundUri}}/g, backgroundUri.toString());
 
 		// 加载账号信息
-		const accounts = this.storage.readData().userInfo.accounts || [];
+		const accounts = this.storage.getAccounts();
 		if (accounts.length === 0) console.log("账号列表为空");
 		return `<!DOCTYPE html>
 			<html lang="en">

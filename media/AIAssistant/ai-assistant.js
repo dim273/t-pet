@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const codeInput = document.getElementById('code-input');
     const problemIdInput = document.getElementById('problem-id');
     const problemInput = document.getElementById('problem-input');
-    const knowledgeSelect = document.getElementById('knowledge-select');
+    const knowledgeInputText = document.getElementById('knowledge-input-text');
     const knowledgeInput = document.getElementById('knowledge-input');
 
     // 侧边栏元素
@@ -58,21 +58,20 @@ document.addEventListener('DOMContentLoaded', function () {
         closeSidebar();
     });
 
-    // 模式切换
+    function activateMode(mode) {
+        const targetBtn = Array.from(modeBtns).find(btn => btn.dataset.mode === mode);
+        if (!targetBtn) return;
+        modeBtns.forEach(b => b.classList.remove('active'));
+        targetBtn.classList.add('active');
+        updateModeIndicator(targetBtn);
+        inputGroups.forEach(group => {
+            group.classList.toggle('active', group.dataset.mode === mode);
+        });
+    }
+
     modeBtns.forEach(btn => {
         btn.addEventListener('click', function () {
-            // 更新按钮状态
-            modeBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-
-            // 更新指示器位置
-            updateModeIndicator(this);
-
-            // 显示对应的输入区域
-            const mode = this.dataset.mode;
-            inputGroups.forEach(group => {
-                group.classList.toggle('active', group.dataset.mode === mode);
-            });
+            activateMode(this.dataset.mode);
         });
     });
 
@@ -84,18 +83,48 @@ document.addEventListener('DOMContentLoaded', function () {
         modeIndicator.style.left = `${btnRect.left - containerRect.left}px`;
     }
 
+    function handleBootstrapTask() {
+        const bootstrap = window.__AI_BOOTSTRAP__;
+        if (!bootstrap) return;
+
+        if (bootstrap.mode === 'problem' && bootstrap.problemId) {
+            const problemId = Number.parseInt(bootstrap.problemId, 10);
+            if (!Number.isInteger(problemId) || problemId <= 0) return;
+
+            activateMode('problem');
+            problemIdInput.value = String(problemId);
+
+            if (bootstrap.requestType === 'decompose') {
+                const autoPrompt = "请你基于这道题做完整问题分解：先用3句话复述题意与输入输出，再给出约束分析与边界条件，再输出分步骤解题路径规划（阶段目标、关键判断、数据结构选择、复杂度目标），最后给出可执行的自检清单。只给思路，不要直接给完整代码。";
+                problemInput.value = autoPrompt;
+            }
+        } else if (bootstrap.mode === 'knowledge' && bootstrap.knowledgeName) {
+            activateMode('knowledge');
+            knowledgeInputText.value = bootstrap.knowledgeName;
+
+            const autoPrompt = `我想学习知识点"${bootstrap.knowledgeName}"，请你提供：
+1. 这个知识点的核心概念与定义
+2. 常见应用场景与使用方式
+3. 学习这个知识点的方法和建议
+4. 与之相关的练习题目类型或解题思路`;
+            knowledgeInput.value = autoPrompt;
+        }
+    }
+
     // 当前流式传输的状态
     let currentAssistantMessageEl = null;
     let currentThoughtText = "";
     let currentContentText = "";
     let lastRenderTime = 0;
     const RENDER_INTERVAL = 50; // 毫秒，控制渲染频率以提升性能
+    let isStreaming = false; // 标记是否正在流式输出，用于防止侧边栏加载时清空聊天区
 
     // 处理来自扩展的消息
     window.addEventListener('message', event => {
         const message = event.data;
         switch (message.type) {
             case 'aiStreamChunk':
+                isStreaming = true;
                 if (!currentAssistantMessageEl) {
                     removeLoading();
                     currentAssistantMessageEl = createAssistantMessageElement();
@@ -130,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 currentThoughtText = "";
                 currentContentText = "";
                 lastRenderTime = 0;
+                isStreaming = false;
                 
                 // AI 完成输出后，检查并同步最后一条用户消息的脚注（如果是“正在读取...”状态）
                 const messages = document.querySelectorAll('.message.user');
@@ -220,6 +250,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function renderCurrentSession(history) {
+        // 如果正在流式输出，不清空聊天区（避免侧边栏加载时破坏流式渲染）
+        if (isStreaming) {
+            return;
+        }
+
         const currentSession = history.sessions.find(s => s.id === history.currentSessionId);
         
         // 清空当前聊天
@@ -400,11 +435,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     sendKnowledgeBtn.addEventListener('click', function () {
-        const knowledge = knowledgeSelect.value;
+        const knowledge = knowledgeInputText.value.trim();
         const message = knowledgeInput.value.trim();
         if (!message && !knowledge) return;
 
         sendMessage('knowledge', message, { knowledge });
+        knowledgeInputText.value = '';
         knowledgeInput.value = '';
     });
 
@@ -432,4 +468,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 初始加载历史记录
     vscode.postMessage({ type: 'loadAiHistory' });
+    handleBootstrapTask();
 });

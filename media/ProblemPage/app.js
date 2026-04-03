@@ -20,6 +20,19 @@ function completeProblem() {
   }
 }
 
+function aiProblemDecompose() {
+  const ref = Number.parseInt(window.currentProblemRef, 10);
+  if (!Number.isInteger(ref) || ref <= 0) return;
+  vscode.postMessage({
+    type: 'switchPageToAiChat',
+    bootstrap: {
+      mode: 'problem',
+      requestType: 'decompose',
+      problemId: ref
+    }
+  });
+}
+
 function renderMarkdown() {
   document.getElementById('listTitle').textContent = problemTitle;
   var markdownDisplay = document.getElementById('markdownDisplay');
@@ -93,6 +106,13 @@ window.onload = function () {
       }
 
       statusDiv.textContent = "开始评测，请稍候...";
+    });
+  }
+
+  const decomposeBtn = document.getElementById("decomposeBtn");
+  if (decomposeBtn) {
+    decomposeBtn.addEventListener("click", () => {
+      aiProblemDecompose();
     });
   }
 };

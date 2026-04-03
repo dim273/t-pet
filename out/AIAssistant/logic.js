@@ -273,13 +273,24 @@ class AIAssistantLogic {
         const isFirstMessage = currentSession && currentSession.messages.length === 0;
 
         let footerText = "";
+        let sessionTitle = "新对话";
+        
         if (mode === "code") {
             const fileName = this.provider._lastActiveEditorContext ? this.provider._lastActiveEditorContext.fileName : "未知文件";
             footerText = `当前提问代码文件：${fileName}`;
+            sessionTitle = `${fileName}代码建议`;
         } else if (mode === "problem") {
-            footerText = `当前提问题目编号：${extraData?.problemId || '未知'}`;
+            const problemId = extraData?.problemId || '未知';
+            footerText = `当前提问题目编号：${problemId}`;
+            sessionTitle = `P${problemId}刷题指导`;
         } else if (mode === "knowledge") {
-            footerText = `当前提问知识点：${extraData?.knowledge || '未知'}`;
+            const knowledgeNodeId = extraData?.knowledge || '未知';
+            footerText = `当前提问知识点：${knowledgeNodeId}`;
+            sessionTitle = `${knowledgeNodeId}知识学习`;
+        }
+
+        if (isFirstMessage) {
+            currentSession.title = sessionTitle;
         }
 
         const userMsg = { 
@@ -319,7 +330,8 @@ class AIAssistantLogic {
             finalUserMessage = `${message}${codeContext}`;
 
         } else if (mode === "problem" && extraData?.problemId) {
-            const problemRef = extraData.problemId;
+            const problemRef = Number.parseInt(extraData.problemId, 10);
+            const requestType = extraData?.requestType === "decompose" ? "decompose" : "default";
             let problemFileContent = "";
             try {
                 const problemFilePath = path.join(this.provider._extensionUri.fsPath, "res", "Problem", `${problemRef}.md`);
@@ -340,6 +352,15 @@ class AIAssistantLogic {
                 return;
             }
             
+            const decompositionInstruction = requestType === "decompose" ? `
+5. 输出结构必须包含：
+   - 题意重述（3句话以内）
+   - 输入输出与约束拆解
+   - 边界条件与易错点清单
+   - 分阶段解题路径（阶段目标/关键操作/验证方法）
+   - 复杂度目标（时间与空间）
+   - 学生可执行的下一步行动项` : "";
+
             dynamicPrompt = `你现在处于【题目解析】模式。
 当前学生正在询问题目编号为 ${problemRef} 的问题。
 **题目原文内容：**
@@ -349,7 +370,7 @@ ${problemFileContent}
 1. **绝对禁止直接给出答案 or 完整代码**。
 2. 你的任务是引导学生分析题目的输入输出要求，拆解核心逻辑。
 3. 结合题目原文，解释其中的难点或容易误解的地方。
-4. 鼓励学生先用自然语言描述思路。`;
+4. 鼓励学生先用自然语言描述思路。${decompositionInstruction}`;
             
             finalUserMessage = `关于题目 ${problemRef}，我的问题是：${message}`;
 
@@ -462,9 +483,6 @@ ${dynamicPrompt}
                             const data = line.slice(6);
                             if (data === '[DONE]') {
                                 this.saveAssistantMessageToHistory(fullAssistantContent, fullAssistantThought);
-                                if (isFirstMessage) {
-                                    this.generateSessionTitle(currentSession.id, message, fullAssistantContent, apiKey, model);
-                                }
                                 if (this.provider._view && this.provider._view.webview) {
                                     this.provider._view.webview.postMessage({ type: 'aiStreamDone' });
                                 }
