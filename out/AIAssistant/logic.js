@@ -75,9 +75,10 @@ class AIAssistantLogic {
 
                 // 1. 提取题单对应的题目 ref 列表
                 const problemSetsMap = {};
-                const problemSetRegex = /"list_(\d+)":\s*\{.*?problems:\s*\[([\s\S]*?)\s*\]\s*\}/g;
+
+                const listBlockRegex = /"list_(\d+)":\s*\{[\s\S]*?problems:\s*\[([\s\S]*?)\]\s*\}/g;
                 let psMatch;
-                while ((psMatch = problemSetRegex.exec(problemContent)) !== null) {
+                while ((psMatch = listBlockRegex.exec(problemContent)) !== null) {
                     const listId = psMatch[1];
                     const problemsText = psMatch[2];
                     const refs = [];
@@ -88,6 +89,9 @@ class AIAssistantLogic {
                     }
                     problemSetsMap[listId] = refs;
                 }
+
+                console.log("[AI调试] 已通过的题目 refs:", Array.from(passedProblems));
+                console.log("[AI调试] problemSetsMap:", JSON.stringify(problemSetsMap));
 
                 // 2. 提取所有知识点节点信息
                 const allNodes = [];
@@ -138,9 +142,19 @@ class AIAssistantLogic {
                 allNodes.forEach(node => {
                     if (node.qListId > 0) {
                         const requiredRefs = problemSetsMap[node.qListId] || [];
-                        if (requiredRefs.length > 0 && requiredRefs.every(ref => passedProblems.has(ref))) {
+                        if (requiredRefs.length === 0) {
+                            node.completed = true;
+                        } else if (requiredRefs.every(ref => passedProblems.has(ref))) {
                             node.completed = true;
                         }
+                    }
+                });
+
+                console.log("[AI调试] 节点计算结果:");
+                allNodes.forEach(node => {
+                    if (node.qListId > 0) {
+                        const requiredRefs = problemSetsMap[node.qListId] || [];
+                        console.log(`  ${node.id}: qListId=${node.qListId}, requiredRefs=${JSON.stringify(requiredRefs)}, passed=${node.completed}`);
                     }
                 });
 
@@ -320,12 +334,18 @@ class AIAssistantLogic {
                 }
             }
             
-            dynamicPrompt = `你现在处于【代码建议】模式。
-你的任务是分析学生提供的代码，给出改进建议。
-**模式指令：**
-1. 重点关注代码的可读性、逻辑正确性和效率。
-2. 采用引导式提问，例如“你觉得这里如果输入负数会发生什么？”。
-3. 给出优化方向，而不是直接重写整个函数。`;
+            dynamicPrompt = `你现在处于【代码分析模式】。
+
+目标：找出问题，而不是重写代码
+
+要求：
+1. 指出 1~3 个关键问题（不要超过3个）
+2. 每个问题：简要说明原因 + 给出修改方向（不要给完整代码）
+3. 可以提出 1 个反问，引导用户思考
+
+禁止：
+- 不要逐行解释代码
+- 不要重写整个函数`;
             
             finalUserMessage = `${message}${codeContext}`;
 
@@ -353,70 +373,118 @@ class AIAssistantLogic {
             }
             
             const decompositionInstruction = requestType === "decompose" ? `
-5. 输出结构必须包含：
-   - 题意重述（3句话以内）
-   - 输入输出与约束拆解
-   - 边界条件与易错点清单
-   - 分阶段解题路径（阶段目标/关键操作/验证方法）
-   - 复杂度目标（时间与空间）
-   - 学生可执行的下一步行动项` : "";
+输出结构（必须遵守）：
+- 题意重述（3句话以内）
+- 输入输出与约束拆解
+- 边界条件与易错点清单
+- 分阶段解题路径（阶段目标/关键操作/验证方法）
+- 复杂度目标（时间与空间）
+- 给学生一个下一步问题` : "";
 
-            dynamicPrompt = `你现在处于【题目解析】模式。
-当前学生正在询问题目编号为 ${problemRef} 的问题。
-**题目原文内容：**
-${problemFileContent}
+            dynamicPrompt = `你现在处于【算法引导模式】。
 
-**模式指令：**
-1. **绝对禁止直接给出答案 or 完整代码**。
-2. 你的任务是引导学生分析题目的输入输出要求，拆解核心逻辑。
-3. 结合题目原文，解释其中的难点或容易误解的地方。
-4. 鼓励学生先用自然语言描述思路。${decompositionInstruction}`;
+目标：帮助学生拆解思路，而不是解题
+
+**题目信息：**
+- 编号：${problemRef}
+- 原文：${problemFileContent.substring(0, 500)}${problemFileContent.length > 500 ? '...[已截断]' : ''}
+
+输出结构（必须遵守）：
+1. 题目核心（≤2句）
+2. 关键难点（最多2点）
+3. 解题突破口（最重要）
+4. 给学生一个下一步问题
+
+禁止：
+- 不给答案
+- 不给完整思路链
+- 不展开讲所有情况`;
             
             finalUserMessage = `关于题目 ${problemRef}，我的问题是：${message}`;
 
         } else if (mode === "knowledge" && extraData?.knowledge) {
             const knowledgeNodeId = extraData.knowledge;
-            dynamicPrompt = `你现在处于【知识深度学习】模式。
-学生选择了知识点：${knowledgeNodeId}。
+            dynamicPrompt = `你现在处于【知识讲解模式】。
 
-**模式指令：**
-1. **关联旧知**：重点引导学生根据他们【已经玩转的领域】(${progressSummary.completedNodes.join(', ') || '编程基础'})来理解这个新知识点。
-2. **循序渐进**：如果这是一个复杂的概念，先解释最基础的部分，通过类比来降低认知负荷。
-3. **学以致用**：尝试给出一个微型场景或代码片段，让学生思考这个知识点如何解决问题。`;
+要求：
+1. 用学生"已掌握知识"做类比切入（已掌握：${progressSummary.completedNodes.join(', ') || '无'}）
+2. 只讲最核心概念（≤3点）
+3. 给一个最小应用场景（1句话）
+
+禁止：
+- 不从零开始讲
+- 不长篇科普`;
             
             finalUserMessage = `我想学习知识点“${knowledgeNodeId}”，我的问题是：${message}`;
         }
 
-        const systemPrompt = `你是一位亲切且专业的编程导师。你的目标是作为伙伴引导学生思考，而不是作为老师说教。
+        const systemPrompt = `你是一位专业的编程导师，风格偏工程师而非老师。
 
-**核心指令：**
-1. **隐藏术语**：严禁在回复中提及“最近发展区”、“ZPD”、“脚手架”、“认知负荷”等任何教育学或心理学专业术语。
-2. **顺滑引导**：根据学生【已完全掌握】的知识，自然地类比或推导出【正在学习】中的新概念。
-3. **阶梯式沟通：**
-   - 如果学生卡住了，先问一个引导性的小问题。
-   - 严禁提及学生【尚未解锁】的深奥概念。
-4. **语气定位**：幽默、鼓励、平等。
+【核心风格】
+- 简洁、直接、理性
+- 少解释，多引导
+- 不使用 emoji、不卖萌、不哄人
+- 最多允许一个简单类比
 
-**学生当前画像：**
+【输出限制】
+- 总长度控制在 5-8 行以内
+- 优先用要点（bullet points）表达
+- 避免长段落
+
+【教学策略】
+1. 优先基于学生"已掌握的知识"进行解释，而不是从零开始讲
+2. 如果问题可以拆解：只给"下一步思考点"，不要一次讲完
+3. 如果学生卡住：提 1~2 个关键问题，而不是直接讲解
+4. 禁止直接给完整答案或完整代码（除非用户明确要求）
+
+【上下文使用要求（非常重要）】
+- 已掌握知识：${progressSummary.completedNodes.join(', ') || '无'}
+- 正在攻克：${progressSummary.zpdNodeIds.join(', ') || '无'}
+
+回答时必须：
+- 至少引用一个"已掌握知识"作为切入点
+- 或指出该问题属于"正在攻克"的哪一类能力
+
+【长度优先级规则】
+如果回答超过 8 行：
+→ 自动压缩为最关键信息
+→ 删除解释性语句
+→ 只保留结论 + 引导问题
+
+【禁止行为】
+- 不要长篇讲解背景
+- 不要重复用户问题
+- 不要输出空话
+
+【学生当前画像】
 - 整体进度：${progressSummary.totalProgress}% (已通关 ${progressSummary.passedCount} 题)
 - 已经玩转的领域：${progressSummary.completedNodes.join(', ') || '刚开始起步'}
 - 正在攻克的难关：${progressSummary.zpdNodeIds.join(', ') || '正在寻找新挑战'}
-- 暂时未触及的迷雾：${progressSummary.lockedNodes.slice(0, 10).join(', ') + (progressSummary.lockedNodes.length > 10 ? '...' : '') || '无'}
 
 ${dynamicPrompt}
 
 **回复准则：**
 - 如果涉及到代码，优先给思路或伪代码；必须给代码时，只给关键的一两行，剩下的留给学生补全。
-- 当学生问“该学什么”时，自然地引导他们去尝试【正在攻克】列表中的内容。`;
+- 当学生问"该学什么"时，自然地引导他们去尝试【正在攻克】列表中的内容。`;
 
         const historyMessages = [
             { role: "system", content: systemPrompt },
-            ...currentSession.messages.slice(-11, -1).map(m => ({
+            ...currentSession.messages.slice(-6, -1).map(m => ({
                 role: m.role,
                 content: m.content
             })),
             { role: "user", content: finalUserMessage }
         ];
+
+        console.log("[AI调试] ========== 发送给AI的完整消息 ==========");
+        console.log("[AI调试] 模式:", mode);
+        console.log("[AI调试] System Prompt:", systemPrompt);
+        console.log("[AI调试] 历史消息数量:", currentSession.messages.slice(-6, -1).length);
+        currentSession.messages.slice(-6, -1).forEach((m, i) => {
+            console.log(`[AI调试] 历史[${i}]: role=${m.role}, content=${m.content.substring(0, 200)}${m.content.length > 200 ? '...' : ''}`);
+        });
+        console.log("[AI调试] 当前用户消息:", finalUserMessage);
+        console.log("[AI调试] ========================================");
 
         let apiKey = "";
         let model = "";
@@ -681,187 +749,6 @@ ${dynamicPrompt}
             this.provider.storage.updateAccountByIndex(this.provider._currentAccountId, this.provider.saveData);
             this.handleLoadAiHistory();
         }
-    }
-
-    getLearningProgressSummary() {
-        const passedProblems = new Set(this.provider.saveData.progress?.passedProblems || []);
-        const summary = {
-            passedCount: passedProblems.size,
-            totalNodes: 0,
-            completedCount: 0,
-            completedNodes: [],
-            zpdNodes: [],
-            lockedNodes: [],
-            totalProgress: 0
-        };
-
-        try {
-            const treeDataPath = path.join(this.provider._extensionUri.fsPath, 'media', 'TreeNode', 'data.js');
-            const problemDataPath = path.join(this.provider._extensionUri.fsPath, 'media', 'ProblemList', 'data.js');
-            
-            if (fs.existsSync(treeDataPath) && fs.existsSync(problemDataPath)) {
-                const treeContent = fs.readFileSync(treeDataPath, 'utf8');
-                const problemContent = fs.readFileSync(problemDataPath, 'utf8');
-
-                const problemSetsMap = {};
-                const problemSetRegex = /"list_(\d+)":\s*\{.*?problems:\s*\[([\s\S]*?)\s*\]\s*\}/g;
-                let psMatch;
-                while ((psMatch = problemSetRegex.exec(problemContent)) !== null) {
-                    const listId = psMatch[1];
-                    const problemsText = psMatch[2];
-                    const refs = [];
-                    const refRegex = /ref:\s*(\d+)/g;
-                    let refMatch;
-                    while ((refMatch = refRegex.exec(problemsText)) !== null) {
-                        refs.push(parseInt(refMatch[1]));
-                    }
-                    problemSetsMap[listId] = refs;
-                }
-
-                const allNodes = [];
-                const nodeMap = new Map();
-                
-                const nodeObjRegex = /\{([\s\S]*?)\}/g;
-                let objMatch;
-                
-                const extractProp = (str, key) => {
-                    const regex = new RegExp(`${key}:\\s*(?:"(.*?)"|(\\d+)|(\\[.*?\\]))`);
-                    const match = regex.exec(str);
-                    if (!match) return null;
-                    return match[1] || match[2] || match[3];
-                };
-
-                while ((objMatch = nodeObjRegex.exec(treeContent)) !== null) {
-                    const content = objMatch[1];
-                    const idVal = extractProp(content, 'id');
-                    const titleVal = extractProp(content, 'title');
-                    const id = idVal || titleVal;
-                    
-                    if (!id) continue;
-
-                    const qListIdStr = extractProp(content, 'questionList');
-                    const parentStr = extractProp(content, 'parent');
-                    
-                    if (id) {
-                        const qListId = qListIdStr ? parseInt(qListIdStr) : 0;
-                        let parents = [];
-                        if (parentStr) {
-                            parents = parentStr.replace(/[\[\]"]/g, '').split(',').map(s => s.trim()).filter(s => s);
-                        }
-
-                        const node = {
-                            id: id,
-                            qListId: qListId,
-                            parents: parents,
-                            completed: false,
-                            unlocked: false
-                        };
-                        allNodes.push(node);
-                        nodeMap.set(id, node);
-                    }
-                }
-
-                allNodes.forEach(node => {
-                    if (node.qListId > 0) {
-                        const requiredRefs = problemSetsMap[node.qListId] || [];
-                        if (requiredRefs.length > 0 && requiredRefs.every(ref => passedProblems.has(ref))) {
-                            node.completed = true;
-                        }
-                    }
-                });
-
-                for (let i = 0; i < 5; i++) {
-                    let changed = false;
-                    allNodes.forEach(node => {
-                        if (node.qListId === 0 && !node.completed) {
-                            const children = allNodes.filter(n => n.parents.includes(node.id));
-                            const leafChildren = children.filter(n => n.qListId > 0);
-                            const categoryChildren = children.filter(n => n.qListId === 0);
-
-                            if (leafChildren.length > 0) {
-                                if (leafChildren.every(c => c.completed)) {
-                                    node.completed = true;
-                                    changed = true;
-                                }
-                            } else if (categoryChildren.length > 0) {
-                                if (categoryChildren.every(c => c.completed)) {
-                                    node.completed = true;
-                                    changed = true;
-                                }
-                            } else {
-                                if (node.id === "编程学习之旅") {
-                                    node.completed = true;
-                                    changed = true;
-                                }
-                            }
-                        }
-                    });
-                    if (!changed) break;
-                }
-                
-                const rootNode = nodeMap.get("编程学习之旅");
-                if (rootNode) {
-                    rootNode.completed = true;
-                    rootNode.unlocked = true;
-                }
-
-                for (let i = 0; i < 5; i++) {
-                    allNodes.forEach(node => {
-                        if (!node.unlocked) {
-                            if (node.parents.length === 0) {
-                                node.unlocked = true;
-                            } else {
-                                const parent = nodeMap.get(node.parents[0]);
-                                if (parent) {
-                                    if (node.qListId > 0) {
-                                        if (parent.unlocked) node.unlocked = true;
-                                    } else {
-                                        if (parent.id === "编程学习之旅") {
-                                            node.unlocked = true;
-                                        } else if (parent.completed) {
-                                            node.unlocked = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
-
-                allNodes.forEach(node => {
-                    if (node.completed) {
-                        summary.completedCount++;
-                        summary.completedNodes.push(node.id);
-                    }
-                    summary.totalNodes++;
-                });
-
-                allNodes.forEach(node => {
-                    if (node.qListId > 0 && node.unlocked && !node.completed) {
-                        let label = node.id;
-                        if (node.parents && node.parents.length > 0) {
-                            const parentId = node.parents.find(p => !p.endsWith('*') && p !== "编程学习之旅");
-                            if (parentId) {
-                                label = `${parentId} > ${node.id}`;
-                            }
-                        }
-                        summary.zpdNodes.push({ id: node.id, label: label });
-                    } else if (!node.unlocked) {
-                        summary.lockedNodes.push(node.id);
-                    }
-                });
-                
-                summary.zpdNodeIds = summary.zpdNodes.map(n => n.id);
-                
-                if (summary.totalNodes > 0) {
-                    summary.totalProgress = Math.round((summary.completedCount / summary.totalNodes) * 100);
-                }
-            }
-        } catch (e) {
-            console.error("获取进度摘要失败:", e);
-        }
-
-        return summary;
     }
 
     getAiChatHtml(webview) {
