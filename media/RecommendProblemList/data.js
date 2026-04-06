@@ -13,7 +13,7 @@
 */
 //passed标签我感觉是没用了，交给之后的人删除吧，题目通没通过应该是存在账号里面的。————jcy
 
-const problemSets = {
+export const problemSets = {
   "list_1": {
     name: "基本数据类型",
     problems: [

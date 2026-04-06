@@ -886,5 +886,5 @@ const treeMain = [
   }
 ]
 
-let treeData = treeMain;
+export let treeData = treeMain;
 let pageID = "知识树";
