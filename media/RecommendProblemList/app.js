@@ -1,4 +1,5 @@
 import { recommendProblems } from "./recommendation.js";
+import { problemSets } from "./data.js";
 
 const vscode = acquireVsCodeApi();
 
@@ -81,7 +82,7 @@ window.onload = function () {
   Object.keys(problemSets).forEach(listId => {
     const list = problemSets[listId];
     if (list && list.problems) {
-      allProblems = allProblems.concat(list.problems);
+      allProblems = allProblems.concat(list.problems.map(p => ({ ...p, listId: listId })));
     }
   });
 
@@ -94,9 +95,10 @@ window.onload = function () {
     });
   }
 
-  // 用户画像（你未来可以从知识树计算出来）
+  // 用户画像
   const userProfile = {
-    passedProblems: window.passedProblems || []
+    passedProblems: window.passedProblems || [],
+    problemSets: problemSets // 传递题单数据，用于知识树进度分析
   };
 
   // 推荐算法输出推荐题
