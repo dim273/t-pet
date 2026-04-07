@@ -468,13 +468,16 @@ class Live2dViewProvider {
 						<button class="common-button" onclick="closeLive2d()"> 关闭live2d</button>
 					</div>
 					<div class="common-bar">
-						<button 
-							title="将定位依赖,大小，位置等信息存储，下次启动自动生效" 
-							class="common-button" 
+						<button
+							title="将定位依赖,大小，位置等信息存储，下次启动自动生效"
+							class="common-button"
 							onclick="saveCurrentConfig()">
 							保存当前配置
 						</button>
 						<button class="common-button" onclick="resetPosition()">重置默认位置</button>
+					</div>
+					<div class="common-bar">
+						<button class="common-button" style="background-color: #e74c3c;" onclick="logout()">退出登录</button>
 					</div>
 
 				  <br/>

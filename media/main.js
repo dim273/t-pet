@@ -12,6 +12,10 @@ function switchPageToMain() {
     vscode.postMessage({ type: 'switchPageToMain' });
 }
 
+function logout() {
+    vscode.postMessage({ type: 'switchPageToLogin' });
+}
+
 function sendCommand(type, data) {
     window.top.postMessage({ type, data }, MainOrigin);
 }
