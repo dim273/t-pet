@@ -1,6 +1,5 @@
 import { recommendProblems } from "./recommendation.js";
 import { problemSets } from "./data.js";
-
 const vscode = acquireVsCodeApi();
 
 let recommendedProblems = [];

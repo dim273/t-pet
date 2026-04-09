@@ -705,7 +705,7 @@ class Live2dViewProvider {
 		// 先暂时复用 ProblemList/data.js
 
 		const appUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "app.js"));
-
+		const treeNodeDataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "data.js"));
 		const passedProblems = this.saveData.progress ? this.saveData.progress.passedProblems : [];
 
 		return `
@@ -740,7 +740,7 @@ class Live2dViewProvider {
       </div>
 
       <div class="problem-list" id="reproblem-list"></div>
-
+			<script src="${treeNodeDataUri}"></script>
       <script src="${dataUri}"></script>
 
       <script>

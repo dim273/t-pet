@@ -6,8 +6,8 @@ const difficultyScoreMap = {
 };
 
 // 导入知识树数据
-import { treeData } from '../TreeNode/data.js';
-
+//import { treeData } from '../TreeNode/data.js';
+treeData = window.treeData;
 // 构建知识树节点映射，方便快速查找
 function buildTreeNodeMap() {
   const nodeMap = new Map();
