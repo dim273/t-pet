@@ -46,53 +46,74 @@ function calculateDomainMastery(domainNode, allProblems, passedSet) {
   }
   console.log('Secondary nodes:', secondaryNodes);
 
-  // 收集二级节点的ID
-  const secondaryNodeIds = secondaryNodes.map(node => node.id);
-  console.log('Secondary node IDs:', secondaryNodeIds);
+  // 计算二级节点的掌握程度
+  const secondaryNodeMastery = {};
+  let totalSecondaryMastery = 0;
+  let validSecondaryNodes = 0;
+
+  secondaryNodes.forEach(secondaryNode => {
+    const nodeId = secondaryNode.id;
+    const questionList = secondaryNode.questionList;
+    console.log('Secondary node:', nodeId, 'questionList:', questionList);
+
+    let nodeTotalProblems = 0;
+    let nodePassedProblems = 0;
+
+    // 根据questionList找到对应的题单，计算该二级节点相关的题目总数和已通过数
+    if (questionList > 0) {
+      const problemSetKey = `list_${questionList}`;
+      const problemSet = window.problemSets[problemSetKey];
+      console.log('Problem set for', nodeId, ':', problemSet);
+
+      if (problemSet && problemSet.problems) {
+        problemSet.problems.forEach(problem => {
+          nodeTotalProblems++;
+          if (passedSet.has(problem.ref)) {
+            nodePassedProblems++;
+          }
+        });
+        console.log('Found', nodeTotalProblems, 'problems for', nodeId, 'passed:', nodePassedProblems);
+      }
+    }
+
+    const nodeMastery = nodeTotalProblems > 0 ? Math.round((nodePassedProblems / nodeTotalProblems) * 100) : 0;
+    secondaryNodeMastery[nodeId] = nodeMastery;
+    console.log('Secondary node', nodeId, 'mastery:', nodeMastery, '(', nodePassedProblems, '/', nodeTotalProblems, ')');
+
+    // 只有当二级节点有相关题目时，才计入一级节点的掌握程度计算
+    if (nodeTotalProblems > 0) {
+      totalSecondaryMastery += nodeMastery;
+      validSecondaryNodes++;
+    }
+  });
+  console.log('Secondary node masteries:', secondaryNodeMastery);
+
+  // 计算领域掌握程度：二级节点掌握程度的平均值
+  const mastery = validSecondaryNodes > 0 ? Math.round(totalSecondaryMastery / validSecondaryNodes) : 0;
+  console.log('Domain', domainId, 'mastery:', mastery);
 
   // 计算领域相关的题目总数和已通过数
   let totalProblems = 0;
   let passedProblems = 0;
 
-  allProblems.forEach(problem => {
-    const problemTags = problem.tags || [];
-    const hasIntersection = secondaryNodeIds.some(nodeId => problemTags.includes(nodeId));
+  secondaryNodes.forEach(secondaryNode => {
+    const questionList = secondaryNode.questionList;
 
-    if (hasIntersection) {
-      totalProblems++;
-      if (passedSet.has(problem.ref)) {
-        passedProblems++;
+    if (questionList > 0) {
+      const problemSetKey = `list_${questionList}`;
+      const problemSet = window.problemSets[problemSetKey];
+
+      if (problemSet && problemSet.problems) {
+        problemSet.problems.forEach(problem => {
+          totalProblems++;
+          if (passedSet.has(problem.ref)) {
+            passedProblems++;
+          }
+        });
       }
     }
   });
   console.log('Domain', domainId, 'problems:', totalProblems, 'passed:', passedProblems);
-
-  // 计算领域掌握程度：已通过题目数 / 总题目数
-  const mastery = totalProblems > 0 ? Math.round((passedProblems / totalProblems) * 100) : 0;
-  console.log('Domain', domainId, 'mastery:', mastery);
-
-  // 计算二级节点的掌握程度
-  const secondaryNodeMastery = {};
-  secondaryNodes.forEach(secondaryNode => {
-    const nodeId = secondaryNode.id;
-    let nodeTotalProblems = 0;
-    let nodePassedProblems = 0;
-
-    // 计算该二级节点相关的题目总数和已通过数
-    allProblems.forEach(problem => {
-      const problemTags = problem.tags || [];
-      if (problemTags.includes(nodeId)) {
-        nodeTotalProblems++;
-        if (passedSet.has(problem.ref)) {
-          nodePassedProblems++;
-        }
-      }
-    });
-
-    const nodeMastery = nodeTotalProblems > 0 ? Math.round((nodePassedProblems / nodeTotalProblems) * 100) : 0;
-    secondaryNodeMastery[nodeId] = nodeMastery;
-  });
-  console.log('Secondary node masteries:', secondaryNodeMastery);
 
   return {
     mastery,
@@ -245,7 +266,7 @@ function setupBackButton() {
 // 从知识树数据中提取能力数据
 function generateAbilityMapData() {
   console.log('Generating ability map data...');
-  
+
   // 获取用户已通过的题目
   const passedProblems = window.passedProblems || [];
   console.log('Passed problems:', passedProblems);
@@ -267,7 +288,7 @@ function generateAbilityMapData() {
   // 使用能力计算模块生成数据
   const treeData = window.treeData || [];
   console.log('Tree data:', treeData);
-  
+
   const abilityData = generateAbilityData(treeData, allProblems, passedSet);
   console.log('Generated ability data:', abilityData);
 
@@ -287,24 +308,24 @@ function generateAbilityMapData() {
 function initAbilityChart() {
   try {
     console.log('Initializing ability chart...');
-    
+
     const canvas = document.getElementById('abilityChart');
     if (!canvas) {
       console.error('Canvas element not found');
       return;
     }
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       console.error('Canvas context not found');
       return;
     }
-    
+
     if (typeof Chart === 'undefined') {
       console.error('Chart.js not loaded');
       return;
     }
-    
+
     const abilityData = generateAbilityMapData();
     console.log('Ability data for chart:', abilityData);
 
@@ -323,7 +344,7 @@ function initAbilityChart() {
     const abilityDetails = document.getElementById('abilityDetails');
     if (abilityDetails) {
       abilityDetails.innerHTML = '';
-      
+
       if (abilityData.chartData && abilityData.chartData.labels) {
         abilityData.chartData.labels.forEach((label, index) => {
           const mastery = abilityData.chartData.datasets[0].data[index];
@@ -427,17 +448,17 @@ function initAbilityChart() {
 // 初始化页面
 function init() {
   console.log('Initializing ability map module...');
-  
+
   try {
     setupBackButton();
-    
+
     // 检查必要的全局变量是否存在
     const checkDependencies = () => {
       console.log('Checking dependencies...');
       console.log('window.treeData:', typeof window.treeData, window.treeData);
       console.log('window.problemSets:', typeof window.problemSets, window.problemSets);
       console.log('window.passedProblems:', typeof window.passedProblems, window.passedProblems);
-      
+
       if (typeof window.treeData !== 'undefined' &&
         typeof window.problemSets !== 'undefined') {
         console.log('All dependencies found, initializing ability chart');

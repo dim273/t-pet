@@ -116,8 +116,12 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentThoughtText = "";
     let currentContentText = "";
     let lastRenderTime = 0;
-    const RENDER_INTERVAL = 50; // 毫秒，控制渲染频率以提升性能
+    const RENDER_INTERVAL = 16; // 毫秒，约60fps，提高响应速度
     let isStreaming = false; // 标记是否正在流式输出，用于防止侧边栏加载时清空聊天区
+    let streamTimeout = null; // 用于节流渲染的定时器
+    let contentUpdateThreshold = 5; // 字符数阈值，只有累积足够多新字符才触发渲染
+    let streamStartTime = 0; // 流式响应开始时间
+    const STREAM_TIMEOUT = 30000; // 30秒超时
 
     // 处理来自扩展的消息
     window.addEventListener('message', event => {
@@ -131,25 +135,46 @@ document.addEventListener('DOMContentLoaded', function () {
                     chatContent.appendChild(currentAssistantMessageEl);
                     currentThoughtText = "";
                     currentContentText = "";
+                    streamStartTime = Date.now();
                 }
-                
+
+                // 检查超时
+                if (Date.now() - streamStartTime > STREAM_TIMEOUT) {
+                    console.error('Stream timeout - no response for 30 seconds');
+                    isStreaming = false;
+                    removeLoading();
+                    addMessage('assistant', '错误: 请求超时，AI响应时间过长。请检查网络连接或API配置。');
+                    currentAssistantMessageEl = null;
+                    currentThoughtText = "";
+                    currentContentText = "";
+                    streamStartTime = 0;
+                    return;
+                }
+
                 if (message.reasoning) {
                     currentThoughtText += message.reasoning;
                 }
                 if (message.content) {
                     currentContentText += message.content;
                 }
-                
-                // 节流渲染
-                const now = Date.now();
-                if (now - lastRenderTime > RENDER_INTERVAL) {
-                    updateAssistantDisplay(currentAssistantMessageEl, currentThoughtText, currentContentText);
-                    lastRenderTime = now;
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                // 使用RAF进行更高效的渲染，避免频繁的setTimeout开销
+                if (!streamTimeout) {
+                    streamTimeout = requestAnimationFrame(() => {
+                        streamTimeout = null;
+                        updateAssistantDisplay(currentAssistantMessageEl, currentThoughtText, currentContentText);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    });
                 }
                 break;
-                
+
             case 'aiStreamDone':
+                // 取消待执行的渲染帧
+                if (streamTimeout) {
+                    cancelAnimationFrame(streamTimeout);
+                    streamTimeout = null;
+                }
+
                 // 最后强制渲染一次确保内容完整
                 if (currentAssistantMessageEl) {
                     updateAssistantDisplay(currentAssistantMessageEl, currentThoughtText, currentContentText);
@@ -160,8 +185,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 currentContentText = "";
                 lastRenderTime = 0;
                 isStreaming = false;
-                
-                // AI 完成输出后，检查并同步最后一条用户消息的脚注（如果是“正在读取...”状态）
+                streamStartTime = 0;
+
+                // AI 完成输出后，检查并同步最后一条用户消息的脚注（如果是"正在读取..."状态）
                 const messages = document.querySelectorAll('.message.user');
                 if (messages.length > 0) {
                     const lastUserMsg = messages[messages.length - 1];
@@ -196,12 +222,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateKnowledgeSelect(nodes) {
         if (!knowledgeSelect) return;
-        
+
         // 保留第一个默认选项
         const firstOption = knowledgeSelect.options[0];
         knowledgeSelect.innerHTML = '';
         knowledgeSelect.appendChild(firstOption);
-        
+
         if (nodes && nodes.length > 0) {
             nodes.forEach(node => {
                 const option = document.createElement('option');
@@ -214,10 +240,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderHistoryList(history) {
         historyList.innerHTML = '';
-        
+
         // 过滤掉没有消息的会话（除非是当前选中的空会话，但通常我们只想在记录里看到有内容的）
         const displaySessions = (history.sessions || []).filter(session => session.messages.length > 0);
-        
+
         if (displaySessions.length === 0) {
             historyList.innerHTML = '<div style="padding: 20px; text-align: center; opacity: 0.5;">暂无历史记录</div>';
             return;
@@ -226,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
         displaySessions.forEach(session => {
             const item = document.createElement('div');
             item.className = `history-item ${session.id === history.currentSessionId ? 'active' : ''}`;
-            
+
             const title = document.createElement('div');
             title.className = 'history-title';
             title.textContent = session.title || '新对话';
@@ -256,10 +282,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const currentSession = history.sessions.find(s => s.id === history.currentSessionId);
-        
+
         // 清空当前聊天
         chatContent.innerHTML = '';
-        
+
         if (!currentSession || currentSession.messages.length === 0) {
             initState.classList.remove('hidden');
             chatContent.style.display = 'none';
@@ -276,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 addMessage('assistant', msg.content, msg.time, msg.thought);
             }
         });
-        
+
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
@@ -298,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateAssistantDisplay(el, thought, content) {
         const bodyEl = el.querySelector('.message-body');
         let html = "";
-        
+
         if (thought) {
             const isStreaming = !content && currentAssistantMessageEl !== null;
             html += `
@@ -307,11 +333,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="thought-content">${thought.trim().replace(/\n/g, '<br>')}</div>
                 </div>`;
         }
-        
+
         if (content) {
             // 清理内容中的多余首尾换行，防止 marked 产生空段落
             const cleanedContent = content.trimStart();
-            if (window.marked && typeof window.marked.parse === 'function') {
+
+            // 判断是否包含Markdown语法，如果没有则直接显示，避免marked解析开销
+            const hasMarkdownSyntax = /[*_`#\-\[\]>]/.test(cleanedContent);
+            if (hasMarkdownSyntax && window.marked && typeof window.marked.parse === 'function') {
                 // 配置 marked 选项以减少不必要的换行
                 html += window.marked.parse(cleanedContent, {
                     breaks: true,
@@ -321,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 html += cleanedContent.replace(/\n/g, '<br>');
             }
         }
-        
+
         bodyEl.innerHTML = html;
     }
 
@@ -347,9 +376,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // 添加用户消息
         addMessage('user', message, null, null, footerText);
 
-        // 添加加载状态
-        addLoading();
-
         // 向扩展发送请求
         vscode.postMessage({
             type: 'aiRequest',
@@ -368,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const messageEl = document.createElement('div');
         messageEl.className = `message ${sender}`;
-        
+
         let formattedText = text;
         if (sender === 'assistant') {
             // 统一使用流式显示的更新逻辑来处理非流式消息

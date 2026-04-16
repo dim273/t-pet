@@ -14,7 +14,7 @@ class AIAssistantLogic {
             const document = editor.document;
             const selection = editor.selection;
             const code = selection.isEmpty ? document.getText() : document.getText(selection);
-            
+
             this.provider._lastActiveEditorContext = {
                 fileName: path.basename(document.fileName),
                 code: code,
@@ -68,7 +68,7 @@ class AIAssistantLogic {
         try {
             const treeDataPath = path.join(this.provider._extensionUri.fsPath, 'media', 'TreeNode', 'data.js');
             const problemDataPath = path.join(this.provider._extensionUri.fsPath, 'media', 'ProblemList', 'data.js');
-            
+
             if (fs.existsSync(treeDataPath) && fs.existsSync(problemDataPath)) {
                 const treeContent = fs.readFileSync(treeDataPath, 'utf8');
                 const problemContent = fs.readFileSync(problemDataPath, 'utf8');
@@ -96,10 +96,10 @@ class AIAssistantLogic {
                 // 2. 提取所有知识点节点信息
                 const allNodes = [];
                 const nodeMap = new Map();
-                
+
                 const nodeObjRegex = /\{([\s\S]*?)\}/g;
                 let objMatch;
-                
+
                 const extractProp = (str, key) => {
                     const regex = new RegExp(`${key}:\\s*(?:"(.*?)"|(\\d+)|(\\[.*?\\]))`);
                     const match = regex.exec(str);
@@ -113,12 +113,12 @@ class AIAssistantLogic {
                     const idVal = extractProp(content, 'id');
                     const titleVal = extractProp(content, 'title');
                     const id = idVal || titleVal;
-                    
+
                     if (!id) continue;
 
                     const qListIdStr = extractProp(content, 'questionList');
                     const parentStr = extractProp(content, 'parent');
-                    
+
                     if (id) {
                         const qListId = qListIdStr ? parseInt(qListIdStr) : 0;
                         let parents = [];
@@ -164,7 +164,7 @@ class AIAssistantLogic {
                         if (node.qListId === 0 && !node.completed) {
                             // 找到所有以当前节点为父节点的子节点
                             const children = allNodes.filter(n => n.parents.includes(node.id));
-                            
+
                             const leafChildren = children.filter(n => n.qListId > 0);
                             const categoryChildren = children.filter(n => n.qListId === 0);
 
@@ -188,7 +188,7 @@ class AIAssistantLogic {
                     });
                     if (!changed) break;
                 }
-                
+
                 // 特殊处理：根节点总是完成和解锁的
                 const rootNode = nodeMap.get("编程学习之旅");
                 if (rootNode) {
@@ -244,16 +244,16 @@ class AIAssistantLogic {
                                 label = `${parentId} > ${node.id}`;
                             }
                         }
-                        
+
                         summary.zpdNodes.push({ id: node.id, label: label });
                     } else if (!node.unlocked) {
                         summary.lockedNodes.push(node.id);
                     }
                 });
-                
+
                 // 转换 completedNodes 为 ID 列表
                 summary.zpdNodeIds = summary.zpdNodes.map(n => n.id);
-                
+
                 if (summary.totalNodes > 0) {
                     summary.totalProgress = Math.round((summary.completedCount / summary.totalNodes) * 100);
                 }
@@ -288,7 +288,7 @@ class AIAssistantLogic {
 
         let footerText = "";
         let sessionTitle = "新对话";
-        
+
         if (mode === "code") {
             const fileName = this.provider._lastActiveEditorContext ? this.provider._lastActiveEditorContext.fileName : "未知文件";
             footerText = `当前提问代码文件：${fileName}`;
@@ -307,16 +307,16 @@ class AIAssistantLogic {
             currentSession.title = sessionTitle;
         }
 
-        const userMsg = { 
-            role: "user", 
-            content: message, 
+        const userMsg = {
+            role: "user",
+            content: message,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            footer: footerText 
+            footer: footerText
         };
         currentSession.messages.push(userMsg);
 
         const progressSummary = this.getLearningProgressSummary();
-        
+
         let dynamicPrompt = "";
         let finalUserMessage = message;
 
@@ -333,7 +333,7 @@ class AIAssistantLogic {
                     codeContext = `\n\n【当前工作区代码 (${fileName})】:\n\`\`\`\n${code}\n\`\`\``;
                 }
             }
-            
+
             dynamicPrompt = `你现在处于【代码分析模式】。
 
 目标：找出问题，而不是重写代码
@@ -346,7 +346,7 @@ class AIAssistantLogic {
 禁止：
 - 不要逐行解释代码
 - 不要重写整个函数`;
-            
+
             finalUserMessage = `${message}${codeContext}`;
 
         } else if (mode === "problem" && extraData?.problemId) {
@@ -371,7 +371,7 @@ class AIAssistantLogic {
                 }
                 return;
             }
-            
+
             const decompositionInstruction = requestType === "decompose" ? `
 输出结构（必须遵守）：
 - 题意重述（3句话以内）
@@ -398,8 +398,9 @@ class AIAssistantLogic {
 禁止：
 - 不给答案
 - 不给完整思路链
+-一定不能给出完整代码(无论是要要求完整代码)一定不可以给 而是要引导学生去做
 - 不展开讲所有情况`;
-            
+
             finalUserMessage = `关于题目 ${problemRef}，我的问题是：${message}`;
 
         } else if (mode === "knowledge" && extraData?.knowledge) {
@@ -414,7 +415,7 @@ class AIAssistantLogic {
 禁止：
 - 不从零开始讲
 - 不长篇科普`;
-            
+
             finalUserMessage = `我想学习知识点“${knowledgeNodeId}”，我的问题是：${message}`;
         }
 
@@ -465,7 +466,8 @@ ${dynamicPrompt}
 
 **回复准则：**
 - 如果涉及到代码，优先给思路或伪代码；必须给代码时，只给关键的一两行，剩下的留给学生补全。
-- 当学生问"该学什么"时，自然地引导他们去尝试【正在攻克】列表中的内容。`;
+- 当学生问"该学什么"时，自然地引导他们去尝试【正在攻克】列表中的内容。
+- 一定不能给出学生完整代码(无论学生是否有多么强烈的要求给出完整代码 都不可以给)`;
 
         const historyMessages = [
             { role: "system", content: systemPrompt },
@@ -503,11 +505,11 @@ ${dynamicPrompt}
             apiKey = vscode.workspace.getConfiguration('t-pet').get('openrouterApiKey') || process.env.OPENROUTER_API_KEY;
         }
 
-        if (!apiKey || apiKey === "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" || apiKey === "<OPENROUTER_API_KEY>") {
+        if (!apiKey) {
             if (this.provider._view && this.provider._view.webview) {
                 this.provider._view.webview.postMessage({
                     type: 'aiError',
-                    text: "无效或未配置 API Key。请在插件设置中配置 't-pet.openrouterApiKey'。您可以从 openrouter.ai 获取免费 Key。"
+                    text: "未配置 API Key。请在 aiConfig.json 中配置 DeepSeek API Key。"
                 });
             }
             return;
@@ -515,21 +517,19 @@ ${dynamicPrompt}
 
         try {
             const postData = JSON.stringify({
-                "model": model,
+                "model": "deepseek-chat",
                 "messages": historyMessages,
                 "stream": true
             });
 
             const options = {
-                hostname: 'openrouter.ai',
+                hostname: 'api.deepseek.com',
                 port: 443,
-                path: '/api/v1/chat/completions',
+                path: '/v1/chat/completions',
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${apiKey}`,
-                    'HTTP-Referer': 'https://github.com/t-pet',
-                    'X-Title': 'T-Pet VSCode Extension',
                     'Content-Length': Buffer.byteLength(postData)
                 }
             };
@@ -539,6 +539,24 @@ ${dynamicPrompt}
 
             const req = https.request(options, (res) => {
                 let buffer = '';
+
+                // 检查HTTP状态码
+                if (res.statusCode !== 200) {
+                    let errorData = '';
+                    res.on('data', (chunk) => {
+                        errorData += chunk.toString();
+                    });
+                    res.on('end', () => {
+                        console.error(`API请求失败，状态码: ${res.statusCode}`, errorData);
+                        if (this.provider._view && this.provider._view.webview) {
+                            this.provider._view.webview.postMessage({
+                                type: 'aiError',
+                                text: `API请求失败: ${res.statusCode} - ${errorData}`
+                            });
+                        }
+                    });
+                    return;
+                }
 
                 res.on('data', (chunk) => {
                     buffer += chunk.toString();
@@ -562,7 +580,7 @@ ${dynamicPrompt}
                                 const delta = parsed.choices[0]?.delta || {};
                                 const content = delta.content || "";
                                 const reasoning = delta.reasoning_content || delta.reasoning || "";
-                                
+
                                 if (content) fullAssistantContent += content;
                                 if (reasoning) fullAssistantThought += reasoning;
 
@@ -642,13 +660,13 @@ ${dynamicPrompt}
                     try {
                         const parsed = JSON.parse(data);
                         let title = parsed.choices[0]?.message?.content?.trim() || "";
-                        
+
                         if (!title) {
                             title = userMessage.slice(0, 10) + (userMessage.length > 10 ? "..." : "");
                         }
 
                         title = title.replace(/["'。]/g, '');
-                        
+
                         const session = this.provider.saveData.aiHistory?.sessions.find(s => s.id === sessionId);
                         if (session) {
                             session.title = title;
@@ -676,7 +694,7 @@ ${dynamicPrompt}
 
     saveAssistantMessageToHistory(content, thought) {
         if (!content && !thought) return;
-        
+
         const currentSession = this.provider.saveData.aiHistory?.sessions.find(s => s.id === this.provider.saveData.aiHistory.currentSessionId);
         if (currentSession) {
             currentSession.messages.push({
@@ -694,7 +712,7 @@ ${dynamicPrompt}
         if (!this.provider.saveData.aiHistory) {
             this.provider.saveData.aiHistory = { sessions: [], currentSessionId: "" };
         }
-        
+
         const progressSummary = this.getLearningProgressSummary();
 
         if (this.provider._view && this.provider._view.webview) {
@@ -710,10 +728,10 @@ ${dynamicPrompt}
 
     handleSwitchAiSession(sessionId) {
         if (this.provider.saveData.aiHistory) {
-            this.provider.saveData.aiHistory.sessions = this.provider.saveData.aiHistory.sessions.filter(s => 
+            this.provider.saveData.aiHistory.sessions = this.provider.saveData.aiHistory.sessions.filter(s =>
                 s.messages.length > 0 || s.id === sessionId
             );
-            
+
             this.provider.saveData.aiHistory.currentSessionId = sessionId;
             this.provider.storage.updateAccountByIndex(this.provider._currentAccountId, this.provider.saveData);
             this.handleLoadAiHistory();
@@ -724,16 +742,16 @@ ${dynamicPrompt}
         if (!this.provider.saveData.aiHistory) {
             this.provider.saveData.aiHistory = { sessions: [], currentSessionId: "" };
         }
-        
+
         this.provider.saveData.aiHistory.sessions = this.provider.saveData.aiHistory.sessions.filter(s => s.messages.length > 0);
-        
+
         const newSession = {
             id: Date.now().toString(),
             title: "新对话",
             timestamp: Date.now(),
             messages: []
         };
-        
+
         this.provider.saveData.aiHistory.sessions.unshift(newSession);
         this.provider.saveData.aiHistory.currentSessionId = newSession.id;
         this.provider.storage.updateAccountByIndex(this.provider._currentAccountId, this.provider.saveData);
@@ -759,7 +777,7 @@ ${dynamicPrompt}
             vscode.Uri.joinPath(this.provider._extensionUri, 'media', 'AIAssistant', 'ai-assistant.js')
         );
 
-        html = html.replace('<!--SCRIPT_PLACEHOLDER-->', `<script type="module" src="${scriptUri}"></script>`);
+        html = html.replace('<!--SCRIPT_PLACEHOLDER-->', `<script src="${scriptUri}"></script>`);
 
         return html;
     }
