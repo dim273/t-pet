@@ -72,9 +72,9 @@
         <i class="fa fa-book"></i>
         <span>题单</span>
       </button>
-      <button id="reloadExtension" class="menu-button bg-gradient-to-br from-pink-200 to-pink-500 btn-effect">
-        <i class="fa fa-shopping-cart"></i>
-        <span>积分商城</span>
+      <button id="switchPageToAbilityMap" class="menu-button bg-gradient-to-br from-purple-200 to-purple-500 btn-effect">
+        <i class="fa fa-line-chart"></i>
+        <span>能力图谱</span>
       </button>
     </div>
 
@@ -106,8 +106,8 @@
     //document.getElementById('switchPageToReProblemList').addEventListener('click', () => {
     //  vscode.postMessage({ type: 'switchPageToReProblemList', listId: 1 });
     //});
-    document.getElementById('reloadExtension').addEventListener('click', () => {
-      vscode.postMessage({ type: 'reloadExtension' });
+    document.getElementById('switchPageToAbilityMap').addEventListener('click', () => {
+      vscode.postMessage({ type: 'switchPageToAbilityMap' });
     });
 
     document.getElementById('switchPageToCalender').addEventListener('click', () => {

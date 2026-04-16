@@ -1,13 +1,17 @@
-import { recommendProblems } from "./recommendation.js";
-import { problemSets } from "./data.js";
+// 使用全局变量
+// 直接使用全局作用域中的变量，不重新声明
+
 const vscode = acquireVsCodeApi();
 
 let recommendedProblems = [];
 
 // 返回主界面
-window.switchPageToMain = function () {
+function switchPageToMain() {
   vscode.postMessage({ type: "goBack" });
-};
+}
+
+// 确保在全局作用域中可用
+window.switchPageToMain = switchPageToMain;
 
 // 跳转到题目界面
 window.switchPageToProblem = function (problemRef) {

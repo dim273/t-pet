@@ -162,6 +162,11 @@ class Live2dViewProvider {
 					this._page = 'setting';
 					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
 					break;
+				case "switchPageToAbilityMap":
+					this._history.push(this._page);
+					this._page = 'abilityMap';
+					webviewView.webview.html = this.updateWebviewContent(webviewView.webview);
+					break;
 				case "switchPageToAiChat":
 					this._history.push(this._page);
 					this._page = 'aiChat';
@@ -319,9 +324,52 @@ class Live2dViewProvider {
 				return this._getAiChatHtml(webview);
 			case 'Reproblem':
 				return this._getRecommendProblemListHtml(webview);
+			case 'abilityMap':
+				return this._getAbilityMapHtml(webview);
 			default:
 				return this._getSettingHtml(webview);
 		}
+	}
+
+	// 生成能力图谱界面
+	_getAbilityMapHtml(webview) {
+		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "data.js"));
+		const problemListDataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "data.js"));
+		const abilityCalculatorUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "AbilityMap", "ability.js"));
+		const abilityHtmlPath = path.join(this._extensionUri.fsPath, "media", "AbilityMap", "ability.html");
+		// 读取能力图谱HTML文件内容
+		let htmlContent = fs.readFileSync(abilityHtmlPath, 'utf8');
+
+		// 替换占位符
+		const logoUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "logo.png"));
+		htmlContent = htmlContent.replace(/{{logo}}/g, logoUri.toString());
+
+		// 获取用户已通过的题目
+		const passedProblems = this.saveData.progress ? this.saveData.progress.passedProblems : [];
+
+		return `<!DOCTYPE html>
+		<html lang="zh-CN">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<link rel="stylesheet" href="${vscodeCssUri}">
+		</head>
+		<body>
+			${htmlContent}
+			<script src="${dataUri}"></script>
+			<script src="${problemListDataUri}"></script>
+			<script src="${abilityCalculatorUri}"></script>
+			<script>
+				// 将用户已通过的题目设置为全局变量
+				window.passedProblems = ${JSON.stringify(passedProblems)};
+				// 将题单数据设置为全局变量
+				window.problemSets = problemSets;
+				// 将知识树数据设置为全局变量
+				window.treeData = treeData;
+			</script>
+		</body>
+		</html>`;
 	}
 	//评测逻辑
 	async _judgeProblem(ref) {
@@ -559,7 +607,6 @@ class Live2dViewProvider {
 		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "styles.css"));
 		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "data.js"));
 		const appUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "app.js"));
-
 		let listTitle = 1;
 		if (this._currentProblemListId)
 			listTitle = this._currentProblemListId;
@@ -611,6 +658,7 @@ class Live2dViewProvider {
 				</div>
 				<script src="${dataUri}"></script>
 				<script src="${appUri}"></script>
+				
 				<script>
 					window.currentListId = "${listTitle}";
 					window.passedProblems = ${JSON.stringify(passedProblems)};
@@ -705,7 +753,8 @@ class Live2dViewProvider {
 		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "styles.css"));
 
 		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "data.js"));
-		// 先暂时复用 ProblemList/data.js
+		const recommendationUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "recommendation.js"));
+		const abilityCalculatorUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "AbilityMap", "ability.js"));
 
 		const appUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "app.js"));
 		const treeNodeDataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "data.js"));
@@ -743,14 +792,16 @@ class Live2dViewProvider {
       </div>
 
       <div class="problem-list" id="reproblem-list"></div>
-			<script src="${treeNodeDataUri}"></script>
+		<script src="${treeNodeDataUri}"></script>
       <script src="${dataUri}"></script>
+      <script src="${abilityCalculatorUri}"></script>
+      <script src="${recommendationUri}"></script>
 
       <script>
         window.passedProblems = ${JSON.stringify(passedProblems)};
       </script>
 
-      <script type="module" src="${appUri}"></script>
+      <script src="${appUri}"></script>
     </body>
     </html>
   `;

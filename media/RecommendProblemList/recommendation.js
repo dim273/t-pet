@@ -129,7 +129,7 @@ function analyzeKnowledgeTreeProgress(userProfile) {
   return progress;
 }
 
-export function recommendProblems(allProblemSets, userProfile, recommendCount = 5) {
+function recommendProblems(allProblemSets, userProfile, recommendCount = 5) {
   const allProblems = flattenAllProblems(allProblemSets);
 
   if (!allProblems || allProblems.length === 0) {
@@ -275,11 +275,42 @@ function buildTagMastery(allProblems, passedSet) {
 
 
 
-export const __test__ = {
-  flattenAllProblems,
-  computeProblemScore,
-  buildTagMastery,
-  buildTreeNodeMap,
-  buildQuestionListToNodeMap,
-  analyzeKnowledgeTreeProgress
-};
+// 暴露到全局作用域
+if (typeof window !== 'undefined') {
+  window.recommendProblems = recommendProblems;
+  window.flattenAllProblems = flattenAllProblems;
+  window.computeProblemScore = computeProblemScore;
+  window.buildTagMastery = buildTagMastery;
+  window.buildTreeNodeMap = buildTreeNodeMap;
+  window.buildQuestionListToNodeMap = buildQuestionListToNodeMap;
+  window.analyzeKnowledgeTreeProgress = analyzeKnowledgeTreeProgress;
+  window.__test__ = {
+    flattenAllProblems,
+    computeProblemScore,
+    buildTagMastery,
+    buildTreeNodeMap,
+    buildQuestionListToNodeMap,
+    analyzeKnowledgeTreeProgress
+  };
+}
+
+// 在Node.js环境中，使用CommonJS导出
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    recommendProblems,
+    flattenAllProblems,
+    computeProblemScore,
+    buildTagMastery,
+    buildTreeNodeMap,
+    buildQuestionListToNodeMap,
+    analyzeKnowledgeTreeProgress,
+    __test__: {
+      flattenAllProblems,
+      computeProblemScore,
+      buildTagMastery,
+      buildTreeNodeMap,
+      buildQuestionListToNodeMap,
+      analyzeKnowledgeTreeProgress
+    }
+  };
+}

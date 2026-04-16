@@ -13,7 +13,7 @@
 */
 //passed标签我感觉是没用了，交给之后的人删除吧，题目通没通过应该是存在账号里面的。————jcy
 
-export const problemSets = {
+const problemSets = {
   "list_1": {
     name: "基本数据类型",
     problems: [
@@ -2011,3 +2011,15 @@ export const problemSets = {
     ]
   }
 };
+
+// 暴露到全局作用域
+if (typeof window !== 'undefined') {
+  window.problemSets = problemSets;
+}
+
+// 在Node.js环境中，使用CommonJS导出
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    problemSets
+  };
+}
