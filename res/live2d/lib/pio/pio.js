@@ -106,28 +106,28 @@ var Paul_Pio = function (prop) {
                 var text, hour = new Date().getHours();
 
                 if (hour > 22 || hour <= 5) {
-                    text = '你是夜猫子呀？这么晚还不睡觉，明天起的来嘛';
+                    text = '这么晚还在学习算法吗？注意休息哦，身体是革命的本钱~';
                 }
                 else if (hour > 5 && hour <= 8) {
-                    text = '早上好！';
+                    text = '早上好！新的一天，新的算法等你来挑战！';
                 }
                 else if (hour > 8 && hour <= 11) {
-                    text = '上午好！工作顺利嘛，不要久坐，多起来走动走动哦！';
+                    text = '上午好！大脑最清醒的时候，适合攻克难题哦！不要久坐，多起来走动走动~';
                 }
                 else if (hour > 11 && hour <= 14) {
-                    text = '中午了，工作了一个上午，现在是午餐时间！';
+                    text = '中午了，学了一上午，现在是午餐时间！吃饱了才有力气刷题~';
                 }
                 else if (hour > 14 && hour <= 17) {
-                    text = '午后很容易犯困呢，今天的运动目标完成了吗？';
+                    text = '午后很容易犯困呢，站起来活动一下，让大脑清醒清醒！';
                 }
                 else if (hour > 17 && hour <= 19) {
-                    text = '傍晚了！窗外夕阳的景色很美丽呢，最美不过夕阳红~';
+                    text = '傍晚了！今天的学习收获满满吧？继续加油哦~';
                 }
                 else if (hour > 19 && hour <= 21) {
-                    text = '晚上好，今天过得怎么样？';
+                    text = '晚上好，今天又掌握了哪些新知识呢？';
                 }
                 else if (hour > 21 && hour <= 23) {
-                    text = '已经这么晚了呀，早点休息吧，晚安~';
+                    text = '已经这么晚了呀，今天的努力会有回报的，早点休息吧，晚安~';
                 }
                 else {
                     text = "奇趣保罗说：这个是无法被触发的吧，哈哈";
@@ -136,7 +136,7 @@ var Paul_Pio = function (prop) {
                 modules.render(text);
             }
             else {
-                modules.render(prop.content.welcome || "欢迎使用本插件，记得去B站关注a-soul！");
+                modules.render(prop.content.welcome || "欢迎使用算法学习插件，一起加油吧！");
             }
 
             // 定时提醒,每一小时提示一下需要休息了
@@ -147,7 +147,7 @@ var Paul_Pio = function (prop) {
         // 触摸
         touch: function () {
             current.canvas.onclick = function () {
-                modules.render(prop.content.touch || ["你在干什么？", "再摸我就报警了！", "HENTAI!", "不可以这样欺负我啦！"]);
+                modules.render(prop.content.touch || ["你在写什么算法呢？", "别摸我啦，快去刷题！", "HENTAI!", "不可以这样，要专心学习哦！"]);
             };
         },
         // 右侧按钮
@@ -157,7 +157,7 @@ var Paul_Pio = function (prop) {
                 window.open('https://studio.asf.ink/');
             };
             elements.home.onmouseover = function () {
-                modules.render(prop.content.home || "想查看更多A-Soul的信息吗？");
+                modules.render(prop.content.home || "想查看更多算法学习资源吗？");
             };
             current.menu.appendChild(elements.home);
 
@@ -176,7 +176,7 @@ var Paul_Pio = function (prop) {
                 localStorage.setItem('live2d-asoul-model', modelIndex);
                 that.model = loadlive2d("pio", prop.model[modelIndex], model => {
                     prop.onModelLoad && prop.onModelLoad(model)
-                    prop.content.skin && prop.content.skin[1] ? modules.render(prop.content.skin[1]) : modules.render("新衣服真漂亮~");
+                    prop.content.skin && prop.content.skin[1] ? modules.render(prop.content.skin[1]) : modules.render("新形象真精神，继续加油学习！");
                 });
             };
             elements.skin.onmouseover = function () {
@@ -198,7 +198,7 @@ var Paul_Pio = function (prop) {
                 }
             };
             elements.skate.onmouseover = function () {
-                const list = ["溜冰去咯", "随机挑战开启", "溜冰的意思不是让你咬咬牙溜十次八次，而是要上百次", "你想摸鱼？？？"]
+                const list = ["来道随机算法题？", "挑战模式开启", "刷题不是一朝一夕的事，坚持就是胜利！", "想休息一会儿？"]
                 modules.render(list);
             };
             current.menu.appendChild(elements.skate);
@@ -219,7 +219,7 @@ var Paul_Pio = function (prop) {
                 }
             };
             elements.audio.onmouseover = function () {
-                modules.render("音频测试");
+                modules.render("加油鼓励！");
             };
             current.menu.appendChild(elements.audio);
 
@@ -228,7 +228,7 @@ var Paul_Pio = function (prop) {
                 window.open("https://asoulfanart.com/pic");
             };
             elements.fans.onmouseover = function () {
-                modules.render("想看更多一个魂们的二创吗？");
+                modules.render("想看看其他学习者的分享吗？");
             };
             current.menu.appendChild(elements.fans);
 
@@ -237,7 +237,7 @@ var Paul_Pio = function (prop) {
                 window.open("https://www.bilibili.com/video/BV1FZ4y1F7HH");
             };
             elements.info.onmouseover = function () {
-                modules.render(["想了解更多关于我的信息吗？", "模型来源"]);
+                modules.render(["想了解更多关于算法学习的信息吗？", "插件信息"]);
             };
             current.menu.appendChild(elements.info);
         }

@@ -356,6 +356,10 @@ class Live2dViewProvider {
 			<link rel="stylesheet" href="${vscodeCssUri}">
 		</head>
 		<body>
+			<div class="header">
+        <button class="back-btn" id="backButton">←</button>
+        <h3 style="font-weight: 600;">能力图谱</h3>
+    	</div>
 			${htmlContent}
 			<script src="${dataUri}"></script>
 			<script src="${problemListDataUri}"></script>
@@ -505,9 +509,10 @@ class Live2dViewProvider {
 				<title>Live 2d</title>
 			</head>
 			<body>
-				<div class="common-bar" >
-						<button class="common-button" onclick="switchPageToMain()">返回主界面</button>
-				</div>
+				<div class="header">
+        	<button class="back-btn" onclick="switchPageToMain()">←</button>
+        	<h3 style="font-weight: 600;">设置</h3>
+    		</div>
 				<div style="max-width: 450px; min-width: 100px; padding: 12px">
 					<div class="common-title">萌宠设置</div>
 					<div class="common-subtitle">基本操作:</div>

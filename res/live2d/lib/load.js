@@ -41,11 +41,11 @@ const initConfig = {
   hidden: false,
   content: {
     link: 引流,
-    welcome: ["Hi!"],
-    touch: "莫挨老子",
-    home: ["这里有很多好听的", "边听asoul的演唱边敲代码？"],
-    skin: [["诶，想看看其他团员吗？", "嘉晚饭yyds", "嘉晚饭是真的"], "替换后入场文本"],
-    background: ["要切换背景图吗？", "这次切背景图会切到我吗？", "换,换一下背景图也不是不可以啦",],
+    welcome: ["Hi！准备好开始今天的算法学习了吗？"],
+    touch: "别戳我啦~专心写代码吧！",
+    home: ["这里有很多好听的", "边听音乐边刷题？效率满满哦"],
+    skin: ["诶，想换个心情继续学习吗？", "换个形象，换种心情，加油！"],
+    background: ["要切换背景图吗？", "换个清新的背景，让思路更清晰吧！", "好的环境能让学习更高效哦~",],
   },
   model: [
     "./models/Diana/Diana.model3.json",
@@ -129,39 +129,39 @@ function onModelLoad(model) {
 
     touchList = [
       {
-        text: "嘉心糖屁用没有",
+        text: "这道题不难的，再想想！你一定可以的！",
         motion: "Tap生气 -领结"
       },
       {
-        text: "有人急了，但我不说是谁~",
+        text: "别急别急，慢慢来，算法需要耐心哦~",
         motion: "Tap= =  左蝴蝶结"
       },
       {
-        text: "呜呜...呜呜呜....",
+        text: "呜呜...这题好难...但我会陪着你的！",
         motion: "Tap哭 -眼角"
       },
       {
-        text: "想然然了没有呀~",
+        text: "今天的学习进度很棒呢！继续保持！",
         motion: "Tap害羞-中间刘海"
       },
       {
-        text: "阿草好软呀~",
+        text: "休息一下也没关系哦，劳逸结合效率更高~",
         motion: "Tap抱阿草-左手"
       },
       {
-        text: "不要再戳啦！好痒！",
+        text: "不要再戳啦！我要专心给你加油了！",
         motion: "Tap摇头- 身体"
       },
       {
-        text: "嗷呜~~~",
+        text: "哇！你又学会了一个新算法！太厉害了！",
         motion: "Tap耳朵-发卡"
       },
       {
-        text: "zzZ。。。",
+        text: "zzZ...你也该休息会儿啦~",
         motion: "Leave"
       },
       {
-        text: "哇！好吃的！",
+        text: "做出来了？就知道你超棒的！",
         motion: "Tap右头发"
       },
     ]
@@ -181,11 +181,11 @@ function onModelLoad(model) {
 
     touchList = [
       {
-        text: "水母 水母~ 只是普通的生物",
+        text: "动态规划？小意思！你肯定能搞定！",
         motion: "Tap右手"
       },
       {
-        text: "可爱的鸽子鸽子~我喜欢你~",
+        text: "每解出一道题，你就离大神更近一步！",
         motion: "Tap胸口项链",
         from: {
           "Part12": 1
@@ -195,7 +195,7 @@ function onModelLoad(model) {
         }
       },
       {
-        text: "好...好兄弟之间喜欢很正常啦",
+        text: "好...好朋友之间互相鼓励很正常啦，你是最棒的！",
         motion: "Tap中间刘海",
         from: {
           "Part12": 1
@@ -205,7 +205,7 @@ function onModelLoad(model) {
         }
       },
       {
-        text: "啊啊啊！怎么推流辣",
+        text: "啊啊啊！这个算法太巧妙了吧！",
         motion: "Tap右眼",
         from: {
           "Part16": 1
@@ -215,11 +215,11 @@ function onModelLoad(model) {
         }
       },
       {
-        text: "你怎么老摸我，我的身体是不是可有魅力",
+        text: "你怎么一直看着我，是要和我一起刷题吗？",
         motion: "Tap嘴"
       },
       {
-        text: "AAAAAAAAAAvvvvAAA 向晚！",
+        text: "AC啦！Accept！恭喜恭喜！",
         motion: "Tap左眼",
         from: {
           "Part15": 1
