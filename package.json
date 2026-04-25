@@ -1,28 +1,27 @@
 {
-  "name": "vscode-live2d",
-  "displayName": "A-SOUL-live2d",
-  "description": "vscode插件-live2d看板娘。 默认角色会设置为asoul的嘉然",
-  "version": "1.1.1",
-  "author": "TheSecondAkari",
-  "publisher": "TheSecondAkari",
+  "name": "code-assistant",
+  "displayName": "Code Assistant",
+  "description": "算法学习插件-吉祥物Live2D看板娘。 陪伴你学习算法，给予鼓励和支持",
+  "version": "2.0.0",
+  "author": "dim273",
+  "publisher": "dim273",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/TheSecondAkari/vscode-live2d"
+    "url": "https://github.com/dim273/t-pet"
   },
   "engines": {
     "vscode": "^1.98.2"
   },
   "keywords": [
-    "vscode看板娘",
-    "看板娘",
-    "kanbanniang",
+    "algorithm",
+    "learning",
+    "算法学习",
     "live2d",
-    "asoul",
-    "a-soul",
-    "vtuber",
-    "国内顶级偶像",
-    "虚拟偶像"
+    "看板娘",
+    "能力图谱",
+    "教育",
+    "编程学习"
   ],
   "icon": "logo.png",
   "categories": [
@@ -39,7 +38,7 @@
         {
           "type": "webview",
           "id": "vscode-live2d.live2dView",
-          "name": "live2d-A-Soul"
+          "name": "code-assistant"
         }
       ]
     },
