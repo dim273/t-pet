@@ -64,30 +64,29 @@ function renderProblemList() {
 
   if (problems.length === 0) {
     problemListElement.innerHTML = `
-      <div class="empty-state">
-        <i>🔍</i>
-        <h3>没有题目数据</h3>
+      <div class="tp-empty-state">
+        <div class="tp-empty-state-title">没有题目数据</div>
       </div>
     `;
     return;
   }
 
   problemListElement.innerHTML = problems.map(problem => `
-    <div class="problem-item" data-id="${problem.id}" onclick="switchPageToProblem(${problem.id})">
-      <div class="problem-info">
-        <div class="problem-title">
+    <div class="tp-problem-item" data-id="${problem.id}" onclick="switchPageToProblem(${problem.id})">
+      <div class="tp-problem-info">
+        <div class="tp-problem-title">
           <a href="${problem.url}" target="_blank">${problem.title}</a>
         </div>
-        <div class="problem-meta">
-          <span class="difficulty ${problem.difficulty}">
+        <div class="tp-problem-meta">
+          <span class="tp-difficulty tp-difficulty-${problem.difficulty}">
             ${problem.difficulty === 'easy' ? '简单' :
-      problem.difficulty === 'medium' ? '中等' : '困难'}  
+      problem.difficulty === 'medium' ? '中等' : '困难'}
           </span>
           <span>${problem.tags.join(', ')}</span>
         </div>
       </div>
-      <div class="status ${problem.passed ? 'passed' : 'failed'}">
-        <span class="status-icon">${problem.passed ? '✓' : '✗'}</span>
+      <div class="tp-status tp-status-${problem.passed ? 'passed' : 'failed'}">
+        <span class="tp-status-icon">${problem.passed ? '&#10003;' : '&#10007;'}</span>
         <span>${problem.passed ? '已通过' : '未通过'}</span>
       </div>
     </div>

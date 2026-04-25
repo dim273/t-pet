@@ -1,111 +1,199 @@
+/**
+ * T-Pet Design System - VSCode Theme Adapter
+ * 基于设计规范 DESIGN_SYSTEM.md
+ *
+ * 此文件提供 VSCode 原生样式适配
+ * 已被 styles/ 目录下的模块化样式替代
+ * 仅保留必要的 VSCode 特定覆盖
+ */
+
+/* ============================================
+ * 1. VSCode Variables Override
+ * ============================================ */
+
 :root {
-	--container-paddding: 20px;
-	--input-padding-vertical: 6px;
-	--input-padding-horizontal: 4px;
-	--input-margin-vertical: 4px;
-	--input-margin-horizontal: 0;
-	background: #252526;
+  /* 间距变量 - 已在 variables.css 中定义 */
+  --container-padding: var(--space-4);
+  --input-padding-vertical: var(--space-1);
+  --input-padding-horizontal: var(--space-2);
+  --input-margin-vertical: var(--space-1);
 }
 
+/* ============================================
+ * 2. Body & Layout
+ * ============================================ */
+
 body {
-	padding: 0 var(--container-paddding);
-	color: var(--vscode-foreground);
-	font-size: var(--vscode-font-size);
-	font-weight: var(--vscode-font-weight);
-	font-family: var(--vscode-font-family);
+  padding: 0 var(--container-padding);
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  font-family: var(--font-ui);
+}
+
+body,
+html {
+  height: 100%;
 }
 
 ol,
 ul {
-	padding-left: var(--container-paddding);
+  padding-inline-start: var(--space-4);
 }
 
-body>*,
-form>* {
-	margin-block-start: var(--input-margin-vertical);
-	margin-block-end: var(--input-margin-vertical);
+body > *,
+form > * {
+  margin-block-start: var(--input-margin-vertical);
+  margin-block-end: var(--input-margin-vertical);
 }
+
+/* ============================================
+ * 3. Focus & Links
+ * ============================================ */
 
 *:focus {
-	outline-color: var(--vscode-focusBorder) !important;
+  outline-color: var(--vscode-focusBorder) !important;
 }
 
 a {
-	color: var(--vscode-textLink-foreground);
+  color: var(--color-info, #3794ff);
 }
 
 a:hover,
 a:active {
-	color: var(--vscode-textLink-activeForeground);
+  color: var(--color-primary, #0078d4);
 }
+
+/* ============================================
+ * 4. Code
+ * ============================================ */
 
 code {
-	font-size: var(--vscode-editor-font-size);
-	font-family: var(--vscode-editor-font-family);
+  font-size: var(--font-code-size, var(--text-sm));
+  font-family: var(--font-code);
 }
 
+/* ============================================
+ * 5. Button Styles (已迁移到 button.css)
+ * ============================================ */
+
+/*
+ * 按钮样式已迁移到 media/styles/button.css
+ * 如需使用，请引入:
+ * <link href="styles/button.css" rel="stylesheet">
+ *
+ * 推荐类名:
+ * - .tp-btn (基础按钮)
+ * - .tp-btn-primary (主要操作)
+ * - .tp-btn-secondary (次要操作)
+ * - .tp-btn-ghost (工具栏)
+ */
+
+/* 保留旧版按钮类名作为向后兼容 */
 button {
-	border: none;
-	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-	width: 100%;
-	text-align: center;
-	outline: 1px solid transparent;
-	outline-offset: 2px !important;
-	color: var(--vscode-button-foreground);
-	background: #1976d2;
-	border-radius: 6px;
+  border: none;
+  padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+  width: 100%;
+  text-align: center;
+  outline: 1px solid transparent;
+  outline-offset: 2px !important;
+  color: var(--vscode-button-foreground);
+  background: var(--color-primary);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
 }
 
 button:hover {
-	cursor: pointer;
-	background: var(--vscode-button-hoverBackground);
+  cursor: pointer;
+  background: var(--color-primary-hover);
 }
 
 button:focus {
-	outline-color: var(--vscode-focusBorder);
+  outline-color: var(--vscode-focusBorder);
 }
 
 button.secondary {
-	color: var(--vscode-button-secondaryForeground);
-	background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
 }
 
 button.secondary:hover {
-	background: var(--vscode-button-secondaryHoverBackground);
+  background: var(--vscode-button-secondaryHoverBackground);
 }
 
-/*可以使用header和back-btn创建一个标题和返回键*/
+/* ============================================
+ * 6. Header & Navigation (已迁移到 base.css)
+ * ============================================ */
+
 .header {
-	padding: 12px 16px;
-	display: flex;
-	align-items: center;
-	border-bottom: 1px solid var(--vscode-tab-border);
-	background-color: var(--vscode-bg);
-	position: relative;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
+  position: relative;
 }
 
 .back-btn {
-	background: transparent;
-	border: none;
-	color: var(--vscode-text);
-	font-size: 18px;
-	cursor: pointer;
-	margin-right: 10px;
-	padding: 0 10px;
-	border-radius: 4px;
-	transition: background 0.2s;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 30px;
-	height: 30px;
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: var(--text-lg);
+  cursor: pointer;
+  margin-right: var(--space-2);
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
 }
 
 .back-btn:hover {
-	background: var(--vscode-highlight);
+  background: var(--color-bg-hover);
 }
 
-/*这个用于空行*/
+/* ============================================
+ * 7. Utility Classes
+ * ============================================ */
+
 .spacer {
-	margin-bottom: 30px;
+  margin-bottom: var(--space-4);
+}
+
+/* ============================================
+ * 8. Legacy Classes (保留向后兼容)
+ * ============================================ */
+
+/* 旧版 common 类 - 建议迁移到新命名 */
+.common-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+}
+
+.common-subtitle {
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
+}
+
+.common-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.common-bar + .common-bar {
+  margin-top: var(--space-1);
+}
+
+.common-button {
+  min-width: 100px;
+  width: 45%;
+  margin-bottom: var(--space-2);
 }

@@ -1,12 +1,21 @@
+/**
+ * Login Page Styles
+ * 基于设计规范 DESIGN_SYSTEM.md - 克制、专注、无干扰
+ */
+
+/* ============================================
+ * Base
+ * ============================================ */
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background-color: #1e1e1e;
-  color: #d4d4d4;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,17 +23,25 @@ body {
   overflow: hidden;
 }
 
+/* ============================================
+ * Top Background (Simplified)
+ * ============================================ */
+
 .top-background {
   width: 100%;
-  height: 200px;
+  height: 160px;
   background: url({{backgroundUri}}) no-repeat center center;
   background-size: cover;
-  filter: brightness(0.6);
+  border-bottom: 1px solid var(--color-border);
 }
+
+/* ============================================
+ * Logo Container
+ * ============================================ */
 
 .logo-container {
   position: absolute;
-  top: 140px;
+  top: 110px;
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -32,131 +49,191 @@ body {
 }
 
 .logo {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   background: url({{logoUri}}) no-repeat center;
   background-size: cover;
-  border-radius: 50%;
-  border: 4px solid white;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
 }
 
 .logo-method {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #d4d4d4;
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
 }
 
+/* ============================================
+ * Login Card
+ * ============================================ */
+
 .login-card {
-  margin-top: 100px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin-top: 80px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
   width: 90%;
-  max-width: 380px;
+  max-width: 360px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
   z-index: 1;
 }
 
+.login-card h2 {
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+/* ============================================
+ * Buttons
+ * ============================================ */
+
+.button,
+.create-button {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.button:hover,
+.create-button:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+}
+
+.button:active,
+.create-button:active {
+  transform: scale(0.98);
+}
+
+/* ============================================
+ * Divider
+ * ============================================ */
+
 .divider {
-  margin: 24px 0 10px;
+  margin: var(--space-4) 0 var(--space-2) 0;
   width: 70%;
   height: 1px;
-  background-color: #444;
+  background: var(--color-border);
 }
+
+.alt-login-title {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-bottom: var(--space-2);
+}
+
+/* ============================================
+ * Alternative Login
+ * ============================================ */
 
 .alt-login {
   display: flex;
   justify-content: center;
-  gap: 24px;
+  gap: var(--space-4);
 }
 
 .alt-login img {
-  width: 28px;
-  height: 28px;
-  margin: 0 10px;
-  filter: none !important;
-  transition: transform 0.2s ease;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+  border: 1px solid var(--color-border);
+  padding: 4px;
+  background: var(--color-bg-secondary);
 }
 
 .alt-login img:hover {
-  transform: scale(1.15);
+  transform: scale(1.1);
+  border-color: var(--color-primary);
 }
 
+/* ============================================
+ * Bottom Options
+ * ============================================ */
+
 .bottom-options {
-  margin-top: 20px;
-  font-size: 13px;
-  color: #a9a9a9;
+  margin-top: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
   display: flex;
   justify-content: space-between;
   width: 100%;
   max-width: 320px;
-  padding: 0 10px;
+  padding: 0 var(--space-2);
 }
 
 .bottom-options span {
   cursor: pointer;
-  text-decoration: underline;
-  transition: color 0.2s ease;
+  transition: color var(--transition-fast);
 }
 
 .bottom-options span:hover {
-  color: #fff;
+  color: var(--color-text-primary);
 }
 
+.bottom-options span:first-child {
+  text-decoration: underline;
+}
+
+/* ============================================
+ * Success Message
+ * ============================================ */
+
 .success-message {
-  margin-top: 40px;
-  font-size: 18px;
-  color: #aaffaa;
+  margin-top: var(--space-6);
+  font-size: var(--text-base);
+  color: var(--color-success);
   display: none;
   text-align: center;
 }
 
-/* 存档管理界面样式 */
+/* ============================================
+ * Account Header
+ * ============================================ */
+
 .account-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-3);
 }
 
 .account-header h3 {
   margin: 0;
-  color: #fff;
-  font-size: 18px;
-  text-align: center;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
 }
 
-.create-button {
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #28a745, #20c997);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.create-button:hover {
-  transform: translateY(-1px);
-}
+/* ============================================
+ * Accounts Container
+ * ============================================ */
 
 .accounts-container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 180px;
+  gap: var(--space-2);
+  max-height: 200px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #4a90e2 #2a2a2a;
-  padding-right: 4px;
+  scrollbar-color: var(--color-border) var(--color-bg-secondary);
+  padding-right: var(--space-1);
+  min-width: 0;
 }
 
 .accounts-container::-webkit-scrollbar {
@@ -164,130 +241,158 @@ body {
 }
 
 .accounts-container::-webkit-scrollbar-track {
-  background: #2a2a2a;
+  background: var(--color-bg-secondary);
   border-radius: 3px;
 }
 
 .accounts-container::-webkit-scrollbar-thumb {
-  background: #4a90e2;
+  background: var(--color-border);
   border-radius: 3px;
 }
 
 .accounts-container::-webkit-scrollbar-thumb:hover {
-  background: #5a9ff2;
+  background: var(--color-text-secondary);
 }
 
+/* ============================================
+ * Account Item
+ * ============================================ */
+
 .account-item {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid #3a4b5c;
-  border-radius: 8px;
-  padding: 12px;
-  transition: all 0.3s ease;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  transition: all var(--transition-fast);
   cursor: pointer;
-  transform: translateX(0);
+  min-width: 0;
 }
 
 .account-item:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: #4a90e2;
-  transform: translateX(4px);
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
 }
 
 .account-item.active {
-  background: rgba(74, 144, 226, 0.15);
-  border-color: #4a90e2;
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-primary);
 }
+
+.account-item-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.account-item-info {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+ * No Accounts
+ * ============================================ */
+
+.no-accounts {
+  text-align: center;
+  padding: var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+/* ============================================
+ * Account Info
+ * ============================================ */
 
 .account-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: var(--space-2);
 }
 
 .account-name {
-  font-weight: bold;
-  color: #ffffff;
-  font-size: 16px;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
 }
 
 .account-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-1);
 }
 
+/* ============================================
+ * Delete Button
+ * ============================================ */
+
 .delete-button {
-  padding: 4px 8px;
-  background: linear-gradient(135deg, #dc3545, #c82333);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 12px;
+  background: transparent;
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  font-size: var(--text-xs);
   cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 .delete-button:hover {
-  background: linear-gradient(135deg, #bd2130, #a71e2a);
+  background: var(--color-error);
+  color: white;
 }
+
+/* ============================================
+ * Platform Status
+ * ============================================ */
 
 .platform-status {
   display: flex;
-  gap: 15px;
-  margin-top: 8px;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .platform {
+  font-size: var(--text-xs);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  text-align: center;
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #ccc;
+  justify-content: center;
 }
 
 .platform.connected {
-  color: #28a745;
+  border-color: var(--color-success);
+  color: var(--color-success);
 }
 
 .platform.disconnected {
-  color: #6c757d;
+  opacity: 0.5;
 }
 
-.platform-icon {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-}
+/* ============================================
+ * Modals
+ * ============================================ */
 
-.no-accounts {
-  text-align: center;
-  color: #9ca3af;
-  font-style: italic;
-  padding: 20px;
-}
-
-.alt-login-title {
-  text-align: center;
-  font-size: 14px;
-  color: #ccc;
-  margin-top: 8px;
-  margin-bottom: 10px;
-}
-
-/* 删除确认弹窗样式 */
 .delete-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: all var(--transition-fast);
 }
 
 .delete-modal-overlay.show {
@@ -296,136 +401,94 @@ body {
 }
 
 .delete-modal {
-  background: #2a2a2a;
-  border-radius: 12px;
-  padding: 0;
-  width: 320px;
-  max-width: 90vw;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  transform: scale(0.9);
-  transition: transform 0.3s ease;
-}
-
-.delete-modal-overlay.show .delete-modal {
-  transform: scale(1);
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  width: 90%;
+  max-width: 400px;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px 0;
-  border-bottom: 1px solid #444;
-  padding-bottom: 16px;
+  margin-bottom: var(--space-3);
+  gap: var(--space-2);
 }
 
 .modal-header h3 {
   margin: 0;
-  color: #fff;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .close-button {
-  background: none;
+  background: transparent;
   border: none;
-  color: #aaa;
-  font-size: 24px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
   cursor: pointer;
-  padding: 0;
-  width: 32px;
-  height: 32px;
+  padding: var(--space-1);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: all 0.2s ease;
+  border-radius: var(--radius-sm);
 }
 
 .close-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  color: var(--color-text-primary);
 }
 
 .modal-content {
-  padding: 24px;
+  margin-bottom: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
 }
 
 .modal-content p {
   margin: 0;
-  color: #ccc;
-  font-size: 14px;
-  line-height: 1.5;
-  text-align: center;
 }
 
 .modal-actions {
   display: flex;
-  gap: 12px;
-  padding: 0 24px 20px;
+  gap: var(--space-2);
   justify-content: flex-end;
 }
 
-.cancel-button,
-.confirm-button {
-  padding: 8px 20px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
-}
-
+.confirm-button,
 .cancel-button {
-  background: #6c757d;
-  color: #fff;
-}
-
-.cancel-button:hover {
-  background: #5a6268;
-  transform: translateY(-1px);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 .confirm-button {
-  background: linear-gradient(135deg, #dc3545, #c82333);
+  background: var(--color-primary);
   color: white;
+  border: 1px solid var(--color-primary);
 }
 
 .confirm-button:hover {
-  background: linear-gradient(135deg, #bd2130, #a71e2a);
-  transform: translateY(-1px);
+  background: var(--color-primary-hover, #005a9e);
 }
 
-input[type=text] {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border: 1px solid #4b5563;
-  border-radius: 8px;
-  background-color: #374151;
-  color: #ffffff;
+.cancel-button {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
 }
 
-input[type=text]:focus {
-  outline: none;
-  border-color: #60a5fa;
-}
-
-.button {
-  width: 100%;
-  padding: 10px 12px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease;
-}
-
-.button:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
+.cancel-button:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-text-secondary);
 }

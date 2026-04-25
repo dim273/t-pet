@@ -54,6 +54,22 @@
             "description": "是否启用live2d-asoul"
           }
         }
+      },
+      {
+        "title": "AI助手配置",
+        "type": "Object",
+        "properties": {
+          "t-pet.deepseekApiKey": {
+            "type": "string",
+            "default": "",
+            "description": "DeepSeek API Key (从 api.deepseek.com 获取)"
+          },
+          "t-pet.deepseekModel": {
+            "type": "string",
+            "default": "deepseek-v4-pro",
+            "description": "DeepSeek 模型名称"
+          }
+        }
       }
     ]
   },

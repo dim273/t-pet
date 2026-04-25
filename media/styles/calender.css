@@ -1,0 +1,197 @@
+/**
+ * Calendar Page Styles
+ * 基于设计规范 DESIGN_SYSTEM.md
+ *
+ * 引入顺序:
+ * 1. styles/variables.css
+ * 2. styles/base.css
+ * 3. this file
+ */
+
+/* ============================================
+ * Page Layout
+ * ============================================ */
+
+body {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+}
+
+.tp-calendar-container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+
+/* ============================================
+ * Header
+ * ============================================ */
+
+.tp-calendar-header {
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.tp-calendar-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+}
+
+.tp-back-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: var(--text-lg);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.tp-back-btn:hover {
+  background: var(--color-bg-hover);
+}
+
+/* ============================================
+ * Calendar Grid
+ * ============================================ */
+
+.tp-calendar-grid {
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.tp-calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.tp-calendar-nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: var(--text-lg);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.tp-calendar-nav-btn:hover {
+  background: var(--color-bg-hover);
+}
+
+.tp-calendar-month {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+}
+
+.tp-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.tp-calendar-weekday {
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  padding: var(--space-2);
+}
+
+.tp-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-1);
+}
+
+.tp-calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tp-calendar-day:hover:not(.tp-calendar-day-empty):not(.tp-calendar-day-checked) {
+  background: var(--color-primary-bg);
+  transform: scale(1.05);
+}
+
+.tp-calendar-day-empty {
+  cursor: default;
+}
+
+.tp-calendar-day-checked {
+  background: rgba(78, 201, 176, 0.2);
+  border: 2px solid var(--color-success);
+}
+
+.tp-calendar-day-today:not(.tp-calendar-day-checked) {
+  border: 2px solid var(--color-info);
+}
+
+/* ============================================
+ * Stats
+ * ============================================ */
+
+.tp-calendar-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.tp-calendar-stat {
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tp-calendar-stat-icon {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-1);
+}
+
+.tp-stat-success {
+  color: var(--color-success);
+}
+
+.tp-stat-warning {
+  color: var(--color-warning);
+}
+
+.tp-calendar-stat-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.tp-calendar-stat-value {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}

@@ -1,0 +1,134 @@
+/**
+ * Menu Page Styles
+ * 基于设计规范 DESIGN_SYSTEM.md
+ *
+ * 引入顺序:
+ * 1. styles/variables.css
+ * 2. styles/base.css
+ * 3. styles/button.css
+ * 4. this file
+ */
+
+/* ============================================
+ * 1. Page Layout
+ * ============================================ */
+
+.tp-menu {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--space-4);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================
+ * 2. Logo
+ * ============================================ */
+
+.tp-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.tp-logo {
+  max-width: 200px;
+  max-height: 120px;
+  object-fit: contain;
+}
+
+/* ============================================
+ * 3. Menu Grid
+ * ============================================ */
+
+.tp-menu-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+/* ============================================
+ * 4. Menu Button
+ * ============================================ */
+
+.tp-menu-btn {
+  flex: 1 1 calc(50% - var(--space-3));
+  min-width: 140px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: #ffffff;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  margin-bottom: var(--space-2);
+}
+
+.tp-menu-btn:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+}
+
+.tp-menu-btn:active {
+  transform: scale(0.98);
+}
+
+.tp-menu-btn:focus {
+  outline-color: var(--vscode-focusBorder);
+}
+
+/* Menu button variants */
+.tp-menu-btn-primary {
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  color: #ffffff;
+}
+
+.tp-menu-btn-primary:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+}
+
+/* Menu button icon */
+.tp-menu-btn-icon {
+  font-size: var(--text-lg);
+  width: 24px;
+  text-align: center;
+}
+
+/* ============================================
+ * 5. Menu Row
+ * ============================================ */
+
+.tp-menu-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  width: 100%;
+  margin-bottom: var(--space-3);
+}
+
+.tp-menu-row:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================
+ * 6. Responsive
+ * ============================================ */
+
+@media (max-width: 480px) {
+  .tp-menu-btn {
+    flex: 1 1 100%;
+    height: 60px;
+  }
+}

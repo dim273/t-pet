@@ -45,31 +45,30 @@ function renderProblemList() {
 
   if (!recommendedProblems || recommendedProblems.length === 0) {
     problemListElement.innerHTML = `
-      <div class="empty-state">
-        <i>📭</i>
-        <h3>暂无推荐题目</h3>
-        <p>请先完成一些知识节点的题目</p>
+      <div class="tp-empty-state">
+        <div class="tp-empty-state-title">暂无推荐题目</div>
+        <div class="tp-empty-state-description">请先完成一些知识节点的题目</div>
       </div>
     `;
     return;
   }
 
   problemListElement.innerHTML = recommendedProblems.map(problem => `
-    <div class="problem-item" onclick="switchPageToProblem(${problem.ref})">
-      <div class="problem-info">
-        <div class="problem-title">
+    <div class="tp-problem-item" onclick="switchPageToProblem(${problem.ref})">
+      <div class="tp-problem-info">
+        <div class="tp-problem-title">
           <a href="${problem.url}" target="_blank">${problem.title}</a>
         </div>
-        <div class="problem-meta">
-          <span class="difficulty ${problem.difficulty}">
+        <div class="tp-problem-meta">
+          <span class="tp-difficulty tp-difficulty-${problem.difficulty}">
             ${problem.difficulty === "easy" ? "简单" :
       problem.difficulty === "medium" ? "中等" : "困难"}
           </span>
           <span>${Array.isArray(problem.tags) ? problem.tags.join(", ") : ""}</span>
         </div>
       </div>
-      <div class="status ${problem.passed ? "passed" : "failed"}">
-        <span class="status-icon">${problem.passed ? "✓" : "✗"}</span>
+      <div class="tp-status tp-status-${problem.passed ? "passed" : "failed"}">
+        <span class="tp-status-icon">${problem.passed ? "&#10003;" : "&#10007;"}</span>
         <span>${problem.passed ? "已通过" : "未通过"}</span>
       </div>
     </div>

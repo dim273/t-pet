@@ -1,57 +1,111 @@
+/**
+ * TreeNode Page Styles
+ * 基于设计规范 DESIGN_SYSTEM.md - 克制、专注、无干扰
+ */
+
+:root {
+  --tree-bg-primary: var(--color-bg-primary, #1e1e1e);
+  --tree-bg-secondary: var(--color-bg-secondary, #252526);
+  --tree-bg-tertiary: var(--color-bg-tertiary, #2d2d2d);
+  --tree-border: var(--color-border, #454545);
+  --tree-text-primary: var(--color-text-primary, #d4d4d4);
+  --tree-text-secondary: var(--color-text-secondary, #808080);
+  --tree-primary: var(--color-primary, #007acc);
+  --tree-success: var(--color-success, #4caf50);
+  --tree-info: var(--color-info, #2196f3);
+  --tree-radius: var(--radius-md, 6px);
+  --tree-space: var(--space-3, 12px);
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+body {
+  background: var(--tree-bg-primary);
+  color: var(--tree-text-primary);
+  font-family: var(--font-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+  min-height: 100vh;
+}
+
+/* ============================================
+ * Header
+ * ============================================ */
+
+.header {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--tree-border);
+  background-color: var(--tree-bg-secondary);
+}
+
+.tp-page-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--tree-text-primary);
+}
+
+.spacer {
+  height: var(--space-4);
+}
+
+/* ============================================
+ * Controls Panel
+ * ============================================ */
+
 .controls {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: var(--space-4);
+  right: var(--space-4);
   z-index: 1000;
-  background: rgba(13, 27, 42, 0.9);
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(100, 255, 218, 0.3);
+  background: var(--tree-bg-tertiary);
+  padding: var(--space-3);
+  border-radius: var(--tree-radius);
+  border: 1px solid var(--tree-border);
 }
 
 .controls h3 {
-  margin: 0 0 10px 0;
-  color: #64ffda;
-  font-size: 16px;
+  color: var(--tree-text-primary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-2);
 }
 
 .reset-btn {
-  background: #64ffda;
-  color: #0a1929;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
+  background: var(--tree-bg-secondary);
+  color: var(--tree-text-primary);
+  border: 1px solid var(--tree-border);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--tree-radius);
   cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: all 0.3s ease;
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast);
 }
 
 .reset-btn:hover {
-  background: #4cd9b9;
-  transform: translateY(-2px);
+  background: var(--tree-bg-tertiary);
+  border-color: var(--tree-primary);
 }
 
 .info {
-  margin-top: 10px;
-  font-size: 12px;
-  color: #8892b0;
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--tree-text-secondary);
 }
 
+/* ============================================
+ * Tech Tree Container
+ * ============================================ */
+
 .tech-tree-container {
-  padding: 50px;
+  padding: var(--space-6);
   display: flex;
   flex-direction: column;
   align-items: center;
   min-width: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 60px);
 }
 
 .tech-tree {
@@ -62,87 +116,103 @@
   position: relative;
 }
 
+/* ============================================
+ * Tech Level
+ * ============================================ */
+
 .tech-level {
   display: flex;
   justify-content: center;
   width: 100%;
-  margin-bottom: 100px;
+  margin-bottom: 80px;
   position: relative;
 }
 
+/* ============================================
+ * Tech Node
+ * ============================================ */
+
 .tech-node {
   width: 140px;
-  height: 70px;
-  margin: 0 15px;
-  background: #3b3b3b86;
-  border: 2px solid #1f1f1fd4;
-  border-radius: 8px;
+  min-height: 70px;
+  margin: 0 var(--space-3);
+  background: var(--tree-bg-tertiary);
+  border: 2px solid var(--tree-border);
+  border-radius: var(--tree-radius);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-fast);
   position: relative;
   z-index: 2;
 }
 
+.tech-node:hover {
+  transform: translateY(-3px);
+  border-color: var(--tree-primary);
+}
+
+.tech-node:active {
+  transform: translateY(0);
+}
+
+.tech-node.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tech-node.locked:hover {
+  transform: none;
+  border-color: var(--tree-border);
+}
+
 .tech-node.root {
-  background: linear-gradient(135deg, #6a5acd, #4b0082);
-  border-color: #8a2be2;
-  box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);
+  background: var(--tree-bg-tertiary);
+  border-color: var(--tree-primary);
 }
 
 .tech-node.ultimate {
-  background: linear-gradient(135deg, #ff1493, #c71585);
-  border-color: #ff69b4;
-  box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);
+  background: var(--tree-bg-tertiary);
+  border-color: var(--tree-info);
 }
 
 .tech-node.unlocked {
-  background: linear-gradient(135deg, #218838, #28a745);
-  border-color: #40c057;
-  box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
-  animation: pulse 2s infinite;
+  background: var(--tree-bg-secondary);
+  border-color: var(--tree-success);
 }
 
 .tech-node.available {
-  background: linear-gradient(135deg, #0056b3, #007bff);
-  border-color: #339af0;
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-  transform: scale(1.05);
+  background: var(--tree-bg-tertiary);
+  border-color: var(--tree-primary);
+  transform: scale(1.02);
 }
 
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
-  }
-
-  50% {
-    box-shadow: 0 0 20px rgba(40, 167, 69, 0.8);
-  }
-
-  100% {
-    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
-  }
+.tech-node.available:hover {
+  transform: scale(1.05) translateY(-3px);
 }
 
-.tech-node:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
+/* ============================================
+ * Node Title & Icon
+ * ============================================ */
 
 .tech-node-title {
-  font-size: 14px;
-  font-weight: bold;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
   text-align: center;
-  padding: 0 5px;
+  padding: 0 var(--space-1);
+  color: var(--tree-text-primary);
 }
 
 .tech-node-icon {
-  font-size: 20px;
-  margin-bottom: 5px;
+  font-size: 18px;
+  margin-bottom: var(--space-1);
 }
+
+/* ============================================
+ * Connection Lines
+ * ============================================ */
 
 .connection-lines {
   position: absolute;
@@ -156,77 +226,101 @@
 
 .connection-line {
   position: absolute;
-  background-color: #233554;
+  background-color: var(--tree-border);
   z-index: 1;
 }
 
 .connection-line.unlocked {
-  background: linear-gradient(90deg, #0056b3, #007bff);
-  box-shadow: 0 0 5px #1976d2;
+  background: var(--tree-success);
 }
 
 .vertical-line {
-  width: 4px;
-  height: 100px;
+  width: 2px;
+  height: 80px;
   left: 50%;
   bottom: 100%;
   transform: translateX(-50%);
 }
 
 .horizontal-line {
-  height: 4px;
+  height: 2px;
   width: 100%;
   left: 0;
   bottom: 100%;
 }
+
+/* ============================================
+ * Message Popup
+ * ============================================ */
 
 .message-popup {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(40, 40, 40, 0.943);
-  color: #ffffff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(82, 82, 82, 0.3);
+  background: var(--tree-bg-tertiary);
+  color: var(--tree-text-primary);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--tree-radius);
+  border: 1px solid var(--tree-border);
   z-index: 2000;
-  font-size: 16px;
-  opacity: 0;
-  animation: fadeInOut 2s ease-in-out;
+  font-size: var(--text-sm);
+  animation: fadeInOut 2s ease-in-out forwards;
 }
 
 @keyframes fadeInOut {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.8);
+    transform: translate(-50%, -50%) scale(0.9);
   }
-
   20% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1.05);
+    transform: translate(-50%, -50%) scale(1);
   }
-
   80% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
-
   100% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.9);
   }
 }
 
+/* ============================================
+ * Tech Level Title
+ * ============================================ */
+
 .tech-level-title {
   position: absolute;
-  top: -60px;
-  left: -60px;
+  top: -40px;
+  left: 0;
   width: 100%;
   text-align: left;
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: bold;
-  text-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+  color: var(--tree-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+/* ============================================
+ * Badge (Used for status indicators)
+ * ============================================ */
+
+.tp-node-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  background: var(--tree-success);
+  color: white;
+}
+
+.tp-node-badge.locked {
+  background: var(--tree-text-secondary);
 }

@@ -217,11 +217,11 @@ class Live2dViewProvider {
 					// 处理选择账号
 					this._currentAccountId = data.accountId;
 					this.saveData = this.storage.getAccountByIndex(data.accountId) || this.saveData;
-					// Ensure progress object exists
 					if (!this.saveData.progress) {
 						this.saveData.progress = { passedProblems: [] };
 					}
-					// console.log("当前账号信息", this.saveData.name);
+					this.saveData.lastLogin = new Date().toLocaleDateString('zh-CN');
+					this.storage.updateAccountByIndex(data.accountId, this.saveData);
 					break;
 				case "problemPassed":
 					// 处理题目完成
@@ -267,16 +267,105 @@ class Live2dViewProvider {
 				case "deleteAiSession":
 					this.aiLogic.handleDeleteAiSession(data.sessionId);
 					break;
+				case "saveDeepseekConfig":
+					this._saveDeepseekConfig(data.data);
+					break;
+				case "testDeepseekConnection":
+					this._testDeepseekConnection(data.data.apiKey);
+					break;
+				case "getDeepseekConfig":
+					this._getDeepseekConfig();
+					break;
 
 			}
 		});
 	}
 
 	/**
+	 * 获取 DeepSeek 配置并发送到 Webview
+	 */
+	_getDeepseekConfig() {
+		const config = vscode.workspace.getConfiguration('t-pet');
+		const apiKey = config.get('deepseekApiKey') || "";
+		const model = config.get('deepseekModel') || "deepseek-v4-pro";
+		this._view.webview.postMessage({
+			type: 'loadDeepseekConfig',
+			data: { apiKey, model }
+		});
+	}
+
+	/**
+	 * 保存 DeepSeek 配置到 VSCode 全局配置
+	 */
+	async _saveDeepseekConfig(data) {
+		try {
+			const config = vscode.workspace.getConfiguration('t-pet');
+			await config.update('deepseekApiKey', data.apiKey, vscode.ConfigurationTarget.Global);
+			await config.update('deepseekModel', data.model, vscode.ConfigurationTarget.Global);
+			this._view.webview.postMessage({ type: 'saveSuccess' });
+		} catch (error) {
+			vscode.window.showErrorMessage('保存配置失败: ' + error.message);
+		}
+	}
+
+	/**
+	 * 测试 DeepSeek API 连接
+	 */
+	async _testDeepseekConnection(apiKey) {
+		if (!apiKey) {
+			this._view.webview.postMessage({ type: 'testError', error: '请先输入 API Key' });
+			return;
+		}
+
+		try {
+			const https = require('https');
+			const postData = JSON.stringify({
+				"model": "deepseek-v4-flash",
+				"messages": [{ role: "user", content: "Hi" }],
+				"thinking": {"type": "disabled"},
+				"stream": false
+			});
+
+			const options = {
+				hostname: 'api.deepseek.com',
+				port: 443,
+				path: '/v1/chat/completions',
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${apiKey}`,
+					'Content-Length': Buffer.byteLength(postData)
+				}
+			};
+
+			const req = https.request(options, (res) => {
+				let data = '';
+				res.on('data', (chunk) => data += chunk);
+				res.on('end', () => {
+					if (res.statusCode === 200) {
+						this._view.webview.postMessage({ type: 'testSuccess' });
+					} else {
+						this._view.webview.postMessage({ type: 'testError', error: `状态码 ${res.statusCode}` });
+					}
+				});
+			});
+
+			req.on('error', (e) => {
+				this._view.webview.postMessage({ type: 'testError', error: e.message });
+			});
+
+			req.write(postData);
+			req.end();
+		} catch (error) {
+			this._view.webview.postMessage({ type: 'testError', error: error.message });
+		}
+	}
+
+	/**
 	 * 异步生成会话标题
 	 */
-	async _generateSessionTitle(sessionId, userMessage, aiResponse, apiKey, model) {
-		return this.aiLogic.generateSessionTitle(sessionId, userMessage, aiResponse, apiKey, model);
+	async _generateSessionTitle(sessionId, userMessage, aiResponse) {
+		return this.aiLogic.generateSessionTitle(sessionId, userMessage, aiResponse);
 	}
 
 	_saveAssistantMessageToHistory(content, thought) {
@@ -333,19 +422,20 @@ class Live2dViewProvider {
 
 	// 生成能力图谱界面
 	_getAbilityMapHtml(webview) {
+		const variablesCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "variables.css"));
+		const baseCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "base.css"));
+		const abilityCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "AbilityMap", "ability.css"));
 		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
 		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "data.js"));
 		const problemListDataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "data.js"));
 		const abilityCalculatorUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "AbilityMap", "ability.js"));
 		const abilityHtmlPath = path.join(this._extensionUri.fsPath, "media", "AbilityMap", "ability.html");
-		// 读取能力图谱HTML文件内容
-		let htmlContent = fs.readFileSync(abilityHtmlPath, 'utf8');
+		const htmlContent = fs.readFileSync(abilityHtmlPath, 'utf8');
 
-		// 替换占位符
 		const logoUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "logo.png"));
-		htmlContent = htmlContent.replace(/{{logo}}/g, logoUri.toString());
+		let result = htmlContent.replace(/{{logo}}/g, logoUri.toString());
+		result = result.replace('</head>', `<link rel="stylesheet" href="${variablesCssUri}">\n<link rel="stylesheet" href="${baseCssUri}">\n<link rel="stylesheet" href="${abilityCssUri}">\n</head>`);
 
-		// 获取用户已通过的题目
 		const passedProblems = this.saveData.progress ? this.saveData.progress.passedProblems : [];
 
 		return `<!DOCTYPE html>
@@ -353,24 +443,31 @@ class Live2dViewProvider {
 		<head>
 			<meta charset="UTF-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<link rel="stylesheet" href="${variablesCssUri}">
+			<link rel="stylesheet" href="${baseCssUri}">
+			<link rel="stylesheet" href="${abilityCssUri}">
 			<link rel="stylesheet" href="${vscodeCssUri}">
+			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+			<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
 		</head>
 		<body>
 			<div class="header">
-        <button class="back-btn" id="backButton">←</button>
-        <h3 style="font-weight: 600;">能力图谱</h3>
+        <button class="tp-back-btn" id="backButton"><i class="fa fa-arrow-left"></i></button>
+        <h3 class="tp-page-title">能力图谱</h3>
     	</div>
-			${htmlContent}
+			${result}
 			<script src="${dataUri}"></script>
 			<script src="${problemListDataUri}"></script>
 			<script src="${abilityCalculatorUri}"></script>
 			<script>
-				// 将用户已通过的题目设置为全局变量
 				window.passedProblems = ${JSON.stringify(passedProblems)};
-				// 将题单数据设置为全局变量
 				window.problemSets = problemSets;
-				// 将知识树数据设置为全局变量
 				window.treeData = treeData;
+				window.onload = function () {
+					if (window.abilityMap && window.abilityMap.init) {
+						window.abilityMap.init();
+					}
+				};
 			</script>
 		</body>
 		</html>`;
@@ -493,32 +590,37 @@ class Live2dViewProvider {
 	// 生成设置
 	_getSettingHtml(webview) {
 		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.css"));
+		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const variablesCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "variables.css"));
+		const baseCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "base.css"));
+		const mainCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.css"));
+		const buttonCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "button.css"));
 
-		// 生成随机数用于 CSP 安全策略
 		const nonce = getNonce();
 
-		// 返回 HTML 模板
 		return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
 				<meta charset="UTF-8">
-				<link href="${styleVSCodeUri}" rel="stylesheet"> 
-				<link href="${styleMainUri}" rel="stylesheet">
+				<link href="${variablesCssUri}" rel="stylesheet">
+				<link href="${baseCssUri}" rel="stylesheet">
+				<link href="${buttonCssUri}" rel="stylesheet">
+				<link href="${mainCssUri}" rel="stylesheet">
+				<link href="${vscodeCssUri}" rel="stylesheet">
+				<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
 				<title>Live 2d</title>
 			</head>
 			<body>
 				<div class="header">
-        	<button class="back-btn" onclick="switchPageToMain()">←</button>
-        	<h3 style="font-weight: 600;">设置</h3>
+        	<button class="tp-back-btn" onclick="switchPageToMain()"><i class="fa fa-arrow-left"></i></button>
+        	<h3 class="tp-page-title">设置</h3>
     		</div>
-				<div style="max-width: 450px; min-width: 100px; padding: 12px">
+				<div class="tp-settings-container">
 					<div class="common-title">萌宠设置</div>
 					<div class="common-subtitle">基本操作:</div>
 					<div class="common-bar">
 						<button class="common-button" onclick="lodashLive2d()">启动live2d</button>
-						<button class="common-button" onclick="closeLive2d()"> 关闭live2d</button>
+						<button class="common-button" onclick="closeLive2d()">关闭live2d</button>
 					</div>
 					<div class="common-bar">
 						<button
@@ -530,40 +632,57 @@ class Live2dViewProvider {
 						<button class="common-button" onclick="resetPosition()">重置默认位置</button>
 					</div>
 					<div class="common-bar">
-						<button class="common-button" style="background-color: #e74c3c;" onclick="logout()">退出登录</button>
+						<button class="common-button common-button-danger" onclick="logout()">退出登录</button>
 					</div>
 
-				  <br/>
 					<div class="common-subtitle">配置信息:</div>
 					<div class="common-subtitle">自启动:</div>
 					<div class="common-bar" >
 						<button class="common-button" onclick="openAutoLodash()">开启</button>
 						<button class="common-button" onclick="closeAutoLodash()">关闭</button>
 					</div>
-					
+
 					<div class="common-subtitle">插件依赖文件:</div>
 					<div class="common-bar">
-						<button 
+						<button
 							title="插件依赖文件会在初次安装插件并启动时自动生成，点击该按钮可强制生成覆盖"
-							class="common-button" 
+							class="common-button"
 							onclick="generateResources()">
 							生成
 						</button>
-						<button 
+						<button
 							title="卸载该插件前，请先执行该操作。去除该插件造成的影响"
-							class="common-button" 
+							class="common-button"
 							onclick="removeResources()">
 							移除
 						</button>
 					</div>
 					<div class="common-subtitle">定时切换(分钟):</div>
 					<div class="common-bar">
-						<input style="width: 30%" placeholder="默认30" type="number" onchange="handleChangeTime(event)" />
-						<button style="width: 30%" onclick="openBackgroundSetTime()"> 开启</button>
-						<button style="width: 30%" onclick="closeBackgroundSetTime()"> 关闭</button>
-					</div>	
+						<input class="tp-input" style="width: 30%" placeholder="默认30" type="number" onchange="handleChangeTime(event)" />
+						<button class="common-button" style="width: 30%" onclick="openBackgroundSetTime()">开启</button>
+						<button class="common-button" style="width: 30%" onclick="closeBackgroundSetTime()">关闭</button>
+					</div>
+
+					<div class="common-title" style="margin-top: var(--space-5);">AI助手配置</div>
+					<div class="common-subtitle">API Key:</div>
+					<div class="common-bar" style="flex-direction: column; align-items: stretch;">
+						<input id="deepseekApiKey" class="tp-input" style="width: 100%; margin-bottom: var(--space-2);" type="password" placeholder="输入 DeepSeek API Key" />
+						<div style="display: flex; gap: var(--space-2);">
+							<button class="common-button" onclick="saveDeepseekConfig()">保存配置</button>
+							<button class="common-button" onclick="testDeepseekConnection()">测试连接</button>
+						</div>
+					</div>
+					<div class="common-subtitle">模型:</div>
+					<div class="common-bar">
+						<select id="deepseekModel" class="tp-input" style="width: 100%;">
+							<option value="deepseek-v4-pro">deepseek-v4-pro</option>
+							<option value="deepseek-v4-flash">deepseek-v4-flash</option>
+						</select>
+					</div>
+					<div id="aiConfigStatus" class="common-subtitle" style="margin-top: var(--space-2); font-size: var(--text-xs);"></div>
 				</div>
-			
+
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
@@ -573,6 +692,17 @@ class Live2dViewProvider {
 	_getAiChatHtml(webview) {
 		const aiHtmlPath = path.join(this._extensionUri.fsPath, 'media', 'AIAssistant', 'ai-assistant.html');
 		let html = fs.readFileSync(aiHtmlPath, 'utf8');
+
+		const variablesCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "variables.css"));
+		const baseCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "base.css"));
+		const buttonCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "button.css"));
+		const aiCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "AIAssistant", "ai-assistant.css"));
+
+		html = html.replace('../styles/variables.css', variablesCssUri.toString());
+		html = html.replace('../styles/base.css', baseCssUri.toString());
+		html = html.replace('../styles/button.css', buttonCssUri.toString());
+		html = html.replace('ai-assistant.css', aiCssUri.toString());
+
 		const bootstrap = this._aiBootstrap ? {
 			mode: this._aiBootstrap.mode,
 			requestType: this._aiBootstrap.requestType,
@@ -597,7 +727,16 @@ class Live2dViewProvider {
 		const htmlPath = path.join(__dirname, '../../media/menu.html');
 		let htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
-		// 正确地动态替换本地资源路径
+		const variablesCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "variables.css"));
+		const baseCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "base.css"));
+		const buttonCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "button.css"));
+		const menuCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "menu.css"));
+
+		htmlContent = htmlContent.replace('styles/variables.css', variablesCssUri.toString());
+		htmlContent = htmlContent.replace('styles/base.css', baseCssUri.toString());
+		htmlContent = htmlContent.replace('styles/button.css', buttonCssUri.toString());
+		htmlContent = htmlContent.replace('menu.css', menuCssUri.toString());
+
 		const logoUri = webview.asWebviewUri(
 			vscode.Uri.joinPath(this._extensionUri, "res", "image", "logo.png")
 		);
@@ -609,6 +748,9 @@ class Live2dViewProvider {
 	// 生成题单
 	_getProblemListHtml(webview) {
 		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const variablesCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "variables.css"));
+		const baseCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "base.css"));
+		const listCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "list.css"));
 		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "styles.css"));
 		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "data.js"));
 		const appUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "app.js"));
@@ -626,23 +768,20 @@ class Live2dViewProvider {
 				<meta charset="UTF-8">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<title>算法题单</title>
-				<link rel="stylesheet" href="${vscodeCssUri}">
+				<link rel="stylesheet" href="${variablesCssUri}">
+				<link rel="stylesheet" href="${baseCssUri}">
+				<link rel="stylesheet" href="${listCssUri}">
 				<link rel="stylesheet" href="${styleCssUri}">
+				<link rel="stylesheet" href="${vscodeCssUri}">
+				<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
 			</head>
 			<body>
 				<div class="header">
-        	<button class="back-btn" id="back-btn" onclick="switchPageToMain()">←</button>
-        	<h3 style="font-weight: 600;" id="listTitle">知识树</h3>
-        	<button id="aiLearnBtn" style="
-						margin-left: auto;
-						background-color: #8b5cf6;
-						color: white;
-						border: none;
-						padding: 5px 10px;
-						border-radius: 4px;
-						cursor: pointer;
-						font-size: 12px;
-					">AI指导学习</button>
+        	<button class="tp-back-btn" id="back-btn" onclick="switchPageToMain()"><i class="fa fa-arrow-left"></i></button>
+        	<h3 class="tp-page-title" id="listTitle">知识树</h3>
+        	<div class="tp-header-buttons">
+        		<button id="aiLearnBtn" class="tp-header-btn tp-header-btn-primary">AI指导学习</button>
+        	</div>
     		</div>
 
 				<div class="stats">
@@ -675,7 +814,11 @@ class Live2dViewProvider {
 	// 生成题目界面
 	_getProblemHtml(webview) {
 		const appUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemPage", "app.js"));
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));		// css主题
+		const variablesCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "variables.css"));
+		const baseCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "base.css"));
+		const listCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "list.css"));
+		const problemCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "problem.css"));
+		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
 		const katex_min_css_Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "katex", "katex.min.css")); // katex.min.css
 		const katex_min_js_Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "katex", "katex.min.js")); // katex.min.js
 		const katex_auto_render_min_js_Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "katex", "auto-render.min.js")); // auto-render.min.js
@@ -692,58 +835,38 @@ class Live2dViewProvider {
 		const fileContent = fs.readFileSync(filePath, 'utf8');
 
 		return `<!DOCTYPE html>
-			<html lang="en">
+			<html lang="zh-CN">
 
 			<head>
 				<meta charset="UTF-8">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>Markdown Displayer</title>
-				<link href="${styleVSCodeUri}" rel="stylesheet" />
-				<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+				<title>题目</title>
+				<link rel="stylesheet" href="${variablesCssUri}">
+				<link rel="stylesheet" href="${baseCssUri}">
+				<link rel="stylesheet" href="${listCssUri}">
+				<link rel="stylesheet" href="${problemCssUri}">
+				<link rel="stylesheet" href="${styleVSCodeUri}">
 				<link rel="stylesheet" href="${katex_min_css_Uri}">
+				<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+				<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   			<script src="${katex_min_js_Uri}"></script>
   			<script src="${katex_auto_render_min_js_Uri}"></script>
 			</head>
 
 			<body>
-				<div class="header">
-        	<button class="back-btn" id="back-btn" onclick="switchPageToProblemList()">←</button>
-        <h3 style="font-weight: 600;" id="listTitle">题目</h3>
-				<button id="decomposeBtn" style="
-					margin-left: auto;
-					background-color: #8b5cf6;
-					color: white;
-					border: none;
-					padding: 5px 10px;
-					border-radius: 4px;
-					cursor: pointer;">AI问题分解</button>
-        <button class="complete-btn" onclick="completeProblem()" style="margin-left: 10px; background-color: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">完成题目</button>
-				<button id="judgeBtn" style="
-					margin-left: 10px; 
-					background-color: #2196F3; 
-					color: white; 
-					border: none; 
-					padding: 5px 10px; 
-					border-radius: 4px; 
-					cursor: pointer;">
-					评测
-				</button>
-    </div>
+				<div class="tp-problem-header">
+					<button class="tp-back-btn" id="back-btn" onclick="switchPageToProblemList()"><i class="fa fa-arrow-left"></i></button>
+					<h3 class="tp-problem-title" id="listTitle">题目</h3>
+					<div class="tp-header-buttons">
+						<button id="decomposeBtn" class="tp-header-btn tp-header-btn-primary">AI问题分解</button>
+						<button id="completeBtn" class="tp-header-btn tp-header-btn-success" onclick="completeProblem()" style="display: none;">完成题目</button>
+						<button id="judgeBtn" class="tp-header-btn tp-header-btn-info">评测</button>
+					</div>
+				</div>
 				<div id="markdownDisplay"></div>
-				<div id="judgeStatus" style="
-					margin-top: 12px;
-					padding: 12px 16px;
-					border-radius: 12px;
-					background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
-					box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-					font-family: Arial, 'Microsoft YaHei', sans-serif;
-					font-size: 14px;
-					color: #004040;
-					white-space: pre-wrap;
-					word-break: break-word;
-				"></div>
-				<script> 
-					let markdownText = ${JSON.stringify(fileContent)}; 
+				<div id="judgeStatus" class="tp-judge-status"></div>
+				<script>
+					let markdownText = ${JSON.stringify(fileContent)};
 					window.currentProblemTitle = "${title || "整型与布尔型的转换"}";
 					window.currentProblemListID = "${listId || 1}";
 					window.currentProblemRef = ${ref};
@@ -755,7 +878,10 @@ class Live2dViewProvider {
 	}
 	_getRecommendProblemListHtml(webview) {
 		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "styles.css"));
+		const variablesCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "variables.css"));
+		const baseCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "base.css"));
+		const listCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "list.css"));
+		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "styles.css"));
 
 		const dataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "data.js"));
 		const recommendationUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "RecommendProblemList", "recommendation.js"));
@@ -772,12 +898,16 @@ class Live2dViewProvider {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>推荐题单</title>
-      <link rel="stylesheet" href="${vscodeCssUri}">
+      <link rel="stylesheet" href="${variablesCssUri}">
+      <link rel="stylesheet" href="${baseCssUri}">
+      <link rel="stylesheet" href="${listCssUri}">
       <link rel="stylesheet" href="${styleCssUri}">
+      <link rel="stylesheet" href="${vscodeCssUri}">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
     </head>
     <body>
       <div class="header">
-        <button class="back-btn" onclick="switchPageToMain()">←</button>
+        <button class="tp-back-btn" onclick="switchPageToMain()"><i class="fa fa-arrow-left"></i></button>
         <h3 id="listTitle">推荐题单</h3>
       </div>
 
@@ -815,22 +945,20 @@ class Live2dViewProvider {
 	// 生成登录界面
 	_getLoginHtml(webview) {
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
+		const variablesCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "variables.css"));
 		const loginCssPath = path.join(this._extensionUri.fsPath, "media", "Login", "login.css");
 		const loginJsUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "Login", "login.js"));
 
-		// 图片信息
 		const leetcodeIcon = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "leetcode.png"));
 		const luoguIcon = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "luogu.png"));
 		const githubIcon = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "github.png"));
 		const logoUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "logo.png"));
 		const backgroundUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "res", "image", "back.jpg"));
 
-		// 读取CSS文件内容并替换占位符
 		let cssContent = fs.readFileSync(loginCssPath, 'utf8');
 		cssContent = cssContent.replace(/{{logoUri}}/g, logoUri.toString())
 			.replace(/{{backgroundUri}}/g, backgroundUri.toString());
 
-		// 加载账号信息
 		const accounts = this.storage.getAccounts();
 		if (accounts.length === 0) console.log("账号列表为空");
 		return `<!DOCTYPE html>
@@ -839,6 +967,7 @@ class Live2dViewProvider {
 			<head>
 				<meta charset="UTF-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+				<link href="${variablesCssUri}" rel="stylesheet" />
 				<link href="${styleVSCodeUri}" rel="stylesheet" />
 				<style>
 					${cssContent}
@@ -892,8 +1021,9 @@ class Live2dViewProvider {
 		const problemDataUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "ProblemList", "data.js"));
 		const styleCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "TreeNode", "style.css"))
 		const vscodeCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"))
+		const variablesCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "variables.css"));
+		const baseCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "base.css"));
 
-		// 根据当前子树ID决定显示的标题
 		let treeTitle = "知识树";
 		if (this._currentSubTree) {
 			treeTitle = this._currentSubTree;
@@ -910,13 +1040,16 @@ class Live2dViewProvider {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<title>知识树图谱</title>
 				<link rel="stylesheet" href="${vscodeCssUri}">
+				<link rel="stylesheet" href="${variablesCssUri}">
+				<link rel="stylesheet" href="${baseCssUri}">
 				<link rel="stylesheet" href="${styleCssUri}">
+				<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
 			</head>
 
 			<body>
 				<div class="header">
-        	<button class="back-btn" id="back-btn" onclick="switchPageToMain()">←</button>
-        	<h3 style="font-weight: 600;">${treeTitle}</h3>
+        	<button class="tp-back-btn" id="back-btn" onclick="switchPageToMain()"><i class="fa fa-arrow-left"></i></button>
+        	<h3 class="tp-page-title">${treeTitle}</h3>
     		</div>
 				
 			  <div class="spacer"></div>
@@ -939,14 +1072,21 @@ class Live2dViewProvider {
 		`
 	}
 
-	// 生成日历 
+	// 生成日历
 	_getCalenderHtml(webview) {
 		const calenderPath = path.join(__dirname, '../.././media/calender.html');
 
-		// 读取calender.html内容
 		const htmlContent = fs.readFileSync(calenderPath, 'utf8');
 
-		return htmlContent;
+		const variablesCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "variables.css"));
+		const baseCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "base.css"));
+		const calenderCssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "styles", "calender.css"));
+
+		let result = htmlContent.replace('styles/variables.css', variablesCssUri.toString());
+		result = result.replace('styles/base.css', baseCssUri.toString());
+		result = result.replace('styles/calender.css', calenderCssUri.toString());
+
+		return result;
 	}
 
 	// 打开数据文件夹

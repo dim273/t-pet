@@ -39,6 +39,12 @@ function renderMarkdown() {
 
   var htmlContent = marked.parse(markdownText);
   markdownDisplay.innerHTML = htmlContent;
+
+  var firstH1 = markdownDisplay.querySelector('h1');
+  if (firstH1) {
+    firstH1.remove();
+  }
+
   renderMathInElement(markdownDisplay, {
     delimiters: [
       { left: "$$", right: "$$", display: true },

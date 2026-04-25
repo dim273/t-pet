@@ -1,31 +1,7 @@
 /**
  * AbilityMap Page Styles
  * 基于设计规范 DESIGN_SYSTEM.md
- *
- * 引入顺序:
- * 1. styles/variables.css
- * 2. styles/base.css
- * 3. this file
  */
-
-/* ============================================
- * Header
- * ============================================ */
-
-.tp-page-title {
-  font-size: var(--text-xl);
-  font-weight: var(--font-semibold);
-  color: var(--color-text-primary);
-}
-
-/* Header */
-.header {
-  padding: var(--space-3) var(--space-4);
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-bg-secondary);
-}
 
 /* ============================================
  * Layout
@@ -95,7 +71,7 @@ body {
 .tp-overall-progress-track {
   flex: 1;
   height: 8px;
-  background: var(--color-bg-tertiary);
+  background: var(--color-bg-secondary);
   border-radius: 4px;
   overflow: hidden;
 }

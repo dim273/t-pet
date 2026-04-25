@@ -1,0 +1,131 @@
+/**
+ * T-Pet Design System - Button Component
+ * 基于设计规范 DESIGN_SYSTEM.md
+ */
+
+/* ============================================
+ * 1. Button Base
+ * ============================================ */
+
+.tp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  height: var(--btn-height);
+  padding: var(--space-1) var(--btn-padding-x);
+  font-family: var(--font-ui);
+  font-size: var(--btn-font-size);
+  font-weight: var(--font-medium);
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.tp-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+ * 2. Button Variants
+ * ============================================ */
+
+/* Primary Button - 主要操作 */
+.tp-btn-primary {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.tp-btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+/* Secondary Button - 一般操作 */
+.tp-btn-secondary {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.tp-btn-secondary:hover:not(:disabled) {
+  background: var(--color-bg-hover);
+}
+
+/* Ghost Button - 工具栏、次要操作 */
+.tp-btn-ghost {
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.tp-btn-ghost:hover:not(:disabled) {
+  background: var(--color-bg-hover);
+}
+
+/* Danger Button - 危险操作 */
+.tp-btn-danger {
+  background: transparent;
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+}
+
+.tp-btn-danger:hover:not(:disabled) {
+  background: rgba(241, 76, 76, 0.1);
+}
+
+/* ============================================
+ * 3. Button Sizes
+ * ============================================ */
+
+.tp-btn-sm {
+  height: 24px;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+}
+
+.tp-btn-lg {
+  height: 32px;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-base);
+}
+
+/* ============================================
+ * 4. Button States
+ * ============================================ */
+
+.tp-btn:focus {
+  outline-color: var(--vscode-focusBorder);
+}
+
+.tp-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* ============================================
+ * 5. Icon Button
+ * ============================================ */
+
+.tp-btn-icon {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  min-width: 30px;
+}
+
+.tp-btn-icon.tp-btn-sm {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+}
+
+.tp-btn-icon.tp-btn-lg {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+}

@@ -26,19 +26,18 @@ function initTechTree() {
     treeLevel.className = 'tech-level';
     treeLevel.dataset.level = index;
 
-    // 添加层级标题
-    const levelTitle = document.createElement('div');
-    levelTitle.className = 'tech-level-title';
-    levelTitle.textContent = levelData.title;
-    treeLevel.appendChild(levelTitle);
+    if (index > 0) {
+      const levelTitle = document.createElement('div');
+      levelTitle.className = 'tech-level-title';
+      levelTitle.textContent = levelData.title;
+      treeLevel.appendChild(levelTitle);
+    }
 
     // 根据层级类型创建节点
     if (index === 0) {
-      // 根节点
       const rootNode = createTechNode(levelData);
       treeLevel.appendChild(rootNode);
     } else {
-      // 其他层级的节点
       levelData.nodes.forEach(nodeData => {
         const node = createTechNode(nodeData);
         treeLevel.appendChild(node);

@@ -1,99 +1,172 @@
-input:not([type='checkbox']),
-textarea {
-    display: block;
-    width: 100%;
-    border: none;
-    font-family: var(--vscode-font-family);
-    padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-    color: var(--vscode-input-foreground);
-    outline-color: var(--vscode-input-border);
-    background-color: var(--vscode-input-background);
+/**
+ * T-Pet Design System - Main Styles
+ * 基于设计规范 DESIGN_SYSTEM.md
+ *
+ * 注意: 这是设置页面的主要样式文件
+ * 引入顺序:
+ * 1. styles/variables.css
+ * 2. styles/base.css
+ * 3. styles/button.css
+ * 4. this file
+ */
+
+/* ============================================
+ * Settings Container
+ * ============================================ */
+
+.tp-settings-container {
+  max-width: 450px;
+  min-width: 100px;
+  padding: var(--space-3);
 }
 
-input::placeholder,
-textarea::placeholder,
-select::placeholder {
-    color: var(--vscode-input-placeholderForeground);
-}
+/* ============================================
+ * Common Utility Classes
+ * ============================================ */
 
-
-select {
-    display: block;
-    width: 100%;
-    border: none;
-    font-family: var(--vscode-font-family);
-    padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-    color: var(--vscode-input-foreground);
-    outline-color: var(--vscode-input-border);
-    background-color: var(--vscode-input-background);
-}
-
-html {
-    box-sizing: border-box;
-    font-size: 12px;
-}
-
-*,
-*:before,
-*:after {
-    box-sizing: inherit;
-}
-
-body,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-ol,
-ul {
-    margin: 0;
-    padding: 0;
-    font-weight: normal;
-}
-
-body {
-    background-color: transparent;
-}
-
-
-/* new */
 .common-title {
-    font-size: 16px;
-    font-weight: 600;
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
 }
 
 .common-subtitle {
-    font-size: 14px;
-    font-weight: 500;
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-2);
 }
 
 .common-bar {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-.common-bar+.common-bar {
-    margin-top: 4px;
+.common-bar + .common-bar {
+  margin-top: var(--space-1);
 }
+
+/* ============================================
+ * Buttons
+ * ============================================ */
 
 .common-button {
-    min-width: 100px;
-    width: 45%;
-    margin-bottom: 6px;
+  min-width: 100px;
+  width: 45%;
+  margin-bottom: var(--space-2);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
-/* 下载图片样式 */
+.common-button:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+}
+
+.common-button:active {
+  transform: scale(0.98);
+}
+
+.common-button-danger {
+  background: var(--color-bg-secondary);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+}
+
+.common-button-danger:hover {
+  background: var(--color-error);
+  color: white;
+  border-color: var(--color-error);
+}
+
+/* ============================================
+ * Input
+ * ============================================ */
+
+.tp-input {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-family: var(--font-ui);
+}
+
+.tp-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.tp-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+ * Header
+ * ============================================ */
+
+.header {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
+}
+
+.tp-page-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+ * Download Image Style
+ * ============================================ */
+
 .download-img {
-    width: 19%;
-    cursor: pointer;
+  width: 19%;
+  cursor: pointer;
+  transition: width var(--transition-fast), border var(--transition-fast);
+  border: 1px solid transparent;
 }
 
 .download-img:hover {
-    width: 20%;
-    border: solid 1px white;
+  width: 20%;
+  border-color: var(--color-text-primary);
+}
+
+/* ============================================
+ * Responsive Helpers
+ * ============================================ */
+
+@media (max-width: 768px) {
+  .common-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .common-button {
+    width: 100%;
+  }
+
+  .download-img {
+    width: 48%;
+  }
+
+  .download-img:hover {
+    width: 48%;
+  }
 }

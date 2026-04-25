@@ -1,8 +1,0 @@
-{
-    "openrouter": {
-        "apiKey": "sk-01f1649e66ae470bbccf3afa32055c8d",
-        "model": "deepseek/deepseek-chat-v3:free",
-        "referer": "https://github.com/t-pet",
-        "title": "T-Pet AI Assistant"
-    }
-}

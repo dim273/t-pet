@@ -1,0 +1,130 @@
+/**
+ * ProblemPage Styles
+ * 基于设计规范 DESIGN_SYSTEM.md
+ *
+ * 引入顺序:
+ * 1. styles/variables.css
+ * 2. styles/base.css
+ * 3. styles/list.css
+ * 4. this file
+ */
+
+/* ============================================
+ * Problem Page Layout
+ * ============================================ */
+
+.tp-problem-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
+}
+
+.tp-problem-header .tp-header-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-left: auto;
+}
+
+.tp-problem-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  flex: 1;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Judge Status */
+.tp-judge-status {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Markdown Content */
+#markdownDisplay {
+  padding: var(--space-4);
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+}
+
+#markdownDisplay h1,
+#markdownDisplay h2,
+#markdownDisplay h3,
+#markdownDisplay h4,
+#markdownDisplay h5,
+#markdownDisplay h6 {
+  color: var(--color-text-primary);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-2);
+}
+
+#markdownDisplay h1 {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+}
+
+#markdownDisplay h2 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+}
+
+#markdownDisplay h3 {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+}
+
+#markdownDisplay p {
+  margin-bottom: var(--space-3);
+  line-height: 1.6;
+}
+
+#markdownDisplay code {
+  background: var(--color-bg-tertiary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-code);
+  font-size: var(--text-sm);
+}
+
+#markdownDisplay pre {
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  overflow-x: auto;
+  margin-bottom: var(--space-3);
+}
+
+#markdownDisplay pre code {
+  background: transparent;
+  padding: 0;
+}
+
+#markdownDisplay ul,
+#markdownDisplay ol {
+  margin-bottom: var(--space-3);
+  padding-left: var(--space-4);
+}
+
+#markdownDisplay li {
+  margin-bottom: var(--space-1);
+}
+
+#markdownDisplay blockquote {
+  border-left: 4px solid var(--color-primary);
+  padding-left: var(--space-3);
+  margin: var(--space-3) 0;
+  color: var(--color-text-secondary);
+}

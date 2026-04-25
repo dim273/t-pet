@@ -1,0 +1,141 @@
+/**
+ * T-Pet Design System - CSS Variables
+ * 基于设计规范 DESIGN_SYSTEM.md
+ *
+ * 使用方式: 在 HTML 中引入此文件，然后使用 var(--variable-name)
+ * 例如: color: var(--color-text-primary);
+ */
+
+:root {
+  /* ============================================
+   * 1. 颜色系统 (Color System)
+   * ============================================ */
+
+  /* --- 主色调 (Primary) --- */
+  --color-primary: #0078d4;
+  --color-primary-hover: #1177bb;
+  --color-primary-bg: rgba(0, 120, 212, 0.1);
+
+  /* --- 功能色 (Functional) --- */
+  --color-success: #4ec9b0;
+  --color-warning: #dcdcaa;
+  --color-error: #f14c4c;
+  --color-info: #3794ff;
+
+  /* --- 文字色 (Text) --- */
+  --color-text-primary: var(--vscode-foreground, #d4d4d4);
+  --color-text-secondary: var(--vscode-descriptionForeground, #858585);
+  --color-text-muted: var(--vscode-disabledForeground, #6e6e6e);
+
+  /* --- 背景色 (Background) --- */
+  --color-bg-primary: var(--vscode-editor-background, #1e1e1e);
+  --color-bg-secondary: var(--vscode-sideBar-background, #252526);
+  --color-bg-tertiary: var(--vscode-input-background, #3c3c3c);
+  --color-bg-hover: var(--vscode-toolbar-hoverBackground, #2a2d2e);
+  --color-bg-active: var(--vscode-toolbar-activeBackground, #37373d);
+
+  /* --- 边框色 (Border) --- */
+  --color-border: var(--vscode-border, #454545);
+  --color-border-light: var(--vscode-contrastBorder, transparent);
+
+  /* ============================================
+   * 2. 难度等级配色 (Difficulty Colors)
+   * ============================================ */
+
+  --difficulty-easy-bg: rgba(78, 201, 176, 0.15);
+  --difficulty-easy-text: #4ec9b0;
+
+  --difficulty-medium-bg: rgba(220, 220, 170, 0.15);
+  --difficulty-medium-text: #dcdcaa;
+
+  --difficulty-hard-bg: rgba(241, 76, 76, 0.15);
+  --difficulty-hard-text: #f14c4c;
+
+  /* ============================================
+   * 3. 间距系统 (Spacing Scale - 4px Grid)
+   * ============================================ */
+
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* ============================================
+   * 4. 圆角系统 (Border Radius)
+   * ============================================ */
+
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+
+  /* ============================================
+   * 5. 字体规范 (Typography)
+   * ============================================ */
+
+  /* UI 字体 - 使用 VSCode 默认字体 */
+  --font-ui: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+
+  /* 代码字体 - 使用 VSCode 编辑器字体 */
+  --font-code: var(--vscode-editor-font-family, 'Consolas', 'Courier New', monospace);
+
+  /* 字号层级 */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-lg: 14px;
+  --text-xl: 16px;
+
+  /* 字重 */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+
+  /* ============================================
+   * 6. 阴影系统 (Shadow - 禁用大阴影)
+   * ============================================ */
+
+  /* 项目中仅允许使用 shadow-sm 或无阴影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+
+  /* ============================================
+   * 7. 过渡动画 (Transition)
+   * ============================================ */
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+
+  /* ============================================
+   * 8. 容器变量 (Container)
+   * ============================================ */
+
+  --container-max-width: 1000px;
+  --container-padding: var(--space-4);
+
+  /* ============================================
+   * 9. 按钮变量 (Button)
+   * ============================================ */
+
+  --btn-height: 26px;
+  --btn-padding-x: var(--space-3);
+  --btn-font-size: var(--text-sm);
+
+  /* ============================================
+   * 10. 输入框变量 (Input)
+   * ============================================ */
+
+  --input-height: 26px;
+  --input-padding-y: var(--space-1);
+  --input-padding-x: var(--space-2);
+
+  /* ============================================
+   * 11. Z-Index 层级
+   * ============================================ */
+
+  --z-dropdown: 100;
+  --z-modal: 200;
+  --z-tooltip: 300;
+}

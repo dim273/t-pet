@@ -488,40 +488,29 @@ ${dynamicPrompt}
         console.log("[AI调试] 当前用户消息:", finalUserMessage);
         console.log("[AI调试] ========================================");
 
-        let apiKey = "";
-        let model = "";
-        try {
-            const configPath = path.join(this.provider._extensionUri.fsPath, 'aiConfig.json');
-            if (fs.existsSync(configPath)) {
-                const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-                apiKey = config.openrouter?.apiKey || "";
-                model = config.openrouter?.model || model;
-            }
-        } catch (error) {
-            console.error("读取 aiConfig.json 失败:", error);
-        }
-
-        if (!apiKey) {
-            apiKey = vscode.workspace.getConfiguration('t-pet').get('openrouterApiKey') || process.env.OPENROUTER_API_KEY;
-        }
+        let apiKey = vscode.workspace.getConfiguration('t-pet').get('deepseekApiKey') || "";
+        let model = vscode.workspace.getConfiguration('t-pet').get('deepseekModel') || "deepseek-v4-pro";
 
         if (!apiKey) {
             if (this.provider._view && this.provider._view.webview) {
                 this.provider._view.webview.postMessage({
                     type: 'aiError',
-                    text: "未配置 API Key。请在 aiConfig.json 中配置 DeepSeek API Key。"
+                    text: "未配置 API Key。请在 VSCode 设置中配置 DeepSeek API Key (t-pet.deepseekApiKey)。"
                 });
             }
             return;
         }
 
-        try {
-            const postData = JSON.stringify({
-                "model": "deepseek-chat",
-                "messages": historyMessages,
-                "stream": true
-            });
+        const useThinking = mode === 'thinking';
+        const postData = JSON.stringify({
+            "model": model,
+            "messages": historyMessages,
+            "thinking": useThinking ? {"type": "enabled"} : {"type": "disabled"},
+            "reasoning_effort": useThinking ? "high" : undefined,
+            "stream": true
+        });
 
+        try {
             const options = {
                 hostname: 'api.deepseek.com',
                 port: 443,
@@ -629,7 +618,14 @@ ${dynamicPrompt}
         }
     }
 
-    async generateSessionTitle(sessionId, userMessage, aiResponse, apiKey, model) {
+    async generateSessionTitle(sessionId, userMessage, aiResponse) {
+        const apiKey = vscode.workspace.getConfiguration('t-pet').get('deepseekApiKey') || "";
+        const model = vscode.workspace.getConfiguration('t-pet').get('deepseekModel') || "deepseek-v4-pro";
+
+        if (!apiKey) {
+            return;
+        }
+
         try {
             const prompt = `请根据以下对话内容，生成一个简短的标题（不超过10个字）。直接返回标题文字，不要包含引号或任何解释。
 用户：${userMessage}
@@ -638,13 +634,14 @@ ${dynamicPrompt}
             const postData = JSON.stringify({
                 "model": model,
                 "messages": [{ role: "user", content: prompt }],
+                "thinking": {"type": "disabled"},
                 "stream": false
             });
 
             const options = {
-                hostname: 'openrouter.ai',
+                hostname: 'api.deepseek.com',
                 port: 443,
-                path: '/api/v1/chat/completions',
+                path: '/v1/chat/completions',
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

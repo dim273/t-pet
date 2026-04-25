@@ -1,0 +1,109 @@
+/**
+ * T-Pet Design System - Card Component
+ * 基于设计规范 DESIGN_SYSTEM.md
+ */
+
+/* ============================================
+ * 1. Card Base
+ * ============================================ */
+
+.tp-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+/* ============================================
+ * 2. Card Header
+ * ============================================ */
+
+.tp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.tp-card-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+}
+
+.tp-card-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+/* ============================================
+ * 3. Card Body
+ * ============================================ */
+
+.tp-card-body {
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+ * 4. Card Footer
+ * ============================================ */
+
+.tp-card-footer {
+  margin-top: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ============================================
+ * 5. Interactive Card
+ * ============================================ */
+
+.tp-card-interactive {
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.tp-card-interactive:hover {
+  border-color: var(--color-primary);
+}
+
+.tp-card-interactive:active {
+  transform: scale(0.995);
+}
+
+/* ============================================
+ * 6. Card Sizes
+ * ============================================ */
+
+.tp-card-sm {
+  padding: var(--space-2);
+}
+
+.tp-card-lg {
+  padding: var(--space-4);
+}
+
+/* ============================================
+ * 7. Stat Card (用于统计卡片)
+ * ============================================ */
+
+.tp-stat-card {
+  text-align: center;
+  padding: var(--space-3);
+}
+
+.tp-stat-value {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+.tp-stat-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}

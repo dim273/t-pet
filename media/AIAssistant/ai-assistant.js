@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const chatContainer = document.getElementById('chat-container');
     const chatContent = document.getElementById('chat-content');
     const initState = document.getElementById('init-state');
-    const modeBtns = document.querySelectorAll('.mode-btn');
+    const modeBtns = document.querySelectorAll('.tp-mode-btn');
     const modeIndicator = document.getElementById('mode-indicator');
-    const inputGroups = document.querySelectorAll('.input-group');
+    const inputGroups = document.querySelectorAll('.tp-input-group');
     const backBtn = document.getElementById('back-btn');
 
     // 发送按钮
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const historyList = document.getElementById('history-list');
 
     // 初始设置指示器位置
-    updateModeIndicator(document.querySelector('.mode-btn.active'));
+    updateModeIndicator(document.querySelector('.tp-mode-btn.active'));
 
     // 侧边栏控制
     menuToggle.addEventListener('click', () => {
@@ -65,7 +65,10 @@ document.addEventListener('DOMContentLoaded', function () {
         targetBtn.classList.add('active');
         updateModeIndicator(targetBtn);
         inputGroups.forEach(group => {
-            group.classList.toggle('active', group.dataset.mode === mode);
+            group.classList.remove('active');
+            if (group.dataset.mode === mode) {
+                group.classList.add('active');
+            }
         });
     }
 
@@ -188,10 +191,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 streamStartTime = 0;
 
                 // AI 完成输出后，检查并同步最后一条用户消息的脚注（如果是"正在读取..."状态）
-                const messages = document.querySelectorAll('.message.user');
+                const messages = document.querySelectorAll('.tp-message.user');
                 if (messages.length > 0) {
                     const lastUserMsg = messages[messages.length - 1];
-                    const footer = lastUserMsg.querySelector('.message-footer');
+                    const footer = lastUserMsg.querySelector('.tp-message-footer');
                     if (footer && footer.textContent.includes('正在读取...')) {
                         // 触发一次历史记录刷新，获取最终保存的文件名
                         setTimeout(() => {
@@ -251,10 +254,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         displaySessions.forEach(session => {
             const item = document.createElement('div');
-            item.className = `history-item ${session.id === history.currentSessionId ? 'active' : ''}`;
+            item.className = `tp-history-item ${session.id === history.currentSessionId ? 'active' : ''}`;
 
             const title = document.createElement('div');
-            title.className = 'history-title';
+            title.className = 'tp-history-title';
             title.textContent = session.title || '新对话';
             title.onclick = () => {
                 vscode.postMessage({ type: 'switchAiSession', sessionId: session.id });
@@ -262,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
             };
 
             const deleteBtn = document.createElement('div');
-            deleteBtn.className = 'delete-session';
+            deleteBtn.className = 'tp-delete-session';
             deleteBtn.innerHTML = '&times;';
             deleteBtn.onclick = (e) => {
                 e.stopPropagation();
@@ -309,45 +312,43 @@ document.addEventListener('DOMContentLoaded', function () {
     function createAssistantMessageElement() {
         const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const messageEl = document.createElement('div');
-        messageEl.className = 'message assistant';
+        messageEl.className = 'tp-message assistant';
         messageEl.innerHTML = `
-            <div class="avatar">AI</div>
-            <div class="message-content">
-                <div class="name">编程助手</div>
-                <div class="message-body"></div>
-                <div class="timestamp">${timestamp}</div>
+            <div class="tp-avatar">AI</div>
+            <div class="tp-message-content">
+                <div class="tp-name">编程助手</div>
+                <div class="tp-message-body"></div>
+                <div class="tp-timestamp">${timestamp}</div>
             </div>
         `;
         return messageEl;
     }
 
     function updateAssistantDisplay(el, thought, content) {
-        const bodyEl = el.querySelector('.message-body');
+        const bodyEl = el.querySelector('.tp-message-body');
         let html = "";
 
         if (thought) {
             const isStreaming = !content && currentAssistantMessageEl !== null;
             html += `
-                <div class="thought-container ${isStreaming ? 'streaming' : 'expanded'}">
-                    <div class="thought-header" onclick="this.parentElement.classList.toggle('expanded')">正在思考中...</div>
-                    <div class="thought-content">${thought.trim().replace(/\n/g, '<br>')}</div>
+                <div class="tp-thought-container ${isStreaming ? 'streaming' : 'expanded'}">
+                    <div class="tp-thought-header" onclick="this.parentElement.classList.toggle('expanded')">正在思考中...</div>
+                    <div class="tp-thought-content">${thought.trim().replace(/\n/g, '<br>')}</div>
                 </div>`;
         }
 
         if (content) {
-            // 清理内容中的多余首尾换行，防止 marked 产生空段落
             const cleanedContent = content.trimStart();
 
-            // 判断是否包含Markdown语法，如果没有则直接显示，避免marked解析开销
             const hasMarkdownSyntax = /[*_`#\-\[\]>]/.test(cleanedContent);
             if (hasMarkdownSyntax && window.marked && typeof window.marked.parse === 'function') {
-                // 配置 marked 选项以减少不必要的换行
-                html += window.marked.parse(cleanedContent, {
-                    breaks: true,
+                const parsed = window.marked.parse(cleanedContent, {
+                    breaks: false,
                     gfm: true
                 });
+                html += parsed.replace(/<br>\s+/g, '<br>');
             } else {
-                html += cleanedContent.replace(/\n/g, '<br>');
+                html += cleanedContent.replace(/\n+/g, '<br>');
             }
         }
 
@@ -393,25 +394,24 @@ document.addEventListener('DOMContentLoaded', function () {
         const name = sender === 'user' ? '您' : '编程助手';
 
         const messageEl = document.createElement('div');
-        messageEl.className = `message ${sender}`;
+        messageEl.className = `tp-message ${sender}`;
 
         let formattedText = text;
         if (sender === 'assistant') {
-            // 统一使用流式显示的更新逻辑来处理非流式消息
             const tempDiv = document.createElement('div');
             updateAssistantDisplay({ querySelector: () => tempDiv }, thought || "", text);
             formattedText = tempDiv.innerHTML;
         }
 
-        let footerHtml = footer ? `<div class="message-footer">${footer}</div>` : "";
+        let footerHtml = footer ? `<div class="tp-message-footer">${footer}</div>` : "";
 
         messageEl.innerHTML = `
-            <div class="avatar">${sender === 'user' ? 'U' : 'AI'}</div>
-            <div class="message-content">
-                <div class="name">${name}</div>
-                <div class="message-body">${formattedText}</div>
+            <div class="tp-avatar">${sender === 'user' ? 'U' : 'AI'}</div>
+            <div class="tp-message-content">
+                <div class="tp-name">${name}</div>
+                <div class="tp-message-body">${formattedText}</div>
                 ${footerHtml}
-                <div class="timestamp">${timestamp}</div>
+                <div class="tp-timestamp">${timestamp}</div>
             </div>
         `;
 
@@ -422,12 +422,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function addLoading() {
         const loadingEl = document.createElement('div');
         loadingEl.id = 'ai-loading';
-        loadingEl.className = 'message assistant';
+        loadingEl.className = 'tp-message assistant';
         loadingEl.innerHTML = `
-            <div class="avatar">AI</div>
-            <div class="message-content">
-                <div class="name">编程助手</div>
-                <div class="message-body">正在思考中...</div>
+            <div class="tp-avatar">AI</div>
+            <div class="tp-message-content">
+                <div class="tp-name">编程助手</div>
+                <div class="tp-message-body">正在思考中...</div>
             </div>
         `;
         chatContent.appendChild(loadingEl);
@@ -456,7 +456,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!message) return;
 
         sendMessage('problem', message, { problemId });
-        problemIdInput.value = '';
         problemInput.value = '';
     });
 
@@ -466,7 +465,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!message && !knowledge) return;
 
         sendMessage('knowledge', message, { knowledge });
-        knowledgeInputText.value = '';
         knowledgeInput.value = '';
     });
 
@@ -489,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 初始化
     window.addEventListener('resize', () => {
-        updateModeIndicator(document.querySelector('.mode-btn.active'));
+        updateModeIndicator(document.querySelector('.tp-mode-btn.active'));
     });
 
     // 初始加载历史记录

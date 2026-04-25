@@ -1,0 +1,137 @@
+/**
+ * T-Pet Design System - Input Component
+ * 基于设计规范 DESIGN_SYSTEM.md
+ */
+
+/* ============================================
+ * 1. Input Base
+ * ============================================ */
+
+.tp-input {
+  display: block;
+  width: 100%;
+  height: var(--input-height);
+  padding: var(--input-padding-y) var(--input-padding-x);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.tp-input:focus {
+  border-color: var(--color-primary);
+}
+
+.tp-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.tp-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+ * 2. Textarea
+ * ============================================ */
+
+.tp-textarea {
+  min-height: 80px;
+  height: auto;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* ============================================
+ * 3. Input Sizes
+ * ============================================ */
+
+.tp-input-sm {
+  height: 24px;
+  font-size: var(--text-sm);
+  padding: var(--space-1) var(--space-2);
+}
+
+.tp-input-lg {
+  height: 32px;
+  font-size: var(--text-lg);
+  padding: var(--space-2) var(--space-3);
+}
+
+/* ============================================
+ * 4. Input States
+ * ============================================ */
+
+.tp-input-error {
+  border-color: var(--color-error);
+}
+
+.tp-input-success {
+  border-color: var(--color-success);
+}
+
+/* ============================================
+ * 5. Input with Icon
+ * ============================================ */
+
+.tp-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.tp-input-wrapper .tp-input {
+  padding-left: calc(var(--input-padding-x) + 20px);
+}
+
+.tp-input-icon {
+  position: absolute;
+  left: var(--space-2);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+/* ============================================
+ * 6. Select
+ * ============================================ */
+
+.tp-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23858585' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-2) center;
+  padding-right: calc(var(--input-padding-x) + 16px);
+  cursor: pointer;
+}
+
+/* ============================================
+ * 7. Form Group
+ * ============================================ */
+
+.tp-form-group {
+  margin-bottom: var(--space-3);
+}
+
+.tp-form-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.tp-form-hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+}
+
+.tp-form-error {
+  font-size: var(--text-xs);
+  color: var(--color-error);
+  margin-top: var(--space-1);
+}
