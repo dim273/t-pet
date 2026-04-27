@@ -1,204 +1,123 @@
-const fs = require('fs');
-const path = require('path');
-const vscode = require('vscode'); // 确保引入vscode模块
+const vscode = require('vscode');
 
-class FileStorage {
-  constructor(_extensionUri) {
-    const workspaceFolder = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0
-      ? vscode.workspace.workspaceFolders[0].uri.fsPath
-      : _extensionUri.fsPath;
+/**
+ * VSCodeStorage — 基于 VS Code globalState 的存储管理器
+ * 
+ * 替代原有的 FileStorage（基于 JSON 文件），使用 VS Code 官方持久化 API。
+ * 数据存储在 VS Code 全局状态中，与工作区无关，随插件卸载自动清理。
+ */
+class VSCodeStorage {
+	/**
+	 * @param {vscode.ExtensionContext['globalState']} globalState - VS Code 扩展全局状态
+	 */
+	constructor(globalState) {
+		this._globalState = globalState;
+		this._DATA_KEY = 'algorithmLearning.data'; // 全局存储键名
+	}
 
-    this._storagePath = path.join(
-      workspaceFolder,
-      'saveData',
-      'data.json'
-    );
+	// ==================== 底层读写 ====================
 
-    // 确保存储目录存在
-    this.ensureDirectoryExists(path.dirname(this._storagePath));
-  }
+	/** 获取完整数据对象 */
+	_readAll() {
+		return this._globalState.get(this._DATA_KEY, null);
+	}
 
-  ensureDirectoryExists(dirPath) {
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, { recursive: true });
-    }
-  }
+	/** 写入完整数据对象 */
+	async _writeAll(data) {
+		try {
+			await this._globalState.update(this._DATA_KEY, data);
+			return true;
+		} catch (error) {
+			console.error(`[VSCodeStorage] 写入失败:`, error);
+			return false;
+		}
+	}
 
-  // 保存数据
-  saveData(data) {
-    try {
-      const content = typeof data === 'string'
-        ? data
-        : JSON.stringify(data, null, 2);
+	// ==================== 账号 CRUD ====================
 
-      fs.writeFileSync(this._storagePath, content, 'utf8');
-      return true;
-    } catch (error) {
-      console.error(`保存数据到${this._storagePath}失败:`, error);
-      return false;
-    }
-  }
+	/** 获取所有账号列表 */
+	getAccounts() {
+		const data = this._readAll();
+		if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
+			return [];
+		}
+		return data.userInfo.accounts;
+	}
 
-  // 读取数据
-  readData() {
-    try {
-      if (!fs.existsSync(this._storagePath)) {
-        return null;
-      }
+	/** 获取账号数量 */
+	getAccountCount() {
+		return this.getAccounts().length;
+	}
 
-      const content = fs.readFileSync(this._storagePath, 'utf8');
+	/** 根据 id 获取单个账号 */
+	getAccountByIndex(id) {
+		try {
+			const account = this.getAccounts().find(account => account.id === id);
+			return account || null;
+		} catch (error) {
+			console.error(`[VSCodeStorage] 获取索引 ${id} 的账号信息失败:`, error);
+			return null;
+		}
+	}
 
-      try {
-        return JSON.parse(content);
-      } catch {
-        return content;
-      }
-    } catch (error) {
-      console.error(`从${this._storagePath}读取数据失败:`, error);
-      return null;
-    }
-  }
+	/** 添加新账号 */
+	async addAccount(newAccount) {
+		try {
+			let data = this._readAll();
+			if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
+				data = { userInfo: { accounts: [] } };
+			}
 
-  // 删除数据文件
-  deleteData() {
-    try {
-      if (fs.existsSync(this._storagePath)) {
-        fs.unlinkSync(this._storagePath);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error(`删除${this._storagePath}失败:`, error);
-      return false;
-    }
-  }
+			data.userInfo.accounts.push(newAccount);
+			return await this._writeAll(data);
+		} catch (error) {
+			console.error('[VSCodeStorage] 添加新账号失败:', error);
+			return false;
+		}
+	}
 
-  // 获取存储目录下的所有文件
-  getAllFiles() {
-    try {
-      const dirPath = path.dirname(this._storagePath);
-      if (!fs.existsSync(dirPath)) {
-        return [];
-      }
+	/** 根据 id 更新账号信息（浅合并） */
+	async updateAccountByIndex(id, updatedAccount) {
+		try {
+			const data = this._readAll();
+			if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
+				return false;
+			}
 
-      return fs.readdirSync(dirPath)
-        .filter(file => fs.statSync(path.join(dirPath, file)).isFile());
-    } catch (error) {
-      console.error('获取文件列表失败:', error);
-      return [];
-    }
-  }
+			const accountIndex = data.userInfo.accounts.findIndex(account => account.id === id);
+			if (accountIndex === -1) {
+				return false;
+			}
 
-  // 清空存储目录下的所有文件
-  clearAll() {
-    try {
-      const dirPath = path.dirname(this._storagePath);
-      const files = this.getAllFiles();
-      files.forEach(file => {
-        fs.unlinkSync(path.join(dirPath, file));
-      });
-      return true;
-    } catch (error) {
-      console.error('清空存储失败:', error);
-      return false;
-    }
-  }
+			data.userInfo.accounts[accountIndex] = {
+				...data.userInfo.accounts[accountIndex],
+				...updatedAccount
+			};
 
-  // 根据信息id获取指定账号信息
-  getAccountByIndex(index) {
-    try {
-      const account = this.getAccounts().find(account => account.id === index);
-      if (!account)
-        return null;
-      return account;
-    } catch (error) {
-      console.error(`获取索引 ${index} 的账号信息失败:`, error);
-      return null;
-    }
-  }
+			console.log("[VSCodeStorage] 更新成功");
+			return await this._writeAll(data);
+		} catch (error) {
+			console.error(`[VSCodeStorage] 更新ID ${id} 的账号信息失败:`, error);
+			return false;
+		}
+	}
 
-  // 根据id更新指定账号信息
-  updateAccountByIndex(id, updatedAccount) {
-    try {
-      const data = this.readData();
-      if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
-        return false;
-      }
+	/** 根据 id 删除账号 */
+	async deleteAccountByIndex(index) {
+		try {
+			const data = this._readAll();
+			if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
+				return false;
+			}
+			const newAccounts = data.userInfo.accounts.filter(account => account.id !== index);
+			data.userInfo.accounts = newAccounts;
 
-      const accountIndex = data.userInfo.accounts.findIndex(account => account.id === id);
-      if (accountIndex === -1) {
-        return false;
-      }
-
-      // 更新指定id的账号信息
-      data.userInfo.accounts[accountIndex] = {
-        ...data.userInfo.accounts[accountIndex],
-        ...updatedAccount
-      };
-
-      console.log("更新成功");
-      return this.saveData(data);
-    } catch (error) {
-      console.error(`更新ID ${id} 的账号信息失败:`, error);
-      return false;
-    }
-  }
-
-  // 根据索引删除指定账号
-  deleteAccountByIndex(index) {
-    try {
-      const data = this.readData();
-      if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
-        return false;
-      }
-      const newAccounts = data.userInfo.accounts.filter(account => account.id !== index);
-      data.userInfo.accounts = newAccounts;
-
-      return this.saveData(data);
-    } catch (error) {
-      console.error(`删除索引 ${index} 的账号失败:`, error);
-      return false;
-    }
-  }
-
-  // 添加新账号
-  addAccount(newAccount) {
-    try {
-      const data = this.readData() || { userInfo: { accounts: [] } };
-
-      if (!data.userInfo) {
-        data.userInfo = { accounts: [] };
-      }
-      if (!Array.isArray(data.userInfo.accounts)) {
-        data.userInfo.accounts = [];
-      }
-
-      data.userInfo.accounts.push(newAccount);
-
-      return this.saveData(data);
-    } catch (error) {
-      console.error('添加新账号失败:', error);
-      return false;
-    }
-  }
-
-  // 获取所有账号数量
-  getAccountCount() {
-    try {
-      return this.getAccounts().length;
-    } catch (error) {
-      console.error('获取账号数量失败:', error);
-      return 0;
-    }
-  }
-
-  getAccounts() {
-    const data = this.readData();
-    if (!data || !data.userInfo || !Array.isArray(data.userInfo.accounts)) {
-      return [];
-    }
-    return data.userInfo.accounts;
-  }
+			return await this._writeAll(data);
+		} catch (error) {
+			console.error(`[VSCodeStorage] 删除索引 ${index} 的账号失败:`, error);
+			return false;
+		}
+	}
 }
 
-module.exports = { FileStorage };
+module.exports = { VSCodeStorage };

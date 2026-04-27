@@ -9,14 +9,14 @@ const Main_1 = require("../live2dModify/Main");
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
-const { FileStorage } = require('../../manager/fileStorage');
+const { VSCodeStorage } = require('../../manager/fileStorage');
 const { AIAssistantLogic } = require('../AIAssistant/logic');
 const { console } = require("inspector");
 
 // 扩展激活入口函数
 function activateLive2d(context) {
 	// 创建 Webview 视图提供者
-	const provider = new Live2dViewProvider(context.extensionUri);
+	const provider = new Live2dViewProvider(context.extensionUri, context.globalState);
 	// 注册 Webview 视图
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(Live2dViewProvider.viewType, provider)
@@ -25,12 +25,12 @@ function activateLive2d(context) {
 
 // Webview视图提供者类
 class Live2dViewProvider {
-	constructor(_extensionUri) {
+	constructor(_extensionUri, globalState) {
 		this._extensionUri = _extensionUri;  // 扩展安装目录URI
 		this._page = 'login';                // 当前页面状态，初始化为登陆界面
 
-		// 初始化文件存储管理器和账号信息
-		this.storage = new FileStorage(_extensionUri);
+		// 初始化 VS Code 全局存储管理器（替代原有的 FileStorage JSON 文件方案）
+		this.storage = new VSCodeStorage(globalState);
 		this._currentAccountId = 0;
 		this.saveData = {
 			id: 1,
@@ -87,6 +87,19 @@ class Live2dViewProvider {
 							type: "judgeResult",
 							results: results
 						});
+
+						// 评测通过后自动完成今日打卡
+						if (results === "AC") {
+							const today = new Date();
+							// 统一使用 data.json 中已有的日期格式: YYYY-M-D
+							const dateKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+
+							if (!this.saveData.checkInDays[dateKey]) {
+								this.saveData.checkInDays[dateKey] = true;
+								this.storage.updateAccountByIndex(this._currentAccountId, this.saveData);
+								console.log(`[自动打卡] ${dateKey}`);
+							}
+						}
 
 					} catch (err) {
 						console.error("评测异常:", err);
@@ -152,8 +165,8 @@ class Live2dViewProvider {
 					const calenderData = this.saveData.checkInDays;
 					if (this._view && this._view.webview) {
 						this._view.webview.postMessage({
-							type: 'loadCalenderData',
-							data: calenderData
+							type: 'loadCheckIn',
+							records: calenderData
 						});
 					}
 					break;
@@ -322,7 +335,7 @@ class Live2dViewProvider {
 			const postData = JSON.stringify({
 				"model": "deepseek-v4-flash",
 				"messages": [{ role: "user", content: "Hi" }],
-				"thinking": {"type": "disabled"},
+				"thinking": { "type": "disabled" },
 				"stream": false
 			});
 
