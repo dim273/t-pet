@@ -1,43 +1,66 @@
 const vscode = acquireVsCodeApi();
+const MainOrigin = "vscode-file://vscode-app";
 
+function sendCommand(type, data) {
+    window.top.postMessage({ type, data }, MainOrigin);
+}
+
+function openAutoLodash() {
+    sendCommand('live2d-openAutoLodash');
+}
+function closeAutoLodash() {
+    sendCommand('live2d-closeAutoLodash');
+}
+
+
+// 生成依赖
 function generateResources() {
     vscode.postMessage({ type: 'generateResources' });
 }
 
+// 移除依赖
 function removeResources() {
     vscode.postMessage({ type: 'removeResources' });
 }
 
+// 返回
 function switchPageToMain() {
     vscode.postMessage({ type: 'switchPageToMain' });
 }
 
+// 退出登陆
 function logout() {
     vscode.postMessage({ type: 'switchPageToLogin' });
 }
 
+// 开启live2d
 function lodashLive2d() {
-    vscode.postMessage({ type: 'live2d-lodash' });
+    sendCommand('live2d-lodash');
 }
 
+// 关闭live2d
 function closeLive2d() {
-    vscode.postMessage({ type: 'live2d-close' });
+    sendCommand('live2d-close');
 }
 
+// 保存配置
 function saveCurrentConfig() {
-    vscode.postMessage({ type: 'live2d-saveCurrentConfig' });
+    sendCommand('live2d-saveCurrentConfig');
 }
 
+// 复原配置
 function resetPosition() {
-    vscode.postMessage({ type: 'live2d-resetPosition' });
+    sendCommand('live2d-resetPosition');
 }
 
+// 自启动开
 function openAutoLodash() {
-    vscode.postMessage({ type: 'live2d-openAutoLodash' });
+    sendCommand('live2d-openAutoLodash');
 }
 
+// 自启动关
 function closeAutoLodash() {
-    vscode.postMessage({ type: 'live2d-closeAutoLodash' });
+    sendCommand('live2d-closeAutoLodash');
 }
 
 function saveDeepseekConfig() {
