@@ -402,34 +402,45 @@ function initAbilityChart() {
             },
             tooltip: {
               enabled: true,
-              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              backgroundColor: 'rgba(0, 0, 0, 0.85)',
               titleColor: 'white',
               bodyColor: 'white',
               borderColor: 'rgba(255, 255, 255, 0.2)',
               borderWidth: 1,
-              padding: 10,
-              cornerRadius: 4,
-              mode: 'index',
-              intersect: false,
+              padding: 12,
+              cornerRadius: 6,
+              boxPadding: 6,
+              usePointStyle: true,
+              mode: 'nearest',
+              intersect: true,
+              displayColors: false,
               callbacks: {
-                afterLabel: function (context) {
-                  const domainIndex = context.dataIndex;
-                  const domainName = context.chart.data.labels[domainIndex];
-                  const domainDetails = window.domainDetails[domainName];
+                title: function (context) {
+                  const domainName = context[0]?.label || '';
+                  return domainName;
+                },
+                label: function (context) {
+                  const domainName = context.label;
+                  const domainDetails = window.domainDetails && window.domainDetails[domainName];
+                  const mastery = context.parsed.r || 0;
+
+                  const lines = [];
+                  lines.push(`掌握程度: ${mastery}%`);
 
                   if (domainDetails) {
-                    let tooltipText = `\n`;
-                    tooltipText += `总题目数: ${domainDetails.totalProblems}\n`;
-                    tooltipText += `已通过: ${domainDetails.passedProblems}\n`;
-                    tooltipText += `二级节点掌握度:\n`;
+                    lines.push(`总题目数: ${domainDetails.totalProblems || 0}`);
+                    lines.push(`已通过: ${domainDetails.passedProblems || 0}`);
 
-                    for (const [nodeName, mastery] of Object.entries(domainDetails.secondaryNodeMastery)) {
-                      tooltipText += `${nodeName}: ${mastery}%\n`;
+                    if (domainDetails.secondaryNodeMastery && Object.keys(domainDetails.secondaryNodeMastery).length > 0) {
+                      lines.push('');
+                      lines.push('二级节点掌握度:');
+                      for (const [nodeName, nodeMastery] of Object.entries(domainDetails.secondaryNodeMastery)) {
+                        lines.push(`${nodeName}: ${nodeMastery}%`);
+                      }
                     }
-
-                    return tooltipText;
                   }
-                  return '';
+
+                  return lines;
                 }
               }
             }
