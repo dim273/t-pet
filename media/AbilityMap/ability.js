@@ -129,7 +129,7 @@ function calculateOverallMastery(treeData, allProblems, passedSet) {
   let overallMasteryScore = 0;
 
   // 遍历所有领域
-  if (Array.isArray(treeData)) {
+  if (Array.isArray(treeData) && treeData.length > 0) {
     console.log('Tree data levels:', treeData.length);
     treeData.forEach((level, levelIndex) => {
       console.log('Level', levelIndex, 'has nodes:', level.nodes ? level.nodes.length : 0);
@@ -176,17 +176,17 @@ function generateAbilityData(treeData, allProblems, passedSet) {
   const domainDetails = {};
 
   // 遍历知识树的根节点
-  if (Array.isArray(treeData)) {
+  if (Array.isArray(treeData) && treeData.length > 0) {
     // 处理知识树的层级结构
     treeData.forEach(level => {
-      if (level.nodes) {
+      if (level && level.nodes) {
         level.nodes.forEach(node => {
           // 跳过根节点"编程学习之旅"
-          if (node.id && node.id !== "编程学习之旅") {
+          if (node && node.id && node.id !== "编程学习之旅") {
             domains.push(node.id);
             // 计算该领域的掌握程度
             const domainInfo = calculateDomainMastery(node, allProblems, passedSet);
-            domainMastery[node.id] = domainInfo.mastery;
+            domainMastery[node.id] = typeof domainInfo.mastery === 'number' ? domainInfo.mastery : 0;
             domainDetails[node.id] = domainInfo;
           }
         });
@@ -333,9 +333,10 @@ function initAbilityChart() {
     const overallProgress = document.getElementById('overallProgress');
     const overallPercentage = document.getElementById('overallPercentage');
     if (overallProgress && overallPercentage) {
-      overallProgress.style.width = `${abilityData.overallProgress}%`;
-      overallPercentage.textContent = `${abilityData.overallProgress}%`;
-      console.log('Overall progress updated to:', abilityData.overallProgress);
+      const progressValue = abilityData.overallProgress || 0;
+      overallProgress.style.width = `${Math.min(Math.max(progressValue, 0), 100)}%`;
+      overallPercentage.textContent = `${progressValue}%`;
+      console.log('Overall progress updated to:', progressValue);
     } else {
       console.error('Overall progress elements not found');
     }
@@ -371,6 +372,24 @@ function initAbilityChart() {
 
     // 创建雷达图
     try {
+      const chartLabels = abilityData.chartData?.labels || [];
+      const chartDataValues = abilityData.chartData?.datasets?.[0]?.data || [];
+
+      // 数据验证
+      if (!Array.isArray(chartLabels) || chartLabels.length === 0) {
+        console.warn('No labels found for chart, using default');
+        return;
+      }
+
+      // 确保数据值都是有效数字
+      const validatedData = chartDataValues.map(value => {
+        const numValue = typeof value === 'number' ? value : 0;
+        return Math.min(Math.max(numValue, 0), 100);
+      });
+
+      // 更新验证后的数据
+      abilityData.chartData.datasets[0].data = validatedData;
+
       new Chart(ctx, {
         type: 'radar',
         data: abilityData.chartData,
@@ -379,6 +398,9 @@ function initAbilityChart() {
           maintainAspectRatio: false,
           scales: {
             r: {
+              min: 0,
+              max: 100,
+              beginAtZero: true,
               angleLines: {
                 color: 'rgba(255, 255, 255, 0.1)'
               },
@@ -386,19 +408,21 @@ function initAbilityChart() {
                 color: 'rgba(255, 255, 255, 0.1)'
               },
               pointLabels: {
-                color: 'rgba(255, 255, 255, 0.8)'
+                color: 'rgba(255, 255, 255, 0.8)',
+                font: {
+                  size: 11
+                }
               },
               ticks: {
                 color: 'rgba(255, 255, 255, 0.5)',
-                backdropColor: 'transparent'
+                backdropColor: 'transparent',
+                stepSize: 20
               }
             }
           },
           plugins: {
             legend: {
-              labels: {
-                color: 'rgba(255, 255, 255, 0.8)'
-              }
+              display: false
             },
             tooltip: {
               enabled: true,
@@ -422,7 +446,7 @@ function initAbilityChart() {
                 label: function (context) {
                   const domainName = context.label;
                   const domainDetails = window.domainDetails && window.domainDetails[domainName];
-                  const mastery = context.parsed.r || 0;
+                  const mastery = typeof context.parsed.r === 'number' ? context.parsed.r : 0;
 
                   const lines = [];
                   lines.push(`掌握程度: ${mastery}%`);
@@ -431,11 +455,11 @@ function initAbilityChart() {
                     lines.push(`总题目数: ${domainDetails.totalProblems || 0}`);
                     lines.push(`已通过: ${domainDetails.passedProblems || 0}`);
 
-                    if (domainDetails.secondaryNodeMastery && Object.keys(domainDetails.secondaryNodeMastery).length > 0) {
+                    if (domainDetails.secondaryNodeMastery && typeof domainDetails.secondaryNodeMastery === 'object' && Object.keys(domainDetails.secondaryNodeMastery).length > 0) {
                       lines.push('');
                       lines.push('二级节点掌握度:');
                       for (const [nodeName, nodeMastery] of Object.entries(domainDetails.secondaryNodeMastery)) {
-                        lines.push(`${nodeName}: ${nodeMastery}%`);
+                        lines.push(`${nodeName}: ${typeof nodeMastery === 'number' ? nodeMastery : 0}%`);
                       }
                     }
                   }
