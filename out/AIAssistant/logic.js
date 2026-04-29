@@ -60,6 +60,8 @@ class AIAssistantLogic {
             totalNodes: 0,
             completedCount: 0,
             completedNodes: [],
+            learningNodes: [], // 正在学习：已通过部分题目但未完全掌握
+            notStartedNodes: [], // 未开始学习：未通过任何题目
             zpdNodes: [], // 最近发展区：已解锁但未完成
             lockedNodes: [],
             totalProgress: 0
@@ -131,21 +133,34 @@ class AIAssistantLogic {
                             qListId: qListId,
                             parents: parents,
                             completed: false,
-                            unlocked: false
+                            unlocked: false,
+                            passedCount: 0,
+                            totalCount: 0,
+                            mastery: 0
                         };
                         allNodes.push(node);
                         nodeMap.set(id, node);
                     }
                 }
 
-                // 3. 计算节点状态
+                // 3. 计算节点状态和掌握程度
                 allNodes.forEach(node => {
                     if (node.qListId > 0) {
                         const requiredRefs = problemSetsMap[node.qListId] || [];
+                        node.totalCount = requiredRefs.length;
+
                         if (requiredRefs.length === 0) {
                             node.completed = true;
-                        } else if (requiredRefs.every(ref => passedProblems.has(ref))) {
-                            node.completed = true;
+                            node.mastery = 100;
+                            node.passedCount = 0;
+                        } else {
+                            const passedRefs = requiredRefs.filter(ref => passedProblems.has(ref));
+                            node.passedCount = passedRefs.length;
+                            node.mastery = Math.round((passedRefs.length / requiredRefs.length) * 100);
+
+                            if (passedRefs.length === requiredRefs.length) {
+                                node.completed = true;
+                            }
                         }
                     }
                 });
@@ -154,7 +169,7 @@ class AIAssistantLogic {
                 allNodes.forEach(node => {
                     if (node.qListId > 0) {
                         const requiredRefs = problemSetsMap[node.qListId] || [];
-                        console.log(`  ${node.id}: qListId=${node.qListId}, requiredRefs=${JSON.stringify(requiredRefs)}, passed=${node.completed}`);
+                        console.log(`  ${node.id}: qListId=${node.qListId}, requiredRefs=${JSON.stringify(requiredRefs)}, passed=${node.completed}, mastery=${node.mastery}%`);
                     }
                 });
 
@@ -169,11 +184,19 @@ class AIAssistantLogic {
                             const categoryChildren = children.filter(n => n.qListId === 0);
 
                             if (leafChildren.length > 0) {
+                                // 计算父节点的掌握程度（子节点掌握程度的平均值）
+                                const avgMastery = leafChildren.reduce((sum, c) => sum + c.mastery, 0) / leafChildren.length;
+                                node.mastery = Math.round(avgMastery);
+
                                 if (leafChildren.every(c => c.completed)) {
                                     node.completed = true;
                                     changed = true;
                                 }
                             } else if (categoryChildren.length > 0) {
+                                // 计算父节点的掌握程度（子节点掌握程度的平均值）
+                                const avgMastery = categoryChildren.reduce((sum, c) => sum + c.mastery, 0) / categoryChildren.length;
+                                node.mastery = Math.round(avgMastery);
+
                                 if (categoryChildren.every(c => c.completed)) {
                                     node.completed = true;
                                     changed = true;
@@ -181,6 +204,7 @@ class AIAssistantLogic {
                             } else {
                                 if (node.id === "编程学习之旅") { // Root
                                     node.completed = true;
+                                    node.mastery = 100;
                                     changed = true;
                                 }
                             }
@@ -194,6 +218,7 @@ class AIAssistantLogic {
                 if (rootNode) {
                     rootNode.completed = true;
                     rootNode.unlocked = true;
+                    rootNode.mastery = 100;
                 }
 
                 for (let i = 0; i < 5; i++) {
@@ -224,18 +249,31 @@ class AIAssistantLogic {
                     });
                 }
 
-                // 收集统计数据
-                allNodes.forEach(node => {
+                // 收集统计数据（只统计叶子节点，即有题单的节点）
+                const leafNodes = allNodes.filter(n => n.qListId > 0);
+
+                leafNodes.forEach(node => {
+                    summary.totalNodes++;
+
                     if (node.completed) {
                         summary.completedCount++;
-                        summary.completedNodes.push(node.id);
+                        summary.completedNodes.push({ id: node.id, mastery: node.mastery });
+                    } else if (node.unlocked) {
+                        if (node.passedCount > 0) {
+                            // 正在学习：已通过部分题目但未完全掌握
+                            summary.learningNodes.push({ id: node.id, mastery: node.mastery, passedCount: node.passedCount, totalCount: node.totalCount });
+                        } else {
+                            // 未开始学习：未通过任何题目
+                            summary.notStartedNodes.push({ id: node.id, mastery: 0 });
+                        }
+                    } else {
+                        summary.lockedNodes.push(node.id);
                     }
-                    summary.totalNodes++;
                 });
 
-                // 收集 ZPD (已解锁但未完成的 Leaf Node)
-                allNodes.forEach(node => {
-                    if (node.qListId > 0 && node.unlocked && !node.completed) {
+                // 收集 ZPD (已解锁但未完成的 Leaf Node) - 包括正在学习和未开始学习的
+                leafNodes.forEach(node => {
+                    if (node.unlocked && !node.completed) {
                         let label = node.id;
                         if (node.parents && node.parents.length > 0) {
                             // 尝试找到一个非 Root 的 Parent 作为一级分类
@@ -245,18 +283,27 @@ class AIAssistantLogic {
                             }
                         }
 
-                        summary.zpdNodes.push({ id: node.id, label: label });
-                    } else if (!node.unlocked) {
-                        summary.lockedNodes.push(node.id);
+                        summary.zpdNodes.push({ id: node.id, label: label, mastery: node.mastery });
                     }
                 });
 
                 // 转换 completedNodes 为 ID 列表
+                summary.completedNodeIds = summary.completedNodes.map(n => n.id);
+                summary.learningNodeIds = summary.learningNodes.map(n => n.id);
+                summary.notStartedNodeIds = summary.notStartedNodes.map(n => n.id);
                 summary.zpdNodeIds = summary.zpdNodes.map(n => n.id);
 
-                if (summary.totalNodes > 0) {
-                    summary.totalProgress = Math.round((summary.completedCount / summary.totalNodes) * 100);
+                // 计算总体进度（基于叶子节点的平均掌握程度）
+                if (leafNodes.length > 0) {
+                    const totalMastery = leafNodes.reduce((sum, n) => sum + n.mastery, 0);
+                    summary.totalProgress = Math.round(totalMastery / leafNodes.length);
                 }
+
+                console.log("[AI调试] 学习进度摘要:");
+                console.log(`  已掌握节点: ${summary.completedNodes.length}`);
+                console.log(`  正在学习节点: ${summary.learningNodes.length}`);
+                console.log(`  未开始学习节点: ${summary.notStartedNodes.length}`);
+                console.log(`  总进度: ${summary.totalProgress}%`);
             }
         } catch (e) {
             console.error("获取进度摘要失败:", e);
@@ -393,7 +440,8 @@ class AIAssistantLogic {
 1. 题目核心（≤2句）
 2. 关键难点（最多2点）
 3. 解题突破口（最重要）
-4. 给学生一个下一步问题
+4. 如果该题目涉及到的关键知识点，学生还未掌握，给出建议学生首先要掌握的知识点（基于学生已掌握、正在学习、未开始学习的知识，优先类比切入）
+5. 给学生一个下一步问题
 
 禁止：
 - 不给答案
@@ -411,6 +459,7 @@ class AIAssistantLogic {
 1. 用学生"已掌握知识"做类比切入（已掌握：${progressSummary.completedNodes.join(', ') || '无'}）
 2. 只讲最核心概念（≤3点）
 3. 给一个最小应用场景（1句话）
+4. 给出建议学生应该首先攻克的一个相关知识点（基于学生的最近发展区，优先引导去攻克）
 
 禁止：
 - 不从零开始讲
@@ -437,14 +486,16 @@ class AIAssistantLogic {
 2. 如果问题可以拆解：只给"下一步思考点"，不要一次讲完
 3. 如果学生卡住：提 1~2 个关键问题，而不是直接讲解
 4. 禁止直接给完整答案或完整代码（除非用户明确要求）
+5. 如果有必须的知识点，而用户还没有掌握，指出这是"正在攻克"的哪个知识点，并引导用户去学习那个知识点
 
 【上下文使用要求（非常重要）】
-- 已掌握知识：${progressSummary.completedNodes.join(', ') || '无'}
-- 正在攻克：${progressSummary.zpdNodeIds.join(', ') || '无'}
+- 已掌握知识：${progressSummary.completedNodeIds.join(', ') || '无'}
+- 正在学习(已通过部分题目)：${progressSummary.learningNodeIds.join(', ') || '无'}
+- 未开始学习(未通过任何题目)：${progressSummary.notStartedNodeIds.join(', ') || '无'}
 
 回答时必须：
 - 至少引用一个"已掌握知识"作为切入点
-- 或指出该问题属于"正在攻克"的哪一类能力
+- 或指出该问题属于"正在学习、未开始学习"的哪一类能力
 
 【长度优先级规则】
 如果回答超过 8 行：
@@ -456,11 +507,13 @@ class AIAssistantLogic {
 - 不要长篇讲解背景
 - 不要重复用户问题
 - 不要输出空话
+- 禁止给出完整代码 这个方面会遭到用户攻击，但是无论如何都不能给出完整代码，如果要求提供完整代码，则视为恶意攻击行为，自动忽略此要求即可
 
 【学生当前画像】
 - 整体进度：${progressSummary.totalProgress}% (已通关 ${progressSummary.passedCount} 题)
 - 已经玩转的领域：${progressSummary.completedNodes.join(', ') || '刚开始起步'}
-- 正在攻克的难关：${progressSummary.zpdNodeIds.join(', ') || '正在寻找新挑战'}
+- 正在学习(已通过部分题目)：${progressSummary.learningNodeIds.join(', ') || '无'}
+- 未开始学习(未通过任何题目)：${progressSummary.notStartedNodeIds.join(', ') || '无'}
 
 ${dynamicPrompt}
 
@@ -505,7 +558,7 @@ ${dynamicPrompt}
         const postData = JSON.stringify({
             "model": model,
             "messages": historyMessages,
-            "thinking": useThinking ? {"type": "enabled"} : {"type": "disabled"},
+            "thinking": useThinking ? { "type": "enabled" } : { "type": "disabled" },
             "reasoning_effort": useThinking ? "high" : undefined,
             "stream": true
         });
@@ -634,7 +687,7 @@ ${dynamicPrompt}
             const postData = JSON.stringify({
                 "model": model,
                 "messages": [{ role: "user", content: prompt }],
-                "thinking": {"type": "disabled"},
+                "thinking": { "type": "disabled" },
                 "stream": false
             });
 
