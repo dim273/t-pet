@@ -84,10 +84,8 @@ var Paul_Pio = function (prop) {
 
     var elements = {
         home: modules.create("span", { class: "pio-home" }),
-        background: modules.create("span", { class: "pio-background" }), // 用于切换背景图
         skin: modules.create("span", { class: "pio-skin" }),
         skate: modules.create("span", { class: "pio-skate" }),
-        audio: modules.create("span", { class: "pio-diana" }), // 语音功能测试
         fans: modules.create("span", { class: "pio-asoulfans" }),
         info: modules.create("span", { class: "pio-info" }),
         // close: modules.create("span", { class: "pio-close" }),
@@ -152,23 +150,14 @@ var Paul_Pio = function (prop) {
         },
         // 右侧按钮
         buttons: function () {
-            // asoulworld网站
+            // 网易云音乐
             elements.home.onclick = function () {
-                window.open('https://studio.asf.ink/');
+                window.open('https://music.163.com/');
             };
             elements.home.onmouseover = function () {
                 modules.render(prop.content.home || "想查看更多算法学习资源吗？");
             };
             current.menu.appendChild(elements.home);
-
-            // 更换背景图
-            elements.background.onclick = function () {
-                changeBackground && changeBackground();
-            };
-            elements.background.onmouseover = function () {
-                modules.render(prop.content.background || "背景图？早该换换了");
-            };
-            current.menu.appendChild(elements.background);
 
             // 更换模型
             elements.skin.onclick = function () {
@@ -203,29 +192,9 @@ var Paul_Pio = function (prop) {
             };
             current.menu.appendChild(elements.skate);
 
-
-            // 音频测试
-            elements.audio.onclick = function () {
-                if (current.idol === 0) {
-                    window.live2d_playAction({
-                        text: "嘉心糖屁都用没有",
-                        motion: "Tap生气 -领结"
-                    })
-                    // 播放音频
-                    modules.audioPlay(`./models/Diana/audio/jiaxintang-nouse.aac`);
-                }
-                else {
-                    modules.render('晚晚的语音测试未添加');
-                }
-            };
-            elements.audio.onmouseover = function () {
-                modules.render("加油鼓励！");
-            };
-            current.menu.appendChild(elements.audio);
-
-            // 一个魂们的二创
+            // 打开博客园
             elements.fans.onclick = function () {
-                window.open("https://asoulfanart.com/pic");
+                window.open("https://www.cnblogs.com/");
             };
             elements.fans.onmouseover = function () {
                 modules.render("想看看其他学习者的分享吗？");
