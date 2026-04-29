@@ -1,16 +1,6 @@
-// 通过读取远程配置文件，进行设置默认信息
+// 通过读取本地配置文件，进行设置默认信息
 function getInitConfig(callback) {
-  fetch(`https://cdn.jsdelivr.net/gh/TheSecondAkari/vscode-live2d@latest/live2dExtraConfig.json`, {
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: "same-origin", // include, same-origin, *omit
-    headers: {
-      "user-agent": "Mozilla/4.0 MDN Example",
-    },
-    method: "GET", // *GET, POST, PUT, DELETE, etc.
-    mode: "cors", // no-cors, cors, *same-origin
-    redirect: "follow", // manual, *follow, error
-    referrer: "no-referrer" // *client, no-referrer
-  })
+  fetch(`../../live2dExtraConfig.json`)
     .then(response => response.json())
     .then(function (myJson) {
       callback && callback(myJson)
@@ -33,7 +23,7 @@ getInitConfig((ExtraInfo) => {
 })
 
 var 引流 = [
-  "https://www.bilibili.com/video/BV1Y64y1U7FZ"
+  "https://www.luogu.com.cn/"
 ]
 
 const initConfig = {
@@ -45,7 +35,7 @@ const initConfig = {
     touch: "别戳我啦~专心写代码吧！",
     home: ["这里有很多好听的", "边听音乐边刷题？效率满满哦"],
     skin: ["诶，想换个心情继续学习吗？", "换个形象，换种心情，加油！"],
-    background: ["要切换背景图吗？", "换个清新的背景，让思路更清晰吧！", "好的环境能让学习更高效哦~",],
+    background: ["要换一个思路吗？", "出去走走，让思路更清晰吧！", "好的环境能让学习更高效哦~",],
   },
   model: [
     "./models/Diana/Diana.model3.json",
