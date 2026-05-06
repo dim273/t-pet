@@ -153,21 +153,49 @@ function calculateOverallMastery(treeData, allProblems, passedSet) {
   return overallMastery;
 }
 
+// 检测是否为深色主题
+function isDarkTheme() {
+  // 检查VSCode是否为深色主题
+  if (typeof document !== 'undefined' && document.body) {
+    // 检查body的背景色是否较暗
+    const computedStyle = window.getComputedStyle(document.body);
+    const bgColor = computedStyle.backgroundColor;
+    if (bgColor) {
+      // 简单的明暗判断
+      if (bgColor.includes('rgba') || bgColor.includes('rgb')) {
+        const rgb = bgColor.match(/\d+/g);
+        if (rgb && rgb.length >= 3) {
+          const r = parseInt(rgb[0]), g = parseInt(rgb[1]), b = parseInt(rgb[2]);
+          const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+          return brightness < 128;
+        }
+      }
+    }
+  }
+  return true; // 默认深色主题
+}
+
 // 生成能力图谱数据
 function generateAbilityData(treeData, allProblems, passedSet) {
+  const isDark = isDarkTheme();
+  // 根据主题选择颜色
+  const primaryColor = isDark ? 'rgba(79, 70, 229, 1)' : 'rgba(59, 130, 246, 1)';
+  const bgColor = isDark ? 'rgba(79, 70, 229, 0.2)' : 'rgba(59, 130, 246, 0.2)';
+  const pointBorder = isDark ? '#fff' : '#1f2937';
+
   // 从知识树数据中提取能力数据
   const abilityData = {
     labels: [],
     datasets: [{
       label: '掌握程度',
       data: [],
-      backgroundColor: 'rgba(79, 70, 229, 0.2)',
-      borderColor: 'rgba(79, 70, 229, 1)',
+      backgroundColor: bgColor,
+      borderColor: primaryColor,
       borderWidth: 2,
-      pointBackgroundColor: 'rgba(79, 70, 229, 1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(79, 70, 229, 1)'
+      pointBackgroundColor: primaryColor,
+      pointBorderColor: pointBorder,
+      pointHoverBackgroundColor: pointBorder,
+      pointHoverBorderColor: primaryColor
     }]
   };
 
@@ -350,14 +378,14 @@ function initAbilityChart() {
         abilityData.chartData.labels.forEach((label, index) => {
           const mastery = abilityData.chartData.datasets[0].data[index];
           const detailCard = document.createElement('div');
-          detailCard.className = 'bg-gray-700 rounded-lg p-3';
+          detailCard.className = 'tp-ability-item';
           detailCard.innerHTML = `
-            <div class="flex justify-between items-center mb-1">
-              <span class="font-medium">${label}</span>
-              <span class="font-bold">${mastery}%</span>
+            <div class="tp-ability-item-header">
+              <span class="tp-ability-item-name">${label}</span>
+              <span class="tp-ability-item-count">${mastery}%</span>
             </div>
-            <div class="w-full bg-gray-600 rounded-full h-2">
-              <div class="bg-green-500 h-2 rounded-full" style="width: ${mastery}%"></div>
+            <div class="tp-ability-item-progress">
+              <div class="tp-ability-item-progress-fill" style="width: ${mastery}%"></div>
             </div>
           `;
           abilityDetails.appendChild(detailCard);
@@ -390,6 +418,17 @@ function initAbilityChart() {
       // 更新验证后的数据
       abilityData.chartData.datasets[0].data = validatedData;
 
+      const isDark = isDarkTheme();
+      // 根据主题设置雷达图颜色
+      const angleLinesColor = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+      const pointLabelsColor = isDark ? 'rgba(255, 255, 255, 0.85)' : 'rgba(55, 65, 81, 0.9)';
+      const ticksColor = isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(107, 114, 128, 0.8)';
+      const tooltipBg = isDark ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.95)';
+      const tooltipTitleColor = isDark ? 'white' : '#1f2937';
+      const tooltipBodyColor = isDark ? 'white' : '#4b5563';
+      const tooltipBorderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
+
       new Chart(ctx, {
         type: 'radar',
         data: abilityData.chartData,
@@ -402,19 +441,20 @@ function initAbilityChart() {
               max: 100,
               beginAtZero: true,
               angleLines: {
-                color: 'rgba(255, 255, 255, 0.1)'
+                color: angleLinesColor
               },
               grid: {
-                color: 'rgba(255, 255, 255, 0.1)'
+                color: gridColor
               },
               pointLabels: {
-                color: 'rgba(255, 255, 255, 0.8)',
+                color: pointLabelsColor,
                 font: {
-                  size: 11
+                  size: 11,
+                  weight: '500'
                 }
               },
               ticks: {
-                color: 'rgba(255, 255, 255, 0.5)',
+                color: ticksColor,
                 backdropColor: 'transparent',
                 stepSize: 20
               }
@@ -426,10 +466,10 @@ function initAbilityChart() {
             },
             tooltip: {
               enabled: true,
-              backgroundColor: 'rgba(0, 0, 0, 0.85)',
-              titleColor: 'white',
-              bodyColor: 'white',
-              borderColor: 'rgba(255, 255, 255, 0.2)',
+              backgroundColor: tooltipBg,
+              titleColor: tooltipTitleColor,
+              bodyColor: tooltipBodyColor,
+              borderColor: tooltipBorderColor,
               borderWidth: 1,
               padding: 12,
               cornerRadius: 6,

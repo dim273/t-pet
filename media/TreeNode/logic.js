@@ -170,19 +170,19 @@ function CheckParentUnlocked(nodeToUnlock) {
             break;
           }
         } else if ((levelData.id === parentId || levelData.title === parentId) && levelData.unlocked) {
-            // For root nodes or nodes without questions, unlocked implies completed enough for access?
-            // Actually root is always unlocked.
-            parentCompleted = true;
-            break;
+          // For root nodes or nodes without questions, unlocked implies completed enough for access?
+          // Actually root is always unlocked.
+          parentCompleted = true;
+          break;
         }
       }
-      
+
       // Also check treeMain if not found in treeData (though CheckParentUnlocked is usually for current tree)
       if (!parentCompleted && typeof treeMain !== 'undefined' && treeData !== treeMain) {
-           const parentNode = findNodeById(parentId);
-           if (parentNode && isNodeCompleted(parentNode)) {
-               parentCompleted = true;
-           }
+        const parentNode = findNodeById(parentId);
+        if (parentNode && isNodeCompleted(parentNode)) {
+          parentCompleted = true;
+        }
       }
 
       if (!parentCompleted) {
@@ -217,13 +217,13 @@ function updateNodeStates() {
               break;
             }
           }
-          
+
           // Also check treeMain
           if (!parentCompleted && typeof treeMain !== 'undefined' && treeData !== treeMain) {
-                const parentNode = findNodeById(node.parent);
-                if (parentNode && isNodeCompleted(parentNode)) {
-                    parentCompleted = true;
-                }
+            const parentNode = findNodeById(node.parent);
+            if (parentNode && isNodeCompleted(parentNode)) {
+              parentCompleted = true;
+            }
           }
 
           if (parentCompleted) {
@@ -363,12 +363,12 @@ function findNodeById(id) {
   }
   // Also search in main tree if not found in current subtree (for parent references)
   if (typeof treeMain !== 'undefined') {
-      for (const level of treeMain) {
-           if (level.nodes) {
-               const found = level.nodes.find(n => n.id === id);
-               if (found) return found;
-           }
+    for (const level of treeMain) {
+      if (level.nodes) {
+        const found = level.nodes.find(n => n.id === id);
+        if (found) return found;
       }
+    }
   }
   return null;
 }
@@ -379,88 +379,88 @@ let passedSet = null;
 let lastPassedSignature = "";
 
 function initPassedSet() {
-    const passed = window.passedProblems || [];
-    // Generate a simple signature: length + last item's ref (if exists)
-    // This assumes passedProblems is append-only or generally stable. 
-    // For more robustness, we could use a checksum, but this is fast.
-    const currentSignature = passed.length + (passed.length > 0 ? ("-" + passed[passed.length - 1]) : "");
+  const passed = window.passedProblems || [];
+  // Generate a simple signature: length + last item's ref (if exists)
+  // This assumes passedProblems is append-only or generally stable. 
+  // For more robustness, we could use a checksum, but this is fast.
+  const currentSignature = passed.length + (passed.length > 0 ? ("-" + passed[passed.length - 1]) : "");
 
-    if (currentSignature !== lastPassedSignature || !passedSet) {
-        passedSet = new Set(passed);
-        completionCache.clear();
-        lastPassedSignature = currentSignature;
-        // Note: We do NOT clear node.__completed property here because completion is monotonic.
-        // Once completed, it stays completed (unless problems are removed, which is rare/unsupported).
-    }
+  if (currentSignature !== lastPassedSignature || !passedSet) {
+    passedSet = new Set(passed);
+    completionCache.clear();
+    lastPassedSignature = currentSignature;
+    // Note: We do NOT clear node.__completed property here because completion is monotonic.
+    // Once completed, it stays completed (unless problems are removed, which is rare/unsupported).
+  }
 }
 
 // Helper to check if a node is completed
 const isNodeCompleted = (node) => {
-    // Optimization: Monotonicity
-    // If a node was previously marked as completed, it remains completed 
-    // (assuming passed problems are not revoked).
-    if (node.__completed) return true;
+  // Optimization: Monotonicity
+  // If a node was previously marked as completed, it remains completed 
+  // (assuming passed problems are not revoked).
+  if (node.__completed) return true;
 
-    // Ensure passedSet is initialized
-    if (!passedSet) initPassedSet();
-    
-    // Check cache first (for current render cycle or stable state)
-    if (completionCache.has(node)) {
-        return completionCache.get(node);
-    }
+  // Ensure passedSet is initialized
+  if (!passedSet) initPassedSet();
 
-    let isCompleted = false;
+  // Check cache first (for current render cycle or stable state)
+  if (completionCache.has(node)) {
+    return completionCache.get(node);
+  }
 
-    // 如果节点包含子树（如 treeMain 中的节点），检查子树中所有题目是否完成
-    if (node.myNode && Array.isArray(node.myNode)) {
-        let allSubQuestionsPassed = true;
-        // 遍历子树各层级
-        for (const level of node.myNode) {
-            if (level.nodes) {
-                for (const subNode of level.nodes) {
-                    // Recursive check with caching
-                    // Note: subNodes might not have __completed set if we haven't visited them.
-                    // But isNodeCompleted(subNode) will set it.
-                    if (subNode.questionList && subNode.questionList !== 0) {
-                         // Check subNode directly
-                         if (!isNodeCompleted(subNode)) {
-                             allSubQuestionsPassed = false;
-                             break;
-                         }
-                    }
-                }
+  let isCompleted = false;
+
+  // 如果节点包含子树（如 treeMain 中的节点），检查子树中所有题目是否完成
+  if (node.myNode && Array.isArray(node.myNode)) {
+    let allSubQuestionsPassed = true;
+    // 遍历子树各层级
+    for (const level of node.myNode) {
+      if (level.nodes) {
+        for (const subNode of level.nodes) {
+          // Recursive check with caching
+          // Note: subNodes might not have __completed set if we haven't visited them.
+          // But isNodeCompleted(subNode) will set it.
+          if (subNode.questionList && subNode.questionList !== 0) {
+            // Check subNode directly
+            if (!isNodeCompleted(subNode)) {
+              allSubQuestionsPassed = false;
+              break;
             }
-            if (!allSubQuestionsPassed) break;
+          }
         }
-        isCompleted = allSubQuestionsPassed;
+      }
+      if (!allSubQuestionsPassed) break;
+    }
+    isCompleted = allSubQuestionsPassed;
+  } else {
+    if (!node.questionList) {
+      isCompleted = node.unlocked;
     } else {
-        if (!node.questionList) {
-             isCompleted = node.unlocked; 
+      const listId = "list_" + node.questionList;
+      if (typeof problemSets === 'undefined') {
+        isCompleted = false;
+      } else {
+        const problemSet = problemSets[listId];
+        if (!problemSet) {
+          isCompleted = true;
         } else {
-            const listId = "list_" + node.questionList;
-            if (typeof problemSets === 'undefined') {
-                isCompleted = false;
-            } else {
-                const problemSet = problemSets[listId];
-                if (!problemSet) {
-                    isCompleted = true;
-                } else {
-                    // Use passedSet for O(1) lookup
-                    isCompleted = problemSet.problems.every(p => passedSet.has(p.ref));
-                }
-            }
+          // Use passedSet for O(1) lookup
+          isCompleted = problemSet.problems.every(p => passedSet.has(p.ref));
         }
+      }
     }
-    
-    // Store result in cache
-    completionCache.set(node, isCompleted);
-    
-    // Persist completion state on the node itself (Monotonic optimization)
-    if (isCompleted) {
-        node.__completed = true;
-    }
-    
-    return isCompleted;
+  }
+
+  // Store result in cache
+  completionCache.set(node, isCompleted);
+
+  // Persist completion state on the node itself (Monotonic optimization)
+  if (isCompleted) {
+    node.__completed = true;
+  }
+
+  return isCompleted;
 };
 
 // Recalculate unlocked and completed states
@@ -470,47 +470,47 @@ function recalculateTreeState() {
 
   // Function to update a specific tree structure
   const updateTree = (targetTree) => {
-      targetTree.forEach(levelData => {
-          if (levelData.type === 'root') {
-              levelData.unlocked = true;
+    targetTree.forEach(levelData => {
+      if (levelData.type === 'root') {
+        levelData.unlocked = true;
+      }
+
+      const nodes = levelData.nodes || [];
+      nodes.forEach(node => {
+        if (node.parent && Array.isArray(node.parent)) {
+          let allParentsCompleted = true;
+          for (const parentId of node.parent) {
+            const parentNode = findNodeById(parentId);
+            if (parentNode) {
+              // If parent is in a different tree that hasn't been updated yet, this might be stale.
+              // But we update treeMain first below.
+              if (!isNodeCompleted(parentNode)) {
+                allParentsCompleted = false;
+                break;
+              }
+            }
           }
-    
-          const nodes = levelData.nodes || [];
-          nodes.forEach(node => {
-              if (node.parent && Array.isArray(node.parent)) {
-                  let allParentsCompleted = true;
-                  for (const parentId of node.parent) {
-                      const parentNode = findNodeById(parentId);
-                      if (parentNode) {
-                           // If parent is in a different tree that hasn't been updated yet, this might be stale.
-                           // But we update treeMain first below.
-                           if (!isNodeCompleted(parentNode)) {
-                               allParentsCompleted = false;
-                               break;
-                           }
-                      }
-                  }
-                  node.unlocked = allParentsCompleted;
-              }
-    
-              if (node.unlocked) {
-                  if (isNodeCompleted(node)) {
-                      node.icon = "⭐";
-                  } else {
-                      if (node.icon === "🔒") node.icon = "🚩";
-                  }
-              } else {
-                  node.icon = "🔒";
-              }
-          });
+          node.unlocked = allParentsCompleted;
+        }
+
+        if (node.unlocked) {
+          if (isNodeCompleted(node)) {
+            node.icon = "⭐";
+          } else {
+            if (node.icon === "🔒") node.icon = "🚩";
+          }
+        } else {
+          node.icon = "🔒";
+        }
       });
+    });
   };
 
   // Update Main Tree first to ensure category unlock status is correct
   if (typeof treeMain !== 'undefined' && treeData !== treeMain) {
-      updateTree(treeMain);
+    updateTree(treeMain);
   }
-  
+
   // Update current tree
   updateTree(treeData);
 }

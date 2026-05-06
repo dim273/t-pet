@@ -122,7 +122,7 @@ body {
 
 .tp-new-chat-btn {
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-on-primary, #ffffff);
   border: none;
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-sm);
@@ -325,8 +325,8 @@ body {
 }
 
 .tp-avatar {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   margin-right: var(--space-2);
   flex-shrink: 0;
@@ -334,7 +334,7 @@ body {
   align-items: center;
   justify-content: center;
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-on-primary, #ffffff);
   font-size: var(--text-xs);
   font-weight: var(--font-bold);
 }
@@ -361,7 +361,7 @@ body {
 
 .tp-message.user .tp-message-body {
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-on-primary, #ffffff);
   border: none;
 }
 
@@ -510,9 +510,17 @@ body {
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.4; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 /* ============================================

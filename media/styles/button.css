@@ -40,7 +40,7 @@
 /* Primary Button - 主要操作 */
 .tp-btn-primary {
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-on-primary, #ffffff);
 }
 
 .tp-btn-primary:hover:not(:disabled) {

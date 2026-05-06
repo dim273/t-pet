@@ -12,31 +12,36 @@
    * ============================================ */
 
   /* --- 主色调 (Primary) --- */
-  --color-primary: #0078d4;
-  --color-primary-hover: #1177bb;
-  --color-primary-bg: rgba(0, 120, 212, 0.1);
+  --color-primary: var(--vscode-accentColor, #0078d4);
+  --color-primary-hover: var(--vscode-accentActiveForeground, #005a9e);
+  --color-primary-bg: var(--vscode-activeSelectionBackground, rgba(0, 120, 212, 0.1));
 
   /* --- 功能色 (Functional) --- */
-  --color-success: #4ec9b0;
-  --color-warning: #dcdcaa;
-  --color-error: #f14c4c;
-  --color-info: #3794ff;
+  --color-success: var(--vscode-testingIconPassed, #4ec9b0);
+  --color-warning: var(--vscode-testingIconFailed, #dcdcaa);
+  --color-error: var(--vscode-errorForeground, #f14c4c);
+  --color-info: var(--vscode-infoForeground, #3794ff);
 
   /* --- 文字色 (Text) --- */
-  --color-text-primary: var(--vscode-foreground, #d4d4d4);
-  --color-text-secondary: var(--vscode-descriptionForeground, #858585);
-  --color-text-muted: var(--vscode-disabledForeground, #6e6e6e);
+  --color-text-primary: var(--vscode-foreground, #333333);
+  --color-text-secondary: var(--vscode-descriptionForeground, #666666);
+  --color-text-muted: var(--vscode-disabledForeground, #999999);
+  --color-text-on-primary: var(--vscode-button-foreground, #ffffff);
 
   /* --- 背景色 (Background) --- */
-  --color-bg-primary: var(--vscode-editor-background, #1e1e1e);
-  --color-bg-secondary: var(--vscode-sideBar-background, #252526);
-  --color-bg-tertiary: var(--vscode-input-background, #3c3c3c);
-  --color-bg-hover: var(--vscode-toolbar-hoverBackground, #2a2d2e);
-  --color-bg-active: var(--vscode-toolbar-activeBackground, #37373d);
+  --color-bg-primary: #f0f7ff;
+  --color-bg-secondary: #e6f0fa;
+  --color-bg-tertiary: #dceaf7;
+  --color-bg-hover: #cce4f5;
+  --color-bg-active: #b3d9f5;
+  --color-bg-card: #ffffff;
 
   /* --- 边框色 (Border) --- */
-  --color-border: var(--vscode-border, #454545);
-  --color-border-light: var(--vscode-contrastBorder, transparent);
+  --color-border: var(--vscode-panel-border, #dee2e6);
+  --color-border-light: var(--vscode-contrastBorder, rgba(0, 0, 0, 0.08));
+
+  /* --- 悬停背景色 --- */
+  --color-primary-bg-hover: rgba(0, 120, 212, 0.1);
 
   /* ============================================
    * 2. 难度等级配色 (Difficulty Colors)
