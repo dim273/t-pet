@@ -105,6 +105,59 @@ function onModelLoad(model) {
 
   window.live2d_playAction = playAction; // 挂载到window上，方便调用
 
+  // 题目通过时的动作列表
+  const problemPassedActions = [
+    {
+      text: "哇！AC了！你太厉害了！",
+      motion: "Tap右头发"
+    },
+    {
+      text: "做出来了？就知道你超棒的！",
+      motion: "Tap右头发"
+    },
+    {
+      text: "恭喜恭喜！又搞定一道题！",
+      motion: "Tap右头发"
+    },
+    {
+      text: "Accept！你真是算法小天才！",
+      motion: "Tap右头发"
+    },
+    {
+      text: "太强了吧！这都难不倒你！",
+      motion: "Tap右头发"
+    },
+    {
+      text: "继续保持！你离成功越来越近了！",
+      motion: "Tap右头发"
+    }
+  ];
+
+  window.live2d_onProblemPassed = function () {
+    console.log('[Live2D] 执行题目通过庆祝动作');
+
+    const action = pio_reference.modules.rand(problemPassedActions)
+    playAction(action)
+  }
+
+  // 监听来自扩展的消息
+  window.addEventListener('message', function (event) {
+    if (event.data && (event.data.type === 't-pet_problem_passed' || event.data.type === 'live2d-problemPassed')) {
+      console.log('[Live2D] 收到题目通过消息，触发庆祝动作');
+      window.live2d_onProblemPassed();
+    }
+  });
+
+  // 监听localStorage变化
+  window.addEventListener('storage', function (event) {
+    if (event.key && event.key.startsWith('t-pet_problem_passed_')) {
+      console.log('[Live2D] 通过localStorage收到题目通过消息');
+      window.live2d_onProblemPassed();
+      // 清理localStorage
+      localStorage.removeItem(event.key);
+    }
+  });
+
   canvas.onclick = function () {
     if (motionManager.state.currentGroup !== "Idle") return
 
