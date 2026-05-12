@@ -102,5 +102,8 @@ window.addEventListener('message', event => {
         const modelSelect = document.getElementById('deepseekModel');
         if (apiKeyInput) apiKeyInput.value = apiKey || "";
         if (modelSelect) modelSelect.value = model || "deepseek-v4-pro";
+    } else if (msg.type === 'triggerPetCelebration') {
+        // 触发萌宠庆祝动作
+        sendCommand('live2d-problemPassed');
     }
 });

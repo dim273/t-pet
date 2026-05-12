@@ -99,6 +99,9 @@ class Live2dViewProvider {
 								this.storage.updateAccountByIndex(this._currentAccountId, this.saveData);
 								console.log(`[自动打卡] ${dateKey}`);
 							}
+
+							// 触发萌宠庆祝动作
+							this._triggerPetCelebration();
 						}
 
 					} catch (err) {
@@ -600,6 +603,22 @@ class Live2dViewProvider {
 			});
 		});
 	}
+
+	// 触发萌宠庆祝动作
+	_triggerPetCelebration() {
+		try {
+			// 通过webview发送消息，由webview转发到主窗口
+			if (this._view && this._view.webview) {
+				this._view.webview.postMessage({
+					type: 'triggerPetCelebration'
+				});
+			}
+			console.log('[Pet Celebration] 已触发萌宠庆祝动作');
+		} catch (error) {
+			console.error('[Pet Celebration] 触发萌宠动作失败:', error);
+		}
+	}
+
 	// 生成设置
 	_getSettingHtml(webview) {
 		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));

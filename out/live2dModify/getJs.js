@@ -15,7 +15,7 @@ function default_1(config, extName, version) {
 			// 添加postmessage事件监听
 			const receiveMessage = (event) => {
 				const origin = event.origin || event.originalEvent.origin;
-				if (origin !== "vscode-webview://webviewview-vscode-live2d-live2dview" && !origin.startsWith('vscode-webview://'))
+				if (origin !== "vscode-webview://webviewview-vscode-live2d-live2dview" && !origin.startsWith('vscode-webview://') && !origin.startsWith('vscode-file://') && origin !== 'null')
 					return;
 				const { type, data } = event?.data || {};
 				if(type)
@@ -37,6 +37,9 @@ function default_1(config, extName, version) {
 							break;
 						case 'live2d-saveCurrentConfig':
 							this.saveCurrentConfig();
+							break;
+						case 'live2d-problemPassed':
+							this.onProblemPassed();
 							break;
 						default:
 							break;
@@ -424,6 +427,15 @@ function default_1(config, extName, version) {
 		modifyBackgroundConfig = (config) => {
 			const fn = this.live2dIframe?.contentWindow?.modifyBackgroundConfig;
 			fn && fn(config);
+		}
+
+		onProblemPassed = () => {
+			const fn = this.live2dIframe?.contentWindow?.live2d_onProblemPassed;
+			if (fn) {
+				fn();
+			} else {
+				console.log('[Live2D] live2d_onProblemPassed function not available');
+			}
 		}
 	}
 
