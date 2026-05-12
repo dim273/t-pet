@@ -1,6 +1,6 @@
 {
-  "name": "code-assistant",
-  "displayName": "Code Assistant",
+  "name": "code-assistant-live2d",
+  "displayName": "Code Assistant-Live2D",
   "description": "算法学习插件-吉祥物Live2D看板娘。 陪伴你学习算法，给予鼓励和支持",
   "version": "2.0.0",
   "author": "dim273",

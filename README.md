@@ -19,7 +19,7 @@
 
 1. 打开 VS Code
 2. 进入扩展面板（`Ctrl+Shift+X`）
-3. 搜索 `Code Assistant`
+3. 搜索 `Code Assistant Live2d`
 4. 点击 **Install** 安装
 
 ### GitHub 下载
